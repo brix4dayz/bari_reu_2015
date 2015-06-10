@@ -23,7 +23,8 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
   for tweetData in tweets:
     print "Tweet #" + str(i)
     i = i + 1
-    print tweetData['time'] 
+    print tweetData['time']
+    print tweetData['lat'] + ", " + tweetData['lon']
     print tweetData['tweet_text'] + "\n"
     tweetData['tweet_text'].lower()
     if "#bostonstrong" in tweetData['tweet_text']: numBostonStrongTags = numBostonStrongTags + 1

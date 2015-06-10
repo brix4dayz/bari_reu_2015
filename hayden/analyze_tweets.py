@@ -15,6 +15,9 @@ def peacefulTweet(tweet):
 def scaredTweet(tweet):
   return
 
+def excitedTweet(tweet):
+  return
+
 # source: https://docs.python.org/2/library/csv.html
 # uses the csv.DictReader class to parse the data
 # because the first line of the file explains each field in a csv
@@ -27,15 +30,12 @@ numTweetsWithKeywords = 0
 import csv
 with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
   tweets = csv.DictReader(csvfile)
-  i = 0
+  ttlNumTweets = 0
   # for all the tweets the reader finds
   for tweetData in tweets:
-    print "Tweet #" + str(i)
-    i = i + 1
-    print tweetData['time'] 
-    print tweetData['tweet_text'] + "\n"
+    ttlNumTweets = ttlNumTweets + 1
     if tweetContainsKeyWords(tweetData['tweet_text'].lower()):
       numTweetsWithKeywords = numTweetsWithKeywords + 1
 
 print numTweetsWithKeywords
-print float(numTweetsWithKeywords)/i
+print float(numTweetsWithKeywords)/ttlNumTweets
