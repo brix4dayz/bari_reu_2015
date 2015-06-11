@@ -34,7 +34,8 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
   # for all the tweets the reader finds
   for tweetData in tweets:
     ttlNumTweets = ttlNumTweets + 1
-    if tweetContainsKeyWords(tweetData['tweet_text'].lower()):
+    tweetData['tweet_text'] = tweetData['tweet_text'].lower()
+    if tweetContainsKeyWords(tweetData['tweet_text']):
       numTweetsWithKeywords = numTweetsWithKeywords + 1
 
 print numTweetsWithKeywords

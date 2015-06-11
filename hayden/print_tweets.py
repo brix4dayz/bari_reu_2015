@@ -1,7 +1,7 @@
 #!/usr/bin/python2.7
 
 """
-  Prints the time and text of all the tweets in the given dataset
+  Prints the time, lon/lat, and text of all the tweets in the given dataset
   while determining number of Boston Strong hashtags.
 """
 
@@ -26,7 +26,7 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
     print tweetData['time']
     print tweetData['lat'] + ", " + tweetData['lon']
     print tweetData['tweet_text'] + "\n"
-    tweetData['tweet_text'].lower()
+    tweetData['tweet_text'] = tweetData['tweet_text'].lower()
     if "#bostonstrong" in tweetData['tweet_text']: numBostonStrongTags = numBostonStrongTags + 1
 
 print numBostonStrongTags
