@@ -14,19 +14,16 @@ import csv
 # a hash/dictionary with the keys matching the fields specified in 
 # the first line of the file
 
-numBostonStrongTags = 0
+types = {}
 
-with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
-  tweets = csv.DictReader(csvfile)
-  i = 0
+with open('2010-14 Full CAD, Jan-Jun 2012.csv') as csvfile:
+  reports = csv.DictReader(csvfile)
   # for all the tweets the reader finds
-  for tweetData in tweets:
-    print "Tweet #" + str(i)
-    i = i + 1
-    print tweetData['time']
-    print tweetData['lat'] + ", " + tweetData['lon']
-    print tweetData['tweet_text'] + "\n"
-    tweetData['tweet_text'] = tweetData['tweet_text'].lower()
-    if "#bostonstrong" in tweetData['tweet_text']: numBostonStrongTags = numBostonStrongTags + 1
+  for r in reports:
+    if not r['TYPE'] in types.keys():
+      types[r['TYPE']] = r['TYPE_DESC']
 
-print numBostonStrongTags
+print "911 Types for 2012:\n"
+for t in sorted(types, key=types.get):
+  print t + " --> " + types[t] 
+print "\n"
