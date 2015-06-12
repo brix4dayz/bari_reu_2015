@@ -25,7 +25,18 @@ with open('2010-14 Full CAD, Jan-Jun 2013.csv') as csvfile:
     if not r['TYPE'] in types2013.keys():
       types2013[r['TYPE']] = r['TYPE_DESC']
 
+sharedKeys = (set(types2012.keys()) & set(types2013.keys()))
+sharedKeys = list(sharedKeys)
+
+other = []
+
 for k in types2012.keys():
   if k in types2013.keys():
+    other.append(k)
     if types2012[k] != types2013[k]:
-      print "2012," + k + types2012[k] + "2013" + k + types2013[k]
+      print "oh no"
+
+for k in sharedKeys:
+  if not k in other:
+    print "mhmmmmm"
+
