@@ -47,6 +47,7 @@ def excitedTweet(tweet):
 # format, DictReader immediately knows how to parse each line into
 # a hash/dictionary with the keys matching the fields specified in 
 # the first line of the file
+
 if __name__ == "__main__":
   numTweetsWithKeywords = 0
 

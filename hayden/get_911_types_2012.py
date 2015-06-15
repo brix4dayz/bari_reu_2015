@@ -15,9 +15,13 @@ with open('2010-14 Full CAD, Jan-Jun 2012.csv') as csvfile:
   reports = csv.DictReader(csvfile)
   for r in reports:
     if not r['TYPE'] in types.keys():
-      types[r['TYPE']] = r['TYPE_DESC']
+      types[r['TYPE']] = {}
+      types[r['TYPE']]['description'] = r['TYPE_DESC']
+      types[r['TYPE']]['count'] = 1
+    else:
+      types[r['TYPE']]['count'] = types[r['TYPE']]['count'] + 1
 
-print "type,description"
+print "type,description,count"
 for t in sorted(types):
-  print t + "," + types[t] 
+  print t + "," + types[t]['description'] + "," + str(types[t]['count'])
 print "\n"
