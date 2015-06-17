@@ -1,9 +1,7 @@
+# source for plotting non-numeric data on x-axis, aka using barplot:
+# http://craiccomputing.blogspot.com/2011/11/plotting-simple-bar-plot-in-r.html
 
-tweets <- read.csv(file="tweets_per_day.csv", sep=",", head=TRUE)
+tweets <- read.csv(file="tweets_per_date_hour.csv", sep=",", head=TRUE)
 
-hist(rep(tweets$day, tweets$number_tweets), breaks=11:22, main="Tweets Containing Keyword vs. Day", 
-  xlab="Day", ylab="Number of Tweets")
-
-axis(side=1, at=seq(11, 22, 1), labels=seq(11, 22, 1))
-
-
+barplot(tweets[,'number_tweets'], main="Tweets With Keywords vs. Date",
+  ylab="Number of Tweets", ylim=c(0,2000), names.arg=tweets[,'date_hour'], las=2)

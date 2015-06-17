@@ -5,23 +5,23 @@ import csv
 
 #################### CRITERIA ########################################################################
 
-keywords = ["#bostonstrong", "#prayforboston", "police", "cops", "shooting", "bombing", "marathon"]
-
-"""angrySentiments = {}
-
-peacefulSentiments = {}
-
-scaredSentiments = {}
-
-excitedSentiments = {}
-
-angryMin = 0
-
-peacefulMin = 0
-
-scaredMin = 0
-
-excitedMin = 0"""
+keywords = ["#bostonmarathon", 
+    "#marathonmonday",
+    "#patriotsday"
+    "marathon",
+    "boylston",
+    "finish line",
+    "#bostonstrong",
+    "#bostonpride",
+    "#prayforboston",
+    "#pray4bos",
+    "bomb"
+    "explosion",
+    "explode",
+    "wounded",
+    "hostage",
+    "watertown",
+    "lockdown"]
 
 tweet_time_fmt = "%Y-%m-%d %H:%M:%S"
 
@@ -52,8 +52,9 @@ def excitedTweet(tweet):
 # a hash/dictionary with the keys matching the fields specified in 
 # the first line of the file
 
-if __name__ == "__main__":
+def main():
   dates = {}
+  date = []
 
   with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
     tweets = csv.DictReader(csvfile)
@@ -62,12 +63,19 @@ if __name__ == "__main__":
       if tweetData['time'] != "":
         date = time.strptime(tweetData['time'], tweet_time_fmt)
         if not date.tm_mday in dates.keys():
-          dates[date.tm_mday] = 0
+          dates[date.tm_mday] = {'AM':0, 'PM':0}
         tweetData['tweet_text'] = tweetData['tweet_text'].lower()
         if tweetContainsKeyWords(tweetData['tweet_text']):
-          dates[date.tm_mday] = dates[date.tm_mday] + 1
+          if date.tm_hour < 12:
+            dates[date.tm_mday]['AM'] += 1
+          else:
+            dates[date.tm_mday]['PM'] += 1
 
-  print "day,number_tweets"
+  print "date_hour,number_tweets"
   for d in sorted(dates):
-    print str(d) + "," + str(dates[d])
+    for h in sorted(dates[d]):
+      print str(date.tm_mon) + "/" + str(d) + " - " + h + "," + str(dates[d][h])
+
+if __name__ == "__main__":
+  main()
 
