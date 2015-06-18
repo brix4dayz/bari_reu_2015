@@ -1,5 +1,6 @@
 #!/usr/bin/python2.7
 
+# author: Hayden Fuss
 
 #################### LIBRARIES ########################################################################
 
@@ -8,6 +9,7 @@ import csv                          # data parser
 import re                           # regex
 import numpy as np                  # arrays for plotting
 import matplotlib.pyplot as plt     # plotting
+import math                         # ceiling for y-max in plots
 
 
 #################### CRITERIA ########################################################################
@@ -34,9 +36,10 @@ keywords_list = ['#bostonmarathon',
                  'manhunt',
                  'collier']
 
-# build regex for containing one of the keywords
+# build regex for searching for all the keywords
 keywords = re.compile('|'.join(keywords_list))
 
+# initialze hash/dictionary for counting keyword occurances
 keyword_counts = {}
 
 for word in keywords_list:
@@ -46,7 +49,7 @@ for word in keywords_list:
 #################### FUNCTIONS #######################################################################
 
 def tweetContainsKeyWords(tweet):
-  ## searches tweet for keywords, if none were found, findall returns empty list
+  # searches tweet for keywords, if none were found, findall returns empty list
   found_words = keywords.findall(tweet)
   if found_words:
     for word in found_words:
@@ -73,6 +76,7 @@ def excitedTweet(tweet):
 # uses the csv.DictReader class to parse the data
 # time.strptime to parse date/time
 # regex to analyze tweet text
+# matplotlib and numpy to make barchart
 
 ## main function
 def main():
@@ -123,9 +127,7 @@ def main():
     tickMarks.append(str(date.tm_mon) + "/" + str(d))
 
   ##### get largest count and round up to nearest 100th
-  maxCount = max(ams + pms)
-  import math
-  maxCount = int(math.ceil(maxCount / 100.0)) * 100
+  maxCount = int(math.ceil(max(ams + pms) / 100.0)) * 100
 
   #### plot data
 
@@ -152,7 +154,7 @@ def main():
   ax2 = fig.add_subplot(122) # 1x2, 2nd subplot
   ax2.axis('off') # makes blank subplot
 
-  # make text
+  # make text, sorts based on count in reverse (descending) order
   for word in sorted(keyword_counts, key=keyword_counts.get, reverse=True):
     fig_text = fig_text + word + "," + str(keyword_counts[word]) + "\n"
 
