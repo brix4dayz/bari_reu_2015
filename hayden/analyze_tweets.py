@@ -36,7 +36,8 @@ keywords_list = ['#bostonmarathon',
                  'manhunt',
                  'collier']
 
-# build regex for searching for all the keywords
+# build regex pattern for searching for all the keywords
+# Will look something like '#bostonmarathon|#marathonmonday|#patriotsday|marathon|...'
 keywords = re.compile('|'.join(keywords_list))
 
 # initialze hash/dictionary for counting keyword occurances
@@ -121,12 +122,15 @@ def main():
   pms = []
   tickMarks = []
 
+  # goes through the date hashes in order of day
   for d in sorted(dates):
+    # adds the day's counts to each list respectively
     ams.append(dates[d]['AM'])
     pms.append(dates[d]['PM'])
+    # make string representing and add it to list
     tickMarks.append(str(date.tm_mon) + "/" + str(d))
 
-  ##### get largest count and round up to nearest 100th
+  ##### get largest count of both lists and round up to nearest 100th
   maxCount = int(math.ceil(max(ams + pms) / 100.0)) * 100
 
   #### plot data
@@ -160,7 +164,7 @@ def main():
 
   # add title and text
   ax2.set_title("Occurances of Keywords")
-  ax2.text(.1,.1,fig_text)
+  ax2.text(.1, .1, fig_text)
 
   #### save plots as image
   plt.savefig("tweets_per_day.png", dpi=96)
