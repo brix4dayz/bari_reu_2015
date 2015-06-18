@@ -16,7 +16,7 @@ tweet_time_fmt = "%Y-%m-%d %H:%M:%S"
 
 keywords_list = ['#bostonmarathon', 
                  '#marathonmonday',
-                 '#patriotsday'
+                 '#patriotsday',
                  'marathon',
                  'boylston',
                  'finish line',
@@ -37,12 +37,23 @@ keywords_list = ['#bostonmarathon',
 # build regex for containing one of the keywords
 keywords = re.compile('|'.join(keywords_list))
 
+keyword_counts = {}
+
+for word in keywords_list:
+  keyword_counts[word] = 0
+
 
 #################### FUNCTIONS #######################################################################
 
 def tweetContainsKeyWords(tweet):
-  # searches tweet for keywords, if none search returns empty object
-  return keywords.search(tweet) is not None
+  ## searches tweet for keywords, if none were found, findall returns empty list
+  found_words = keywords.findall(tweet)
+  if found_words:
+    for word in found_words:
+      keyword_counts[word] += 1
+    return True
+  else:
+    return False
 
 # Sentiment analysis functions, will require a lot more code
 def angryTweet(tweet):
@@ -86,16 +97,16 @@ def main():
         tweetData['tweet_text'] = tweetData['tweet_text'].lower()
         if tweetContainsKeyWords(tweetData['tweet_text']):
           # determine if morning or evening
-          if date.tm_hour < 12: # hour = 0 - 11
+          if date.tm_hour < 12:                     # hour = 0 - 11
             dates[date.tm_mday]['AM'] += 1
-          else: # hour = 12 - 23
+          else:                                     # hour = 12 - 23
             dates[date.tm_mday]['PM'] += 1
 
   ### produce plots
   ### source: http://people.duke.edu/~ccc14/pcfb/numpympl/MatplotlibBarPlots.html
   
   fig = plt.figure()
-  ax = fig.add_subplot(111)
+  ax = fig.add_subplot(121) # 1x2 grid, 1st subplot
 
   #### make data plot-friendly
 
@@ -111,13 +122,14 @@ def main():
     pms.append(dates[d]['PM'])
     tickMarks.append(str(date.tm_mon) + "/" + str(d))
 
-
+  ##### get largest count and round up to nearest 100th
   maxCount = max(ams + pms)
-
   import math
   maxCount = int(math.ceil(maxCount / 100.0)) * 100
 
   #### plot data
+
+  ##### first plot
 
   amBars = ax.bar(indices, ams, bar_width, color='c')
 
@@ -133,7 +145,24 @@ def main():
 
   ax.legend((amBars[0], pmBars[0]), ('AM', 'PM'))
 
+  ##### second plot, keyword count
+
+  fig_text = ""
+
+  ax2 = fig.add_subplot(122) # 1x2, 2nd subplot
+  ax2.axis('off') # makes blank subplot
+
+  # make text
+  for word in sorted(keyword_counts, key=keyword_counts.get, reverse=True):
+    fig_text = fig_text + word + "," + str(keyword_counts[word]) + "\n"
+
+  # add title and text
+  ax2.set_title("Occurances of Keywords")
+  ax2.text(.1,.1,fig_text)
+
+  #### save plots as image
   plt.savefig("tweets_per_day.png", dpi=96)
+
 
 ## if this program is being executed, and not used as a module, call main
 if __name__ == "__main__":
