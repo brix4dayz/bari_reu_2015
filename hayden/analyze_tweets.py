@@ -1,5 +1,3 @@
-#!/usr/bin/python2.7
-
 # author: Hayden Fuss
 
 #################### LIBRARIES ########################################################################
@@ -10,42 +8,30 @@ import re                           # regex
 import numpy as np                  # arrays for plotting
 import matplotlib.pyplot as plt     # plotting
 import math                         # ceiling for y-max in plots
-
+import yaml                         # for loading criteria data
 
 #################### CRITERIA ########################################################################
 
-tweet_time_fmt = "%Y-%m-%d %H:%M:%S"
+# open criteria .yml file and load it into dictionary using yaml
+criteria_yml = open('twitter_criteria.yml', 'r')
+criteria = yaml.load(criteria_yml)
+criteria_yml.close()
 
-keywords_list = ['#bostonmarathon', 
-                 '#marathonmonday',
-                 '#patriotsday',
-                 'marathon',
-                 'boylston',
-                 'finish line',
-                 '#bostonstrong',
-                 '#bostonpride',
-                 '#prayforboston',
-                 '#pray4bos',
-                 'bomb',
-                 'explosion',
-                 'explode',
-                 'wounded',
-                 'hostage',
-                 'watertown',
-                 'lockdown',
-                 'manhunt',
-                 'collier']
+# store twitter time format
+tweet_time_fmt = criteria['time_fmt']
 
 # build regex pattern for searching for all the keywords
 # Will look something like '#bostonmarathon|#marathonmonday|#patriotsday|marathon|...'
-keywords = re.compile('|'.join(keywords_list))
+keywords = re.compile('|'.join(criteria['keywords']))
 
 # initialze hash/dictionary for counting keyword occurances
 keyword_counts = {}
 
-for word in keywords_list:
+for word in criteria['keywords']:
   keyword_counts[word] = 0
 
+# free additional memory used for criteria dictionary
+del(criteria)
 
 #################### FUNCTIONS #######################################################################
 
