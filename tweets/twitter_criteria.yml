@@ -19,3 +19,6 @@ keywords: ["#bostonmarathon",
            "collier"]
 
 time_fmt: "%Y-%m-%d %H:%M:%S"
+
+features:
+  scared: [fearful]
