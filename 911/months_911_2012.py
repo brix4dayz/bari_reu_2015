@@ -3,6 +3,7 @@
 import time
 import csv
 
+# author: Josh Lojzim
 
 emer_time_fmt = "%m/%d/%Y %H:%M"
 

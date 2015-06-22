@@ -1,3 +1,4 @@
+# author: Hayden Fuss
 
 senders <- read.csv(file="sender_count.csv", sep=",", head=TRUE)
 

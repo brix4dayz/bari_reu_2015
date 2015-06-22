@@ -1,5 +1,7 @@
 #!/usr/bin/python2.7
 
+# author: Hayden Fuss
+
 """
   Prints the time, lon/lat, and text of all the tweets in the given dataset
   while determining number of Boston Strong hashtags.

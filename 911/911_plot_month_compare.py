@@ -1,5 +1,8 @@
 #!/usr/bin/python2.7
 
+# author: Josh Lojzim
+# revised by: Hayden Fuss
+
 import time
 import csv
 import numpy as np

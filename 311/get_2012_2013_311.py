@@ -1,5 +1,7 @@
 #!/usr/bin/python2.7
 
+# author: Hayden Fuss
+
 import csv
 
 filtered = []

@@ -1,5 +1,7 @@
 #!/usr/bin/python2.7
 
+# author: Hayden Fuss
+
 """
   Prints the first 10 tweets as raw data.
 """

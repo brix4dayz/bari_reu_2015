@@ -1,3 +1,5 @@
+# author: Hayden Fuss
+
 # source for plotting non-numeric data on x-axis, aka using barplot:
 # http://craiccomputing.blogspot.com/2011/11/plotting-simple-bar-plot-in-r.html
 

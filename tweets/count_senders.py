@@ -1,5 +1,7 @@
 import csv
 
+# author: Josh Lojzim
+
 # source: https://docs.python.org/2/library/csv.html
 # uses the csv.DictReader class to parse the data
 # because the first line of the file explains each field in a csv

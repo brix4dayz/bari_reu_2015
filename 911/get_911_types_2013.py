@@ -1,5 +1,7 @@
 #!/usr/bin/python2.7
 
+# author: Hayden Fuss
+
 import csv
 
 # source: https://docs.python.org/2/library/csv.html

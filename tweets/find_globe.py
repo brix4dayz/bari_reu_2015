@@ -1,5 +1,7 @@
 #!/usr/bin/python2.7
 
+# author: Jeremy McKenzie
+
 """
   Prints the time, lon/lat, and text of all the tweets in the given dataset
   while determining number of Boston Strong hashtags.
