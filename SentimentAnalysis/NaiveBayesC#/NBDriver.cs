@@ -1,7 +1,7 @@
 /*
 	Name: Elizabeth Brooks
 	Date Modified: 06/22/2015
-	File: NaiveBayesJAVA (Driver)
+	File: NaiveBayesJAVA (NBDriver)
 */
 
 //PreProcessor Directives
