@@ -15,7 +15,7 @@ Over the past week, we have started to process the data through the use of progr
 Next, we developed a dictionary of keywords that can accurately determine if a tweet was referring to the bombing and/or manhunt. As we analyze smaller and smaller units of time, it will be necessary to reference the data against a timeline of major events related to the bombing. Lastly, we have begun to familiarize ourselves with natural language processing, sentiment analysis, and basic machine learning. This will allow us to develop a program that will determine the sentiment of a given tweet with reasonable accuracy.
 Using the initial keyword dictionary we have written, it was possible to count the volume of related geo-tagged tweets in the morning (AM) and evening (PM) for a ten day period, April 12th through 22nd of 2013, during which the bombings and manhunt took place (Figure 1). Additionally, we have counted the number of times each of the classified keywords occurred. This will allow us to tweak the keyword dictionary throughout the duration of the research process (Figure 1). With the current dictionary, we have observed spikes at the periods of time when significant events occurred. This indicates our dictionary is reasonably accurate, at this point.  
 <div align="center">
-	<img src="tweets_per_day.png" height=350 >
+	<img src="tweets/tweets_per_day.png" height=350 >
 </div>
 **Figure 1.**  The density of tweets during the week of the Boston Marathon (2013) bombing containing the pre classified keywords listed to the right of the figure.
 

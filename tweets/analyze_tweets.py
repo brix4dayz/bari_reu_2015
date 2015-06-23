@@ -58,6 +58,71 @@ def scaredTweet(tweet):
 def excitedTweet(tweet):
   return
 
+def makePlot(dates, month):
+  ### produce plots
+  ### source: http://people.duke.edu/~ccc14/pcfb/numpympl/MatplotlibBarPlots.html
+  
+  fig = plt.figure()
+  ax = fig.add_subplot(121) # 1x2 grid, 1st subplot
+
+  #### make data plot-friendly
+
+  bar_width = 0.35
+  indices = np.arange(len(dates))
+
+  ams = []
+  pms = []
+  tickMarks = []
+
+  # goes through the date hashes in order of day
+  for d in sorted(dates):
+    # adds the day's counts to each list respectively
+    ams.append(dates[d]['AM'])
+    pms.append(dates[d]['PM'])
+    # make string representing and add it to list
+    tickMarks.append(str(month) + "/" + str(d))
+
+  ##### get largest count of both lists and round up to nearest 100th
+  maxCount = int(math.ceil(max(ams + pms) / 100.0)) * 100
+
+  #### plot data
+
+  ##### first plot
+
+  amBars = ax.bar(indices, ams, bar_width, color='c')
+
+  pmBars = ax.bar(indices+bar_width, pms, bar_width, color='g')
+
+  ax.set_xlim(-bar_width, len(indices)+bar_width)
+  ax.set_ylim(0, maxCount)
+  ax.set_ylabel('Number of Tweets')
+  ax.set_title('Tweets Containing Keywords per Day', fontsize=10)
+  ax.set_xticks(indices+bar_width)
+  tickNames = ax.set_xticklabels(tickMarks)
+  plt.setp(tickNames, rotation=45, fontsize=10)
+
+  ax.legend((amBars[0], pmBars[0]), ('AM', 'PM'))
+
+  ##### second plot, keyword count
+
+  fig_text = ""
+
+  ax2 = fig.add_subplot(122) # 1x2, 2nd subplot
+  ax2.axis('off') # makes blank subplot
+
+  # make text, sorts based on count in reverse (descending) order
+  for word in sorted(keyword_counts, key=keyword_counts.get, reverse=True):
+    fig_text = fig_text + word + "," + str(keyword_counts[word]) + "\n"
+
+  # add title and text
+  ax2.set_title("Occurances of Keywords")
+  ax2.text(0.0, -0.1, fig_text)
+
+  #### save plots as image
+  plt.savefig("tweets_per_day.png", dpi=96)
+
+  return
+
 
 ##################### MAIN ###########################################################################
 # uses the csv.DictReader class to parse the data
@@ -93,67 +158,7 @@ def main():
           else:                                     # hour = 12 - 23
             dates[date.tm_mday]['PM'] += 1
 
-  ### produce plots
-  ### source: http://people.duke.edu/~ccc14/pcfb/numpympl/MatplotlibBarPlots.html
-  
-  fig = plt.figure()
-  ax = fig.add_subplot(121) # 1x2 grid, 1st subplot
-
-  #### make data plot-friendly
-
-  bar_width = 0.35
-  indices = np.arange(len(dates))
-
-  ams = []
-  pms = []
-  tickMarks = []
-
-  # goes through the date hashes in order of day
-  for d in sorted(dates):
-    # adds the day's counts to each list respectively
-    ams.append(dates[d]['AM'])
-    pms.append(dates[d]['PM'])
-    # make string representing and add it to list
-    tickMarks.append(str(date.tm_mon) + "/" + str(d))
-
-  ##### get largest count of both lists and round up to nearest 100th
-  maxCount = int(math.ceil(max(ams + pms) / 100.0)) * 100
-
-  #### plot data
-
-  ##### first plot
-
-  amBars = ax.bar(indices, ams, bar_width, color='c')
-
-  pmBars = ax.bar(indices+bar_width, pms, bar_width, color='g')
-
-  ax.set_xlim(-bar_width, len(indices)+bar_width)
-  ax.set_ylim(0, maxCount)
-  ax.set_ylabel('Number of Tweets')
-  ax.set_title('Tweets Containing Keywords per Day')
-  ax.set_xticks(indices+bar_width)
-  tickNames = ax.set_xticklabels(tickMarks)
-  plt.setp(tickNames, rotation=45, fontsize=10)
-
-  ax.legend((amBars[0], pmBars[0]), ('AM', 'PM'))
-
-  ##### second plot, keyword count
-
-  fig_text = ""
-
-  ax2 = fig.add_subplot(122) # 1x2, 2nd subplot
-  ax2.axis('off') # makes blank subplot
-
-  # make text, sorts based on count in reverse (descending) order
-  for word in sorted(keyword_counts, key=keyword_counts.get, reverse=True):
-    fig_text = fig_text + word + "," + str(keyword_counts[word]) + "\n"
-
-  # add title and text
-  ax2.set_title("Occurances of Keywords")
-  ax2.text(.1, .1, fig_text)
-
-  #### save plots as image
-  plt.savefig("tweets_per_day.png", dpi=96)
+    makePlot(dates, date.tm_mon)
 
 
 ## if this program is being executed, and not used as a module, call main

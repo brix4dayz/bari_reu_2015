@@ -1,5 +1,6 @@
 # author: Hayden Fuss
 
+# consider adding regex and no longer converting to lowercase
 keywords: ["#bostonmarathon",
            "#marathonmonday",
            "#patriotsday",
