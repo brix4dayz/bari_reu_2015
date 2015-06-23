@@ -19,14 +19,12 @@ namespace NaiveBayesClassifier
 	{
 		//Class fields
 		private DataSet dataSet = new DataSet();
-		
 		//Method to define the DataSet
 		public DataSet DataSet
 		{
 			get{return dataSet;}
 			set{dataSet = value;}
 		}//End method
-		
 		//Method for training the data
 		public void TrainClassifier(DataTable table)
 		{
@@ -64,7 +62,6 @@ namespace NaiveBayesClassifier
 				}//End inner for
 			}//End outer for
 		}//End method TrainClassifier
-		
 		//Method for classifying strings
 		public string Classify(double[]obj)
 		{
