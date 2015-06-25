@@ -4,34 +4,37 @@
 
 import time                         # time/date parser
 import csv                          # data parser
-import re                           # regex
 import numpy as np                  # arrays for plotting
 import matplotlib.pyplot as plt     # plotting
 import math                         # ceiling for y-max in plots
-import yaml                         # for loading criteria data
+import twitter_criteria as twc      # yaml, re, os
 
 #################### CRITERIA ########################################################################
 
+print twc.criteria
+
 # open criteria .yml file and load it into dictionary using yaml
-criteria_yml = open('twitter_criteria.yml', 'r')
-criteria = yaml.load(criteria_yml)
-criteria_yml.close()
+twc.loadCriteria()
+
+print twc.criteria
+
+#import sys
+#sys.exit()
 
 # store twitter time format
-tweet_time_fmt = criteria['time_fmt']
+tweet_time_fmt = twc.getTwitterTimeFmt()
 
 # build regex pattern for searching for all the keywords
 # Will look something like '#bostonmarathon|#marathonmonday|#patriotsday|marathon|...'
-keywords = re.compile('|'.join(criteria['keywords']))
-
+keywords = twc.getKeywordRegex()
 # initialze hash/dictionary for counting keyword occurances
 keyword_counts = {}
 
-for word in criteria['keywords']:
+for word in twc.getKeywords():
   keyword_counts[word] = 0
 
 # free additional memory used for criteria dictionary
-del(criteria)
+twc.clearCriteria()
 
 #################### FUNCTIONS #######################################################################
 
