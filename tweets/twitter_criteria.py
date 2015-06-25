@@ -29,6 +29,9 @@ def getKeywordRegex():
   global criteria
   return re.compile('|'.join(criteria['keywords']))
 
+def getHandleRegex():
+  return re.compile(r'@[^ :\xe2\"\)\./\\\?\'!@]+')
+
 def clearCriteria():
   global criteria
   del(criteria)
