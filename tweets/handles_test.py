@@ -1,7 +1,9 @@
 import csv
-import twitter_criteria as twc
+import twittercriteria as twc
 import time
 import matplotlib.pyplot as plt
+
+# author: Hayden Fuss
 
 twc.loadCriteria()
 time_fmt = twc.getTwitterTimeFmt()

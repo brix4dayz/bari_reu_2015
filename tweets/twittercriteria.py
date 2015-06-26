@@ -3,6 +3,8 @@ import os
 import inspect
 import re
 
+# author: Hayden Fuss
+
 # uses os and inspect to determine path to module
 myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 filepath = myDir + '/twitter_criteria.yml'
