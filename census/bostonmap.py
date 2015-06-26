@@ -29,6 +29,9 @@ def test():
 def distance(parcel, datum):
   return 
 
+def convertCoord(coordinate):
+  return float(coordinate)*1000.0
+
 class ParcelGrid(object):
   def __init__(self, xmin, xmax, ymin, ymax, binsize):
     self.grid = {}
@@ -39,15 +42,19 @@ class ParcelGrid(object):
     return
 
   def addParcel(self, parcel):
-    i = int(float(parcel['X']))/binsize
-    j = int(float(parcel['Y']))/binsize
+    parcel['X'] = convertCoord(parcel['X'])
+    parcel['Y'] = convertCoord(parcel['Y'])
+    i = int(parcel['X'])/binsize
+    j = int(parcel['Y'])/binsize
     self.grid[i][j].append(parcel)
     return
 
   def addData(self, datum):
     global cutoff
-    i = int(float(datum['lon']))/binsize
-    j = int(float(datum['lat']))/binsize
+    datum['lon'] = convertCoord(datum['lon'])
+    datum['lat'] = convertCoord(datum['lat'])
+    i = int(datum['lon'])/binsize
+    j = int(datum['lat'])/binsize
     for p in self.grid[i][j]:
       if distance(p, datum) <= cutoff:
         p.append(datum)
