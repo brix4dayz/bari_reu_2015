@@ -2,6 +2,9 @@ import csv
 import yaml
 import math
 import re
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
+import numpy as np
 
 grid = None
 
@@ -23,14 +26,15 @@ def initGrid():
 def loadParcels():
   return
 
-def test():
-  return
-
 def distance(parcel, datum):
   return 
 
 def convertCoord(coordinate):
   return float(coordinate)*1000.0
+
+class BostonMap(object):
+  def __init__(self):
+    return
 
 class ParcelGrid(object):
   def __init__(self, xmin, xmax, ymin, ymax, binsize):
@@ -60,6 +64,9 @@ class ParcelGrid(object):
         p.append(datum)
         return
 
+def test():
+  
+  return
 
 if __name__ == "__main__":
   test()
