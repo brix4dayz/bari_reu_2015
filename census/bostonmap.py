@@ -28,7 +28,7 @@ class BostonMap(object):
 
   def loadBasemap(self):
     self.fig = plt.figure()
-    self.ax = self.fig.add_subplot(111, axisbg='w', frame_on=False)
+    self.ax = self.fig.add_subplot(111)
 
     self.map = Basemap(
     projection='tmerc',
@@ -39,7 +39,8 @@ class BostonMap(object):
     urcrnrlon=self.coords[2] + self.extra * self.w,
     urcrnrlat=self.coords[3] + self.extra + 0.01 * self.h,
     lat_ts=0,
-    resolution='i',
+    resolution='h',
+    area_thresh=0.05,
     suppress_ticks=True)
 
     self.map.readshapefile(
@@ -69,6 +70,10 @@ class BostonMap(object):
 
     self.buildDFs()
 
+    # plot leverett g tower for fun
+    x,y = self.map(-71.1161, 42.3692)
+    self.map.plot(x, y, 'go', markersize=5)
+
     # Draw a map scale
     self.map.drawmapscale(
       self.coords[0] + self.w/4, self.coords[3],
@@ -91,6 +96,6 @@ class BostonMap(object):
     return
 
 if __name__ == "__main__":
-  out = raw_input("Enter name of map png: ")
+  out = raw_input("Enter name of output png: ")
   boston = BostonMap(out)
   boston.plotMap()
