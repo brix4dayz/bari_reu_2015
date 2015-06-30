@@ -10,9 +10,15 @@ from descartes import PolygonPatch
 
 #source: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
 
+# uses os and inspect to determine path to module
+import os
+import inspect
+myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+#####################################################################################################################
 class BostonMap(object):
   def __init__(self):
-    shp = fiona.open('Tracts_Boston_2010_BARI.shp')
+    shp = fiona.open(myDir + '/Tracts_Boston_2010_BARI.shp')
     bds = shp.bounds
     shp.close()
     self.extra = 0.01
@@ -37,8 +43,12 @@ class BostonMap(object):
       resolution='h',
       area_thresh=0.01,
       suppress_ticks=True)
+    self.loadShapeFile()
+    return
+
+  def loadShapeFile(self):
     self.map.readshapefile(
-      'Tracts_Boston_2010_BARI',
+      myDir + '/Tracts_Boston_2010_BARI',
       'boston',
       color='none',
       zorder=2)
@@ -93,12 +103,12 @@ class BostonMap(object):
 
   # virtual function to be overridden
   def data(self):
-    self.leverettG()
+    #self.leverettG()
     return
 
   def makePlot(self, outname, title):
     plt.title(title)
-    #self.fig.set_figsize(...)
+    self.fig.set_size_inches(10, (self.h/self.w)*10)
     plt.savefig(outname + '.png', dpi=100, alpha=True)
     return
 
@@ -111,11 +121,13 @@ class BostonMap(object):
     self.makePlot(outname, title)
     return
 
+#####################################################################################################################
 class BostonScatter(BostonMap):
   def __init__(self, dataPoints):
     self.dataPoints = dataPoints
     # call parent constructor
     super(BostonScatter, self).__init__()
+    return
 
   def dataDF(self):
     output = {'lon':[], 'lat':[]}
@@ -137,10 +149,33 @@ class BostonScatter(BostonMap):
       10, marker='o', lw=.25,
       facecolor='#33ccff', edgecolor='w',
       alpha=0.9, antialiased=True, zorder=3)
-
-    #self.map.drawcoastlines()
     return
 
+#####################################################################################################################
+class GreaterBostonScatter(BostonScatter):
+  def __init__(self, dataPoints):
+    super(GreaterBostonScatter, self).__init__(dataPoints)
+    return
+
+  # override so polygon patches arent added
+  def tracts(self):
+    return
+
+  # override so dataframe of map isnt made, instead draw boundaries and fill in colors
+  def mapDF(self):
+    self.map.drawmapboundary(color='w', fill_color='aqua')
+    self.map.drawcoastlines()
+    self.map.fillcontinents(color='coral', lake_color='aqua')
+    return
+
+  def loadShapeFile(self):
+    self.map.readshapefile(
+      myDir + '/Tracts_Boston_2010_BARI',
+      'boston',
+      zorder=2)
+    return
+
+#####################################################################################################################
 def testMap():
   out = raw_input("Enter name of output png: ")
   boston = BostonMap()
@@ -153,10 +188,11 @@ def testScatter():
     {'lon':'-71.1864942', 'lat':'42.36610796'},
     {'lon':'-71.0530936', 'lat':'42.35931187'}
   ]
-  boston = BostonScatter(testData)
+  boston = GreaterBostonScatter(testData)
   boston.plotMap(outname=out, title='Scatterplot Over Boston')
   return
 
+#####################################################################################################################
 if __name__ == "__main__":
-  testScatter()
+  testMap()
   plt.show()
