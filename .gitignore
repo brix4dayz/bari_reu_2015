@@ -2,11 +2,3 @@
 *.csv
 *.ipynb_checkpoints
 *.zip
-
-*.shp
-*.shx
-*.dbf
-*.prj
-*.shp.xml
-*.cpg
-london_20131229.xml

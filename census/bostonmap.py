@@ -13,130 +13,84 @@ import geopandas as gp
 
 #source: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
 
-grid = None
-
-cutoff = 1.0
-
-bostonXMIN = 0.0
-
-bostonXMAX = 0.0
-
-bostonYMIN = 0.0
-
-bostonYMAX = 0.0
-
-binsize = 10.0
-
-def initGrid():
-  return 
-
-def loadParcels():
-  return
-
-def distance(parcel, datum):
-  return 
-
-def convertCoord(coordinate):
-  return float(coordinate)*1000.0
-
 class BostonMap(object):
-  def __init__(self):
+  def __init__(self, outname):
+    self.outname = outname
+    shp = fiona.open('Tracts_Boston_2010_BARI.shp')
+    bds = shp.bounds
+    shp.close()
+    self.extra = 0.01
+    self.ll = (bds[0], bds[1])
+    self.ur = (bds[2], bds[3])
+    self.coords = list(chain(self.ll, self.ur))
+    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
     return
 
-class ParcelGrid(object):
-  def __init__(self, xmin, xmax, ymin, ymax, binsize):
-    self.grid = {}
-    for i in range(xmin, xmax, binsize):
-      self.grid[i] = {}
-      for j in range(ymin, ymax, binsize):
-        self.grid[i][j] = []
-    return
+  def loadBasemap(self):
+    self.fig = plt.figure()
+    self.ax = self.fig.add_subplot(111, axisbg='w', frame_on=False)
 
-  def addParcel(self, parcel):
-    parcel['X'] = convertCoord(parcel['X'])
-    parcel['Y'] = convertCoord(parcel['Y'])
-    i = int(parcel['X'])/binsize
-    j = int(parcel['Y'])/binsize
-    self.grid[i][j].append(parcel)
-    return
-
-  def addData(self, datum):
-    global cutoff
-    datum['lon'] = convertCoord(datum['lon'])
-    datum['lat'] = convertCoord(datum['lat'])
-    i = int(datum['lon'])/binsize
-    j = int(datum['lat'])/binsize
-    for p in self.grid[i][j]:
-      if distance(p, datum) <= cutoff:
-        p.append(datum)
-        return
-
-def test():
-
-  shp = fiona.open('Tracts_Boston_2010_BARI.shp')
-  bds = shp.bounds
-  shp.close()
-  extra = 0.01
-  ll = (bds[0], bds[1])
-  ur = (bds[2], bds[3])
-  coords = list(chain(ll, ur))
-  w, h = coords[2] - coords[0], coords[3] - coords[1]
-
-  fig = plt.figure()
-  ax = fig.add_subplot(111, axisbg='w', frame_on=False)
-
-  m = Basemap(
+    self.map = Basemap(
     projection='tmerc',
-    lon_0=(coords[0] + coords[2])/2, # here was where I went wrong
-    lat_0=(coords[3] + coords[1])/2,
-    llcrnrlon=coords[0] - extra * w,
-    llcrnrlat=coords[1] - extra + 0.01 * h,
-    urcrnrlon=coords[2] + extra * w,
-    urcrnrlat=coords[3] + extra + 0.01 * h,
+    lon_0=(self.coords[0] + self.coords[2])/2, # here was where I went wrong
+    lat_0=(self.coords[3] + self.coords[1])/2,
+    llcrnrlon=self.coords[0] - self.extra * self.w,
+    llcrnrlat=self.coords[1] - self.extra + 0.01 * self.h,
+    urcrnrlon=self.coords[2] + self.extra * self.w,
+    urcrnrlat=self.coords[3] + self.extra + 0.01 * self.h,
     lat_ts=0,
     resolution='i',
     suppress_ticks=True)
 
-  m.readshapefile(
-    'Tracts_Boston_2010_BARI',
-    'boston',
-    color='none',
-    zorder=2)
+    self.map.readshapefile(
+      'Tracts_Boston_2010_BARI',
+      'boston',
+      color='none',
+      zorder=2)
+    return
 
-  # set up a map dataframe
-  df_map = pd.DataFrame({
-    'poly': [Polygon(xy) for xy in m.boston]})
-  df_map['area_m'] = df_map['poly'].map(lambda x: x.area)
-  df_map['area_km'] = df_map['area_m'] / 100000
+  def buildDFs(self):
+    # set up a map dataframe
+    self.df_map = pd.DataFrame({
+      'poly': [Polygon(xy) for xy in self.map.boston]})
+    self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
+    self.df_map['area_km'] = self.df_map['area_m'] / 100000
 
-  # draw ward patches from polygons
-  df_map['patches'] = df_map['poly'].map(lambda x: PolygonPatch(
-    x,
-    fc='#000055',
-    ec='#787878', lw=.25, alpha=.9,
-    zorder=4))
+    # draw ward patches from polygons
+    self.df_map['patches'] = self.df_map['poly'].map(lambda x: PolygonPatch(
+      x,
+      fc='#000055',
+      ec='#787878', lw=.25, alpha=.9,
+      zorder=4))
+    return
 
-  # Draw a map scale
-  m.drawmapscale(
-    coords[0] + w/4, coords[3],
-    coords[0], coords[1],
-    2.,
-    barstyle='fancy', labelstyle='simple',
-    fillcolor1='w', fillcolor2='#000055',
-    fontcolor='#000055',
-    zorder=5,
-    units='mi')
+  def plotMap(self):
+    self.loadBasemap()
 
-  # plot boroughs by adding the PatchCollection to the axes instance
-  ax.add_collection(PatchCollection(df_map['patches'].values, match_original=True))
+    self.buildDFs()
 
-  plt.title("Boston")
-  # this will set the image width to 722px at 100dpi
-  #fig.set_size_inches(7.22, 5.25)
-  plt.savefig('boston2.png', dpi=100, alpha=True)
-  plt.show()
+    # Draw a map scale
+    self.map.drawmapscale(
+      self.coords[0] + self.w/4, self.coords[3],
+      self.coords[0], self.coords[1],
+      2.,
+      barstyle='fancy', labelstyle='simple',
+      fillcolor1='w', fillcolor2='#000055',
+      fontcolor='#000055',
+      zorder=5,
+      units='mi')
 
-  return
+    # plot boroughs by adding the PatchCollection to the axes instance
+    self.ax.add_collection(PatchCollection(self.df_map['patches'].values, match_original=True))
+
+    plt.title("Boston")
+    # this will set the image width to 722px at 100dpi
+    #fig.set_size_inches(7.22, 5.25)
+    plt.savefig(self.outname + '.png', dpi=100, alpha=True)
+    plt.show()
+    return
 
 if __name__ == "__main__":
-  test()
+  out = raw_input("Enter name of map png: ")
+  boston = BostonMap(out)
+  boston.plotMap()
