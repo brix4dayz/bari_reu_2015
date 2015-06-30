@@ -12,6 +12,10 @@ from descartes import PolygonPatch
 import fiona
 from itertools import chain
 
+plt.clf()
+fig = plt.figure()
+ax = fig.add_subplot(111, axisbg='w', frame_on=False)
+
 tree = etree.parse("data/london_20131229.xml")
 root = tree.getroot()
 
@@ -91,10 +95,6 @@ df_map['patches'] = df_map['poly'].map(lambda x: PolygonPatch(
     fc='#555555',
     ec='#787878', lw=.25, alpha=.9,
     zorder=4))
-
-plt.clf()
-fig = plt.figure()
-ax = fig.add_subplot(111, axisbg='w', frame_on=False)
 
 # we don't need to pass points to m() because we calculated using map_points and shapefile polygons
 dev = m.scatter(

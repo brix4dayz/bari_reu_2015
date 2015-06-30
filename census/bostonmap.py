@@ -72,16 +72,6 @@ class ParcelGrid(object):
         return
 
 def test():
-  """boston = Basemap(projection='merc', lat_0=42.3601, lon_0=-71.0589, area_thresh=0.1, resolution='h',
-                   llcrnrlat=42.20, llcrnrlon=-71.20, urcrnrlat=42.45, urcrnrlon=-70.95)
-
-  boston.drawcoastlines()
-  boston.drawcountries()
-  boston.fillcontinents(color='lightblue')
-  boston.drawmapboundary()
-  boston.drawstates()
-  boston.drawrivers()
-  plt.show()"""
 
   shp = fiona.open('Tracts_Boston_2010_BARI.shp')
   bds = shp.bounds
@@ -92,10 +82,13 @@ def test():
   coords = list(chain(ll, ur))
   w, h = coords[2] - coords[0], coords[3] - coords[1]
 
+  fig = plt.figure()
+  ax = fig.add_subplot(111, axisbg='w', frame_on=False)
+
   m = Basemap(
     projection='tmerc',
-    lon_0=42.3601,
-    lat_0=-71.0589,
+    lon_0=(coords[0] + coords[2])/2, # here was where I went wrong
+    lat_0=(coords[3] + coords[1])/2,
     llcrnrlon=coords[0] - extra * w,
     llcrnrlat=coords[1] - extra + 0.01 * h,
     urcrnrlon=coords[2] + extra * w,
@@ -103,32 +96,36 @@ def test():
     lat_ts=0,
     resolution='i',
     suppress_ticks=True)
-  
-  """# this line of code isn't right
+
   m.readshapefile(
     'Tracts_Boston_2010_BARI',
     'boston',
     color='none',
-    zorder=2)"""
-
-  boros = gp.GeoDataFrame.from_file('Tracts_Boston_2010_BARI.shp')
+    zorder=2)
 
   # set up a map dataframe
   df_map = pd.DataFrame({
-    'poly': [row['geometry'] for i, row in boros.iterrows()]})
+    'poly': [Polygon(xy) for xy in m.boston]})
   df_map['area_m'] = df_map['poly'].map(lambda x: x.area)
   df_map['area_km'] = df_map['area_m'] / 100000
 
   # draw ward patches from polygons
   df_map['patches'] = df_map['poly'].map(lambda x: PolygonPatch(
     x,
-    fc='#555555',
+    fc='#000055',
     ec='#787878', lw=.25, alpha=.9,
     zorder=4))
 
-  plt.clf()
-  fig = plt.figure()
-  ax = fig.add_subplot(111, axisbg='w', frame_on=False)
+  # Draw a map scale
+  m.drawmapscale(
+    coords[0] + w/4, coords[3],
+    coords[0], coords[1],
+    2.,
+    barstyle='fancy', labelstyle='simple',
+    fillcolor1='w', fillcolor2='#000055',
+    fontcolor='#000055',
+    zorder=5,
+    units='mi')
 
   # plot boroughs by adding the PatchCollection to the axes instance
   ax.add_collection(PatchCollection(df_map['patches'].values, match_original=True))
