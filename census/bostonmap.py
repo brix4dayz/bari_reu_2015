@@ -1,10 +1,17 @@
 import csv
 import yaml
-import math
-import re
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
+import pandas as pd
+import fiona
+from itertools import chain
+from matplotlib.collections import PatchCollection
+from shapely.geometry import Point, Polygon, MultiPoint, MultiPolygon
+from descartes import PolygonPatch
+import geopandas as gp
+
+#source: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
 
 grid = None
 
@@ -65,7 +72,73 @@ class ParcelGrid(object):
         return
 
 def test():
+  """boston = Basemap(projection='merc', lat_0=42.3601, lon_0=-71.0589, area_thresh=0.1, resolution='h',
+                   llcrnrlat=42.20, llcrnrlon=-71.20, urcrnrlat=42.45, urcrnrlon=-70.95)
+
+  boston.drawcoastlines()
+  boston.drawcountries()
+  boston.fillcontinents(color='lightblue')
+  boston.drawmapboundary()
+  boston.drawstates()
+  boston.drawrivers()
+  plt.show()"""
+
+  shp = fiona.open('Tracts_Boston_2010_BARI.shp')
+  bds = shp.bounds
+  shp.close()
+  extra = 0.01
+  ll = (bds[0], bds[1])
+  ur = (bds[2], bds[3])
+  coords = list(chain(ll, ur))
+  w, h = coords[2] - coords[0], coords[3] - coords[1]
+
+  m = Basemap(
+    projection='tmerc',
+    lon_0=42.3601,
+    lat_0=-71.0589,
+    llcrnrlon=coords[0] - extra * w,
+    llcrnrlat=coords[1] - extra + 0.01 * h,
+    urcrnrlon=coords[2] + extra * w,
+    urcrnrlat=coords[3] + extra + 0.01 * h,
+    lat_ts=0,
+    resolution='i',
+    suppress_ticks=True)
   
+  """# this line of code isn't right
+  m.readshapefile(
+    'Tracts_Boston_2010_BARI',
+    'boston',
+    color='none',
+    zorder=2)"""
+
+  boros = gp.GeoDataFrame.from_file('Tracts_Boston_2010_BARI.shp')
+
+  # set up a map dataframe
+  df_map = pd.DataFrame({
+    'poly': [row['geometry'] for i, row in boros.iterrows()]})
+  df_map['area_m'] = df_map['poly'].map(lambda x: x.area)
+  df_map['area_km'] = df_map['area_m'] / 100000
+
+  # draw ward patches from polygons
+  df_map['patches'] = df_map['poly'].map(lambda x: PolygonPatch(
+    x,
+    fc='#555555',
+    ec='#787878', lw=.25, alpha=.9,
+    zorder=4))
+
+  plt.clf()
+  fig = plt.figure()
+  ax = fig.add_subplot(111, axisbg='w', frame_on=False)
+
+  # plot boroughs by adding the PatchCollection to the axes instance
+  ax.add_collection(PatchCollection(df_map['patches'].values, match_original=True))
+
+  plt.title("Boston")
+  # this will set the image width to 722px at 100dpi
+  #fig.set_size_inches(7.22, 5.25)
+  plt.savefig('boston2.png', dpi=100, alpha=True)
+  plt.show()
+
   return
 
 if __name__ == "__main__":
