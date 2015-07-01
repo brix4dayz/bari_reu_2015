@@ -1,0 +1,7 @@
+Graffiti Removal,9101
+Improper Storage of Trash (Barrels),6951
+Rodent Activity,4465
+Illegal Dumping,2355
+PWD Graffiti,2352
+Empty Litter Basket,1249
+Abandoned Bicycle,342
