@@ -1,0 +1,25 @@
+General Request,60034
+Schedule a Bulk Item Pickup,41876
+Pothole Repair (Internal),13712
+Request for Recycling Cart,7737
+Schedule a Bulk Item Pickup SS,5517
+General Comments For a Program or Policy,4710
+Sticker Request,3946
+Notification,3864
+Recycling Cart Return,2467
+Sidewalk Repair (Internal),1840
+General Transportation Issues,1515
+Major System Failure,1431
+General Comments For An Employee,1395
+Work w/out Permit,1333
+Utility Call-In,1331
+Base Repair (Internal),1287
+Unsafe Dangerous Conditions,1228
+Public Works General Request,1206
+Contractor Complaints,1100
+Street Light Outages (Internal),1068
+BWSC General Request,739
+Metrolist Survey,716
+Electrical,710
+Unsanitary Conditions - Establishment,710
+Request for Snow Plowing (Emergency Responder),588

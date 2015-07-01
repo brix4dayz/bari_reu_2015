@@ -1,0 +1,25 @@
+Request for Snow Plowing,20445
+Requests for Street Cleaning,18787
+Street Light Outages,14444
+Request for Pothole Repair,11417
+Missed Trash/Recycling/Yard Waste/Bulk Item,11174
+Graffiti Removal,9101
+Tree Maintenance Requests,7916
+Sidewalk Repair (Make Safe),6975
+Improper Storage of Trash (Barrels),6951
+Park Maintenance Requests,6096
+Traffic Signal Repair,5933
+Snow Removal,5290
+Rodent Activity,4465
+Pick up Dead Animal,4369
+Sign Repair,3971
+Sidewalk Repair,3417
+Abandoned Vehicles,3303
+Highway Maintenance,2855
+New Tree Requests,2773
+Tree Emergencies,2379
+Illegal Dumping,2355
+PWD Graffiti,2352
+Parking Enforcement,2321
+General Lighting Request,2183
+Building Inspection Request,1667

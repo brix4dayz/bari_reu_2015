@@ -1,0 +1,17 @@
+Unsatisfactory Living Conditions,7273
+Poor Conditions of Property,3577
+Heat - Excessive, Insufficient,2114
+Bed Bugs,753
+Mice Infestation - Residential,641
+Breathe Easy,516
+Maintenance Complaint - Residential,480
+Chronic Dampness/Mold,411
+Pest Infestation - Residential,342
+Unsatisfactory Utilities - Electrical, Plumbing,161
+Squalid Living Conditions,156
+Big Buildings Online Request,107
+Lead,105
+Maintenance - Homeowner,97
+Big Buildings Resident Complaint,29
+Poor Ventilation,20
+Big Buildings Enforcement,12
