@@ -15,10 +15,13 @@ import os
 import inspect
 myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
+bostonTracts = '/boston/Tracts_Boston_2010_BARI'
+stateTracts = '/mass/CENSUS2010TRACTS_POLY'
+
 #####################################################################################################################
 class BostonMap(object):
   def __init__(self):
-    shp = fiona.open(myDir + '/Tracts_Boston_2010_BARI.shp')
+    shp = fiona.open(myDir + bostonTracts + '.shp')
     bds = shp.bounds
     shp.close()
     self.extra = 0.01
@@ -48,7 +51,7 @@ class BostonMap(object):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + '/Tracts_Boston_2010_BARI',
+      myDir + bostonTracts,
       'boston',
       color='none',
       zorder=2)
@@ -170,7 +173,7 @@ class GreaterBostonScatter(BostonScatter):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + '/Tracts_Boston_2010_BARI',
+      myDir + bostonTracts,
       'boston',
       zorder=2)
     return

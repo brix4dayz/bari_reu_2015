@@ -4,7 +4,7 @@
 - Percentage of each category, total number reports
 - Count the frequency of types w/in categories, can see which types attribute the most (i.e. lampposts)
 - Public, Public Denigration, Private == Private Neglect, Other
-- Fameshift, Days of the Week
+- Frameshift, Days of the Week
 
 ##### 911 Analysis
 - Frequency of types
