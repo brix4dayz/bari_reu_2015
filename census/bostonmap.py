@@ -16,7 +16,7 @@ import inspect
 myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 bostonTracts = '/boston/Tracts_Boston_2010_BARI'
-stateTracts = '/mass/CENSUS2010TRACTS_POLY'
+stateTracts = '/mass/tl_2010_25025_bg10'
 
 #####################################################################################################################
 class BostonMap(object):
