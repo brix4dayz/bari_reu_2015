@@ -8,11 +8,15 @@ import matplotlib.pyplot as plt
 twc.loadCriteria()
 time_fmt = twc.getTwitterTimeFmt()
 handle_pattern = twc.getHandleRegex()
+kw_reg = twc.getKeywordRegex()
 twc.clearCriteria()
 
 handles = {}
 
 senders = {}
+
+def tweetContainsKeyword(tweet):
+  return kw_reg.search(tweet) is not None
 
 with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
   twitterData = csv.DictReader(csvfile)
@@ -20,19 +24,21 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
     if tweet['time'] != "":
       date = time.strptime(tweet['time'], time_fmt)
       if date.tm_mday > 15 or (date.tm_mday == 15 and date.tm_hour >= 14):
-        
-        if not tweet['sender_name'] in senders.keys():
-          senders[tweet['sender_name']] = 1
-        else:
-          senders[tweet['sender_name']] += 1
-
-        results = handle_pattern.findall(tweet['tweet_text'])
-        for r in results:
-          handle = r.strip("@").lower()
-          if not handle in handles.keys():
-            handles[handle] = 1
+        if tweetContainsKeyword(tweet['tweet_text'].lower()):
+          if not tweet['sender_name'] in senders.keys():
+            senders[tweet['sender_name']] = 1
           else:
-            handles[handle] += 1
+            senders[tweet['sender_name']] += 1
+          results = handle_pattern.findall(tweet['tweet_text'])
+          for r in results:
+            handle = r.strip("@").lower()
+            if not handle in handles.keys():
+              handles[handle] = {'senders':[], 'count':1}
+              handles[handle]['senders'].append(tweet['sender_name'])
+            else:
+              if not tweet['sender_name'] in handles[handle]['senders']:
+                handles[handle]['count'] += 1
+                handles[handle]['senders'].append(tweet['sender_name'])
 
 
 fig = plt.figure(figsize=(12,6))
@@ -58,7 +64,7 @@ ax.set_title("Top 25 Most \'Tweeted-At\' Accounts", fontsize=10)
 table_data = []
 
 for handle in sorted(handles, key=handles.get, reverse=True)[0:25]:
-  table_data.append([handle, handles[handle]])
+  table_data.append([handle, handles[handle]['count']])
 
 table = ax.table(loc='center', colLabels=colLabs, cellText=table_data)
 table.set_fontsize(12)
