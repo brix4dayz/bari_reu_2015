@@ -21,11 +21,12 @@
 - Word networks/cluster
 	- Determine which words are likely to be together regarding the bombing
 - Frequency of top senders by day
-- Apply keywords to senders/tweeted at to see marathon relevance
-- Count distinct handles who are tweeted at
+- <s>Apply keywords to senders/tweeted at to see marathon relevance</s>
+- <s>Count distinct handles who are tweeted at</s>
 - Improve maps
  	- state census data
 	- go to 405 (commuter rail)
 	- look into arcpy (arcgis)
 - Sentiment Analysis
+- Determine when popular hashtags (i.e. #bostonstrong) started to appear
 
