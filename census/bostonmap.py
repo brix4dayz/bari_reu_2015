@@ -8,7 +8,11 @@ from matplotlib.collections import PatchCollection
 from shapely.geometry import Point, Polygon, MultiPoint, MultiPolygon
 from descartes import PolygonPatch
 
+# author: Hayden Fuss
+# last edited: Monday, July 6, 2015
+
 #source: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
+# mass. census source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile
 
 # uses os and inspect to determine path to module
 import os
@@ -16,7 +20,7 @@ import inspect
 myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 bostonTracts = '/boston/Tracts_Boston_2010_BARI'
-stateTracts = '/mass/tl_2010_25025_bg10'
+stateTracts = '/mass/tl_2014_25_tract'
 
 #####################################################################################################################
 class BostonMap(object):
@@ -51,7 +55,7 @@ class BostonMap(object):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + bostonTracts,
+      myDir + stateTracts,
       'boston',
       color='none',
       zorder=2)
@@ -59,8 +63,15 @@ class BostonMap(object):
 
   def mapDF(self):
     # set up a map dataframe
+    indices = []
     self.df_map = pd.DataFrame({
-      'poly': [Polygon(xy) for xy in self.map.boston]})
+      'poly': [Polygon(xy) for xy in self.map.boston],
+      'land_info': [info['ALAND'] for info in self.map.boston_info]})
+    for i,row in self.df_map.iterrows():
+      if row['land_info'] == 0:
+        print 'yes'
+        indices.append(i)
+    self.df_map.drop(indices)
     self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
     self.df_map['area_km'] = self.df_map['area_m'] / 100000
     # draw ward patches from polygons
@@ -173,7 +184,7 @@ class GreaterBostonScatter(BostonScatter):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + bostonTracts,
+      myDir + stateTracts,
       'boston',
       zorder=2)
     return
