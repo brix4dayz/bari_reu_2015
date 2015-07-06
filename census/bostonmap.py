@@ -1,3 +1,17 @@
+############################################################################################################################
+# author: Hayden Fuss
+# last edited: Monday, July 6, 2015
+#
+# Module for plotting data over a map of greater Boston using census data. Given a tuple of dictionaries, which
+# have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both a scatter
+# and density plotters.
+#
+# source for making maps: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
+# mass. census source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile   07/06/2015
+# cb source: https://www.census.gov/geo/maps-data/data/cbf/cbf_tracts.html   07/06/2015
+#
+##########################################################################################################################
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import numpy as np
@@ -7,22 +21,23 @@ from itertools import chain
 from matplotlib.collections import PatchCollection
 from shapely.geometry import Point, Polygon, MultiPoint, MultiPolygon
 from descartes import PolygonPatch
-
-# author: Hayden Fuss
-# last edited: Monday, July 6, 2015
-
-#source: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
-# mass. census source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile
-
 # uses os and inspect to determine path to module
 import os
 import inspect
 myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 bostonTracts = '/boston/Tracts_Boston_2010_BARI'
-stateTracts = '/mass/tl_2014_25_tract'
+stateTracts = '/mass_cb/gz_2010_25_140_00_500k'
+# stateTracts = '/mass_tiger/tl_2014_25_tract'
+
+# list of counties with INCITS
+countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7C', 
+                '007':'#7E7125', '009':'#4E65EF', '011':'#BC4638', '013':'#C8C736', 
+                '015':'#F0BF26', '021':'#02896F', '025':'#6E95A3', '023':'#50658C',
+                '027':'#32B126', '019':'#B66497'}
 
 #####################################################################################################################
+
 class BostonMap(object):
   def __init__(self):
     shp = fiona.open(myDir + bostonTracts + '.shp')
@@ -40,7 +55,7 @@ class BostonMap(object):
     self.ax = self.fig.add_subplot(111)
     self.map = Basemap(
       projection='tmerc',
-      lon_0=(self.coords[0] + self.coords[2])/2, # here was where I went wrong
+      lon_0=(self.coords[0] + self.coords[2])/2,
       lat_0=(self.coords[3] + self.coords[1])/2,
       llcrnrlon=self.coords[0] - self.extra * self.w,
       llcrnrlat=self.coords[1] - self.extra + 0.01 * self.h,
@@ -55,7 +70,8 @@ class BostonMap(object):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + stateTracts,
+      myDir + stateTracts
+    ,
       'boston',
       color='none',
       zorder=2)
@@ -63,15 +79,10 @@ class BostonMap(object):
 
   def mapDF(self):
     # set up a map dataframe
-    indices = []
     self.df_map = pd.DataFrame({
       'poly': [Polygon(xy) for xy in self.map.boston],
-      'land_info': [info['ALAND'] for info in self.map.boston_info]})
-    for i,row in self.df_map.iterrows():
-      if row['land_info'] == 0:
-        print 'yes'
-        indices.append(i)
-    self.df_map.drop(indices)
+      'land_info': [info for info in self.map.boston_info]})
+
     self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
     self.df_map['area_km'] = self.df_map['area_m'] / 100000
     # draw ward patches from polygons
@@ -136,6 +147,7 @@ class BostonMap(object):
     return
 
 #####################################################################################################################
+
 class BostonScatter(BostonMap):
   def __init__(self, dataPoints):
     self.dataPoints = dataPoints
@@ -156,6 +168,9 @@ class BostonScatter(BostonMap):
       [Point(self.map(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(df['lon'], df['lat'])])
     return
 
+  def mapScale(self):
+    return
+
   def data(self):
     self.map.scatter(
       [geom.x for geom in self.dataPoints],
@@ -165,7 +180,32 @@ class BostonScatter(BostonMap):
       alpha=0.9, antialiased=True, zorder=3)
     return
 
+  def mapDF(self):
+    # set up a map dataframe
+    self.df_map = pd.DataFrame({
+      'poly': [Polygon(xy) for xy in self.map.boston],
+      'land_info': [info for info in self.map.boston_info]})
+
+    self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
+    self.df_map['area_km'] = self.df_map['area_m'] / 100000
+    # draw ward patches from polygons
+    self.df_map['patches'] = [PolygonPatch(row['poly'],
+                          fc=countyColors[row['land_info']['COUNTY']],
+                          ec='k', lw=.25, alpha=.9,
+                          zorder=4) for i,row in self.df_map.iterrows()]
+
+    return
+
+    self.df_map['poly'].map(lambda x: PolygonPatch(
+      x,
+      fc='#000055',
+      ec='#787878', lw=.25, alpha=.9,
+      zorder=4))
+    return
+    return
+
 #####################################################################################################################
+
 class GreaterBostonScatter(BostonScatter):
   def __init__(self, dataPoints):
     super(GreaterBostonScatter, self).__init__(dataPoints)
@@ -173,6 +213,10 @@ class GreaterBostonScatter(BostonScatter):
 
   # override so polygon patches arent added
   def tracts(self):
+    return
+
+  def mapScale(self):
+    super(BostonScatter, self).mapScale()
     return
 
   # override so dataframe of map isnt made, instead draw boundaries and fill in colors
@@ -184,12 +228,14 @@ class GreaterBostonScatter(BostonScatter):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + stateTracts,
+      myDir + stateTracts
+    ,
       'boston',
       zorder=2)
     return
 
 #####################################################################################################################
+
 def testMap():
   out = raw_input("Enter name of output png: ")
   boston = BostonMap()
@@ -207,6 +253,7 @@ def testScatter():
   return
 
 #####################################################################################################################
+
 if __name__ == "__main__":
-  testMap()
+  testScatter()
   plt.show()
