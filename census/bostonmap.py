@@ -1,6 +1,6 @@
 ############################################################################################################################
 # author: Hayden Fuss
-# last edited: Monday, July 6, 2015
+# last edited: Tuesday, July 7, 2015
 #
 # Module for plotting data over a map of greater Boston using census data. Given a tuple of dictionaries, which
 # have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both scatter
@@ -179,13 +179,10 @@ class BostonScatter(BostonMap):
     for d in self.dataPoints:
       for each in ('lon', 'lat'):
         output[each].append(d[each])
-
     df = pd.DataFrame(output)
     df[['lon', 'lat']] = df[['lon', 'lat']].astype(float)
-
     self.dataPoints = pd.Series(
       [Point(self.map(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(df['lon'], df['lat'])])
-
     return
 
   def data(self):
@@ -199,9 +196,9 @@ class BostonScatter(BostonMap):
 
   def patchesDF(self):
     self.df_map['patches'] = [PolygonPatch(row['poly'],
-                          fc=countyColors[row['land_info']['COUNTY']],
-                          ec='k', lw=.25, alpha=.9,
-                          zorder=4) for i,row in self.df_map.iterrows()]
+      fc=countyColors[row['land_info']['COUNTY']],
+      ec='k', lw=.25, alpha=.9,
+      zorder=4) for i,row in self.df_map.iterrows()]
     return
 
 #####################################################################################################################
@@ -240,6 +237,7 @@ class GreaterBostonScatter(BostonScatter):
 #####################################################################################################################
 
 # Convenience functions for working with colour ramps and bars
+# from map-making source
 def colorbar_index(ncolors, cmap, labels=None, **kwargs):
     """
     This is a convenience function to stop you making off-by-one errors
@@ -254,7 +252,7 @@ def colorbar_index(ncolors, cmap, labels=None, **kwargs):
     colorbar.set_ticks(np.linspace(0, ncolors, ncolors))
     colorbar.set_ticklabels(range(ncolors))
     if labels:
-        colorbar.set_ticklabels(labels)
+      colorbar.set_ticklabels(labels)
     return colorbar
 
 def cmap_discretize(cmap, N):
@@ -271,13 +269,13 @@ def cmap_discretize(cmap, N):
 
     """
     if type(cmap) == str:
-        cmap = get_cmap(cmap)
+      cmap = get_cmap(cmap)
     colors_i = np.concatenate((np.linspace(0, 1., N), (0., 0., 0., 0.)))
     colors_rgba = cmap(colors_i)
     indices = np.linspace(0, 1., N + 1)
     cdict = {}
     for ki, key in enumerate(('red', 'green', 'blue')):
-        cdict[key] = [(indices[i], colors_rgba[i - 1, ki], colors_rgba[i, ki]) for i in xrange(N + 1)]
+      cdict[key] = [(indices[i], colors_rgba[i - 1, ki], colors_rgba[i, ki]) for i in xrange(N + 1)]
     return mplc.LinearSegmentedColormap(cmap.name + "_%d" % N, cdict, 1024)
 
 
@@ -314,7 +312,7 @@ class BostonDensity(BostonScatter):
     
     self.jenks_labels = ["<= %0.1f/km$^2$(%s tracts)" % (b, c) for b, c in zip(
     self.breaks.bins, self.breaks.counts)]
-    self.jenks_labels.insert(0, '0.0/km$^2$(%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
+    self.jenks_labels.insert(0, '<= 0.0/km$^2$(%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
     return
 
   def data(self):
