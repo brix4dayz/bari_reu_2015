@@ -3,12 +3,18 @@
 # last edited: Monday, July 6, 2015
 #
 # Module for plotting data over a map of greater Boston using census data. Given a tuple of dictionaries, which
-# have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both a scatter
+# have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both scatter
 # and density plotters.
 #
 # source for making maps: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
-# mass. census source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile   07/06/2015
-# cb source: https://www.census.gov/geo/maps-data/data/cbf/cbf_tracts.html   07/06/2015
+#
+# mass. census tracts: 
+#   source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile   07/06/2015
+#   date accessed: 07/06/2015
+#
+# cb tracts: 
+#   source: https://www.census.gov/geo/maps-data/data/cbf/cbf_tracts.html
+#   date accessed: 07/06/2015
 #
 ##########################################################################################################################
 
@@ -21,6 +27,11 @@ from itertools import chain
 from matplotlib.collections import PatchCollection
 from shapely.geometry import Point, Polygon, MultiPoint, MultiPolygon
 from descartes import PolygonPatch
+from pysal.esda.mapclassify import Natural_Breaks as nb
+from shapely.prepared import prep
+import matplotlib.colors as mplc
+from matplotlib.collections import PatchCollection
+import matplotlib.cm as cm
 # uses os and inspect to determine path to module
 import os
 import inspect
@@ -30,7 +41,7 @@ bostonTracts = '/boston/Tracts_Boston_2010_BARI'
 stateTracts = '/mass_cb/gz_2010_25_140_00_500k'
 # stateTracts = '/mass_tiger/tl_2014_25_tract'
 
-# list of counties with INCITS
+# list of counties with INCITS: https://en.wikipedia.org/wiki/List_of_counties_in_Massachusetts
 countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7C', 
                 '007':'#7E7125', '009':'#4E65EF', '011':'#BC4638', '013':'#C8C736', 
                 '015':'#F0BF26', '021':'#02896F', '025':'#6E95A3', '023':'#50658C',
@@ -70,8 +81,7 @@ class BostonMap(object):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + stateTracts
-    ,
+      myDir + stateTracts,
       'boston',
       color='none',
       zorder=2)
@@ -85,7 +95,11 @@ class BostonMap(object):
 
     self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
     self.df_map['area_km'] = self.df_map['area_m'] / 100000
-    # draw ward patches from polygons
+    
+    return
+
+  def patchesDF(self):
+    # draw tract patches from polygons
     self.df_map['patches'] = self.df_map['poly'].map(lambda x: PolygonPatch(
       x,
       fc='#000055',
@@ -100,6 +114,7 @@ class BostonMap(object):
   def buildDFs(self):
     self.mapDF()
     self.dataDF()
+    self.patchesDF()
     return
 
   def leverettG(self):
@@ -121,6 +136,9 @@ class BostonMap(object):
       units='mi')
     return
 
+  def colorScale(self):
+    return
+
   def tracts(self):
     # plot tracts by adding the PatchCollection to the axes instance
     self.ax.add_collection(PatchCollection(self.df_map['patches'].values, match_original=True))
@@ -128,7 +146,7 @@ class BostonMap(object):
 
   # virtual function to be overridden
   def data(self):
-    #self.leverettG()
+    self.leverettG()
     return
 
   def makePlot(self, outname, title):
@@ -141,6 +159,7 @@ class BostonMap(object):
     self.loadBasemap()
     self.buildDFs()
     self.mapScale()
+    self.colorScale()
     self.tracts()
     self.data()
     self.makePlot(outname, title)
@@ -166,9 +185,7 @@ class BostonScatter(BostonMap):
 
     self.dataPoints = pd.Series(
       [Point(self.map(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(df['lon'], df['lat'])])
-    return
 
-  def mapScale(self):
     return
 
   def data(self):
@@ -180,28 +197,11 @@ class BostonScatter(BostonMap):
       alpha=0.9, antialiased=True, zorder=3)
     return
 
-  def mapDF(self):
-    # set up a map dataframe
-    self.df_map = pd.DataFrame({
-      'poly': [Polygon(xy) for xy in self.map.boston],
-      'land_info': [info for info in self.map.boston_info]})
-
-    self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
-    self.df_map['area_km'] = self.df_map['area_m'] / 100000
-    # draw ward patches from polygons
+  def patchesDF(self):
     self.df_map['patches'] = [PolygonPatch(row['poly'],
                           fc=countyColors[row['land_info']['COUNTY']],
                           ec='k', lw=.25, alpha=.9,
                           zorder=4) for i,row in self.df_map.iterrows()]
-
-    return
-
-    self.df_map['poly'].map(lambda x: PolygonPatch(
-      x,
-      fc='#000055',
-      ec='#787878', lw=.25, alpha=.9,
-      zorder=4))
-    return
     return
 
 #####################################################################################################################
@@ -226,15 +226,115 @@ class GreaterBostonScatter(BostonScatter):
     self.map.fillcontinents(color='coral', lake_color='aqua')
     return
 
+  # overriden
+  def patchesDF(self):
+    return
+
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + stateTracts
-    ,
+      myDir + stateTracts,
       'boston',
       zorder=2)
     return
 
 #####################################################################################################################
+
+# Convenience functions for working with colour ramps and bars
+def colorbar_index(ncolors, cmap, labels=None, **kwargs):
+    """
+    This is a convenience function to stop you making off-by-one errors
+    Takes a standard colour ramp, and discretizes it,
+    then draws a colour bar with correctly aligned labels
+    """
+    cmap = cmap_discretize(cmap, ncolors)
+    mappable = cm.ScalarMappable(cmap=cmap)
+    mappable.set_array([])
+    mappable.set_clim(-0.5, ncolors+0.5)
+    colorbar = plt.colorbar(mappable, **kwargs)
+    colorbar.set_ticks(np.linspace(0, ncolors, ncolors))
+    colorbar.set_ticklabels(range(ncolors))
+    if labels:
+        colorbar.set_ticklabels(labels)
+    return colorbar
+
+def cmap_discretize(cmap, N):
+    """
+    Return a discrete colormap from the continuous colormap cmap.
+
+        cmap: colormap instance, eg. cm.jet. 
+        N: number of colors.
+
+    Example
+        x = resize(arange(100), (5,100))
+        djet = cmap_discretize(cm.jet, 5)
+        imshow(x, cmap=djet)
+
+    """
+    if type(cmap) == str:
+        cmap = get_cmap(cmap)
+    colors_i = np.concatenate((np.linspace(0, 1., N), (0., 0., 0., 0.)))
+    colors_rgba = cmap(colors_i)
+    indices = np.linspace(0, 1., N + 1)
+    cdict = {}
+    for ki, key in enumerate(('red', 'green', 'blue')):
+        cdict[key] = [(indices[i], colors_rgba[i - 1, ki], colors_rgba[i, ki]) for i in xrange(N + 1)]
+    return mplc.LinearSegmentedColormap(cmap.name + "_%d" % N, cdict, 1024)
+
+
+class BostonDensity(BostonScatter):
+  def __init__(self, dataPoints):
+    super(BostonDensity, self).__init__(dataPoints)
+    return
+
+  def dataDF(self):
+    super(BostonDensity, self).dataDF()
+
+    self.df_map['count'] = self.df_map['poly'].map(lambda x: int(len(filter(prep(x).contains, self.dataPoints))))
+    self.df_map['density_m'] = self.df_map['count'] / self.df_map['area_m']
+    self.df_map['density_km'] = self.df_map['count'] / self.df_map['area_km']
+    # it's easier to work with NaN values when classifying
+    self.df_map.replace(to_replace={'density_m': {0: np.nan}, 'density_km': {0: np.nan}}, inplace=True)
+
+    self.breaks = nb(
+      self.df_map[self.df_map['density_km'].notnull()].density_km.values,
+      initial=300,
+      k=5)
+    # the notnull method lets us match indices when joining
+    jb = pd.DataFrame({'jenks_bins': self.breaks.yb}, index=self.df_map[self.df_map['density_km'].notnull()].index)
+    self.df_map = self.df_map.join(jb)
+    self.df_map.jenks_bins.fillna(-1, inplace=True)
+
+    return
+
+  def patchesDF(self):
+    # use a blue colour ramp - we'll be converting it to a map using cmap()
+    self.cmap = plt.get_cmap('Blues')
+    # draw wards with grey outlines
+    self.df_map['patches'] = self.df_map['poly'].map(lambda x: PolygonPatch(x, ec='#555555', lw=.2, alpha=1., zorder=4))
+    
+    self.jenks_labels = ["<= %0.1f/km$^2$(%s tracts)" % (b, c) for b, c in zip(
+    self.breaks.bins, self.breaks.counts)]
+    self.jenks_labels.insert(0, '0.0/km$^2$(%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
+    return
+
+  def data(self):
+    return
+
+  def tracts(self):
+    self.pc = PatchCollection(self.df_map['patches'], match_original=True)
+    # impose our colour map onto the patch collection
+    norm = mplc.Normalize()
+    self.pc.set_facecolor(self.cmap(norm(self.df_map['jenks_bins'].values)))
+    self.ax.add_collection(self.pc)
+    return
+
+  def colorScale(self):
+    # Add a colour bar
+    cb = colorbar_index(ncolors=len(self.jenks_labels), cmap=self.cmap, shrink=0.5, labels=self.jenks_labels)
+    cb.ax.tick_params(labelsize=6)
+    return
+
+#######################################################################################################################
 
 def testMap():
   out = raw_input("Enter name of output png: ")
