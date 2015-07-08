@@ -23,5 +23,7 @@ keywords: ["#bostonmarathon",
 
 time_fmt: "%Y-%m-%d %H:%M:%S"
 
-features:
-  scared: [fearful]
+twitterMarkup: ['&amp;',
+                'https*://t.co/.*',
+                '&lt;',
+                '\[pic\]']

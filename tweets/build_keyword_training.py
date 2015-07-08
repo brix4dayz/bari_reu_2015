@@ -1,17 +1,11 @@
+# author: Hayden Fuss
+
 import csv
 import twittercriteria as twc
 import time
 import numpy as np
 
-twc.loadCriteria()
-
-kw_pattern = twc.getKeywordRegex()
 tweet_time_fmt = twc.getTwitterTimeFmt()
-
-twc.clearCriteria()
-
-def containsKeyword(tweet_text):
-  return kw_pattern.search(tweet_text) is not None
 
 def randomSubset(alist, sub_size=500):
   temp = []
@@ -33,7 +27,7 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
       tweet['tweet_text'] = twc.cleanUpTweet(tweet['tweet_text'])
       if date.tm_mday < 15:
         trueIrrelevants.append(tweet['tweet_text'])
-      elif containsKeyword(tweet['tweet_text']):
+      elif twc.tweetContainsKeyword(tweet['tweet_text']):
         possibleRelevants.append(tweet['tweet_text'])
 
 trueIrrelevants = randomSubset(trueIrrelevants)

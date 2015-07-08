@@ -4,19 +4,12 @@ import time
 import matplotlib.pyplot as plt
 
 # author: Hayden Fuss
-
-twc.loadCriteria()
 time_fmt = twc.getTwitterTimeFmt()
 handle_pattern = twc.getHandleRegex()
-kw_reg = twc.getKeywordRegex()
-twc.clearCriteria()
 
 handles = {}
 
 senders = {}
-
-def tweetContainsKeyword(tweet):
-  return kw_reg.search(tweet) is not None
 
 with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
   twitterData = csv.DictReader(csvfile)
@@ -24,7 +17,7 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
     if tweet['time'] != "":
       date = time.strptime(tweet['time'], time_fmt)
       if date.tm_mday > 15 or (date.tm_mday == 15 and date.tm_hour >= 14):
-        if tweetContainsKeyword(tweet['tweet_text'].lower()):
+        if twc.tweetContainsKeyword(tweet['tweet_text'].lower()):
           if not tweet['sender_name'] in senders.keys():
             senders[tweet['sender_name']] = 1
           else:

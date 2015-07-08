@@ -9,15 +9,16 @@ import re
 myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 filepath = myDir + '/twitter_criteria.yml'
 
-criteria = None
+# open criteria .yml file and load it into dictionary using yaml
+criteria_yml = open(filepath, 'r')
+criteria = yaml.load(criteria_yml)
+criteria_yml.close()
 
-def loadCriteria():
-  global criteria
-  # open criteria .yml file and load it into dictionary using yaml
-  criteria_yml = open(filepath, 'r')
-  criteria = yaml.load(criteria_yml)
-  criteria_yml.close()
-  return
+kw_regex = re.compile('|'.join(criteria['keywords']))
+
+handle_regex = re.compile(r'@[^ :\xe2\"\)\./\\\?\'!@]+')
+
+markup_regex = re.compile('|'.join(criteria['twitterMarkup']))
 
 def getTwitterTimeFmt():
   global criteria
@@ -28,24 +29,24 @@ def getKeywords():
   return criteria['keywords']
 
 def getKeywordRegex():
-  global criteria
-  return re.compile('|'.join(criteria['keywords']))
+  global kw_regex
+  return kw_regex
 
 def getHandleRegex():
-  return re.compile(r'@[^ :\xe2\"\)\./\\\?\'!@]+')
+  global handle_regex
+  return handle_regex
 
-def clearCriteria():
-  global criteria
-  del(criteria)
-  return
+def tweetContainsKeyword(tweet):
+  global kw_regex
+  return kw_regex.search(tweet) is not None
 
 # Function to clean up tweet strings 
 # by manually removing irrelevant data (not words)
 def cleanUpTweet(tweet_text):
-    # Irrelevant characters
-    twitterMarkup = ['&amp;', 'https*://t\.co/.*', '&lt;', '\[pic\]']
-    temp = tweet_text.lower()
-    # Use regex to create a regular expression 
-    # for removing undesired characters
-    temp = re.sub('|'.join(twitterMarkup), r"", temp)
-    return temp
+  global markup_regex
+  # Irrelevant characters
+  temp = tweet_text.lower()
+  # Use regex to create a regular expression 
+  # for removing undesired characters
+  temp = markup_regex.sub(r"", temp)
+  return temp
