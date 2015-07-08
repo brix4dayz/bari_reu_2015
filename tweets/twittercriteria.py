@@ -38,3 +38,14 @@ def clearCriteria():
   global criteria
   del(criteria)
   return
+
+# Function to clean up tweet strings 
+# by manually removing irrelevant data (not words)
+def cleanUpTweet(tweet_text):
+    # Irrelevant characters
+    twitterMarkup = ['&amp;', 'https*://t\.co/.*', '&lt;', '\[pic\]']
+    temp = tweet_text.lower()
+    # Use regex to create a regular expression 
+    # for removing undesired characters
+    temp = re.sub('|'.join(twitterMarkup), r"", temp)
+    return temp
