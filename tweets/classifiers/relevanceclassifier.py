@@ -9,11 +9,11 @@ sys.path.append(os.path.realpath('../'))
 import csv
 import yaml
 import re
+import random
+import twittercriteria as twc
+# Classification function imports
 import nltk
 from nltk.classify import apply_features
-import random
-# Directives for twc yaml
-import twittercriteria as twc
 from nltk.classify import SklearnClassifier
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest, chi2
