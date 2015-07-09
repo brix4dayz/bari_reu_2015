@@ -8,18 +8,19 @@ sys.path.append(os.path.realpath('../'))
 import csv
 import yaml
 import re
+import nltk
 from nltk.classify import apply_features
 import random
 # Directives for twc yaml
 import twittercriteria as twc
 
 # Global field declarations
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 # Define wrapper class
 class WeightedRelevanceClassifier(object):
 
-    def __init__(self, class1_path='relevantTraining.txt', class2_path='irrelevantTraining.txt'):
+    def __init__(self, class1_path='/relevantTraining.txt', class2_path='/irrelevantTraining.txt'):
         # Initialize the training and dev data sets
         self.trainingSet = []
         self.labeledTweets = []
@@ -45,9 +46,6 @@ class WeightedRelevanceClassifier(object):
                 self.labeledTweets.append((line.split(), 'irrelevant'))
         # Randomize the data
         random.shuffle(self.labeledTweets)
-        # Close the files
-        relevantTxtFile.close()
-        irrelevantTxtFile.close()
     # End initDictSet
 
     # Function to get relevant tweet terms
@@ -70,7 +68,7 @@ class WeightedRelevanceClassifier(object):
     # Function to train the input NB classifier using it's apply_features func
     def trainClassifier(self):
         # The apply_features func processes a set of labeled tweet strings using the passed extractFeatures func
-        self.trainingSet = nltk.classify.apply_features(self.extractFeatures, self.labeledTweets)
+        self.trainingSet = apply_features(self.extractFeatures, self.labeledTweets)
 
         self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
         return
@@ -89,7 +87,7 @@ class WeightedRelevanceClassifier(object):
     # Function to classify input cleaned tweet txt
     def isRelevant(self, tweet_text):
         # Return the use of the classifier
-        return self.classifierNB.classify(twc.cleanUpTweet(tweet_text).split()) == "relevant"
+        return self.classifierNB.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split())) == "relevant"
     # End isRelevant
 # End WeightedRelevanceClassifier    
 # End script
