@@ -3,31 +3,35 @@
 
 # PreProcessor Directives
 import os
+import inspect
 import sys
 sys.path.append(os.path.realpath('../'))
 import csv
 import yaml
 import re
+import nltk
 from nltk.classify import apply_features
 import random
 # Directives for twc yaml
 import twittercriteria as twc
+from nltk.classify import SklearnClassifier
+from sklearn.feature_extraction.text import TfidfTransformer
+from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import Pipeline
 
 # Global field declarations
-current_dir = os.getcwd()
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 # Define wrapper class
 class RelevanceClassifier(object):
 
-    def __init__(self, class1_path='relevantTraining.txt', class2_path='irrelevantTraining.txt'):
+    def __init__(self, class1_path='/relevantTraining.txt', class2_path='/irrelevantTraining.txt'):
         # Initialize the training and dev data sets
         self.trainingSet = []
         self.labeledTweets = []
         self.allTerms = []
-
         self.initDictSet(class1_path, class2_path)
-        self.getTweetText()
-        self.getTerms()
         self.trainClassifier()
         return
 
@@ -45,9 +49,6 @@ class RelevanceClassifier(object):
                 self.labeledTweets.append((line.split(), 'irrelevant'))
         # Randomize the data
         random.shuffle(self.labeledTweets)
-        # Close the files
-        relevantTxtFile.close()
-        irrelevantTxtFile.close()
     # End initDictSet
 
     # Function to get relevant tweet terms
@@ -67,14 +68,24 @@ class RelevanceClassifier(object):
         return
     # End getTerms
 
+    def buildTrainingSet(self):
+        self.getTweetText()
+        self.getTerms()
+        # The apply_features func processes a set of labeled tweet strings using the passed extractFeatures func
+        self.trainingSet = apply_features(self.extractFeatures, self.labeledTweets)
+        return
+
     # Function to train the input NB classifier using it's apply_features func
     def trainClassifier(self):
-        # The apply_features func processes a set of labeled tweet strings using the passed extractFeatures func
-        self.trainingSet = nltk.classify.apply_features(self.extractFeatures, self.labeledTweets)
-
-        self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
+        self.buildTrainingSet()
+        self.buildClassifier()
         return
     # End trainClassifier
+
+    # this function can be overriden for scikit learn wrapper for multinomialNB
+    def buildClassifier(self):
+        self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
+        return
 
     # Function to extract features from tweets
     def extractFeatures(self, tweet_terms):
@@ -89,7 +100,23 @@ class RelevanceClassifier(object):
     # Function to classify input cleaned tweet txt
     def isRelevant(self, tweet_text):
         # Return the use of the classifier
-        return self.classifierNB.classify(twc.cleanUpTweet(tweet_text).split()) == "relevant"
+        return self.classifierNB.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split())) == "relevant"
     # End isRelevant
 # End Wrapper    
+
+class WeightedRelevanceClassifier(RelevanceClassifier):
+    def __init__(self):
+        super(WeightedRelevanceClassifier, self).__init__()
+        return
+
+    def buildClassifier(self):
+        #insert scikit learn
+        pipeline = Pipeline([('tfidf', TfidfTransformer()),
+                     ('chi2', SelectKBest(chi2, k=1000)),
+                     ('nb', MultinomialNB())])
+        self.classifierNB = SklearnClassifier(pipeline)
+        self.classifierNB.train(self.trainingSet)
+        return
+
 # End script
+
