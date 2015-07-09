@@ -1,20 +1,23 @@
 # Author: Elizabeth Brooks
 # Date Modified: 07/09/2015
 
-# Define wrapper class
-class Wrapper(object):
+# PreProcessor Directives
+import os
+import sys
+sys.path.append(os.path.realpath('../'))
+import csv
+import yaml
+import re
+from nltk.classify import apply_features
+import random
+# Directives for twc yaml
+import twittercriteria as twc
 
-    # PreProcessor Directives
-    import os
-    import sys
-    sys.path.append(os.path.realpath('../'))
-    import csv
-    import yaml
-    import re
-    from nltk.classify import apply_features
-    import random
-    # Directives for twc yaml
-    import twittercriteria as twc
+# Define wrapper class
+class RelevenceClassifier(object):
+
+    def __init__(self):
+        return
 
     # Global field declarations
     current_dir = os.getcwd()
@@ -28,16 +31,15 @@ class Wrapper(object):
         # Loop through the txt files line by line
         # Assign labels to tweets
         # Two classes, relevant and irrelevant to the marathon
+        self.labeledTweets = []
         with open(current_dir + class1_path, "r") as relevantFile:
             for line in relevantFile:
-                for word in line.split():
-                    labeledTweetDict.append(word, 'relevant')
+                self.labeledTweets.append((line.split(), 'relevant'))
         with open(current_dir + class2_path, "r") as irrelevantFile:
             for line in irrelevantFile:
-                for word in line.split():
-                    labeledTweetDict.append(word, 'irrelevant')
+                self.labeledTweets.append((line.split(), 'irrelevant'))
         # Randomize the data
-        random.shuffle(labeledTweets)
+        random.shuffle(self.labeledTweets)
         # Close the files
         relevantTxtFile.close()
         irrelevantTxtFile.close()
@@ -93,7 +95,7 @@ class Wrapper(object):
     # Function to classify input cleaned tweet txt
     def isRelevant(self, tweet_text):
         # Return the use of the classifier
-        return self.wrapped_class.classifierNB.classify(tweet_text)
+        return self.classifierNB.classify(twc.cleanUpTweet(tweet_text).split())
     # End isRelevant
 
     # The main method
