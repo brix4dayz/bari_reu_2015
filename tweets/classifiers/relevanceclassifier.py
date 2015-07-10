@@ -32,7 +32,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 # Size of chi2 sample, can tune for best results with MNB
-chiK = 2000
+#chiK = 3000
 
 # Define class to classify tweet relevance
 class RelevanceClassifier(object):
@@ -129,7 +129,7 @@ class RelevanceClassifier(object):
             for i in range(0, len(each)):
                 each[i] = self.extractFeatures(twc.cleanUpTweet(each[i]).split())
         rel = np.array(self.classifier.classify_many(testSetRel))
-        irr = np.array(self.classifier.classify_many(testSetIrr))
+        irr = np.array(self.classifier.classify_many(testSetIrr))   
         tp = (rel == 'relevant').sum()
         fn = (rel == 'irrelevant').sum()
         fp = (irr == 'relevant').sum()
@@ -142,8 +142,9 @@ class RelevanceClassifier(object):
 # Sub class to weight term relevance and use Bag-Of-Words (MultinomialNB)
 class RelevanceMNB(RelevanceClassifier):
 	# Sub class constructor
-    def __init__(self):
+    def __init__(self, chiK):
 		# Call the super class constructor which initializes the classifier
+        self.chiK = chiK
         super(RelevanceMNB, self).__init__()
 		# End func return
         return
@@ -153,12 +154,14 @@ class RelevanceMNB(RelevanceClassifier):
         # Pipeline of transformers with a final estimator
         # The pipeline class behaves like a compound classifier
         # pipeline(steps=[...])
-        self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=chiK)), # Select 1000 greatest chi-squared stats between features
-                            ('nb', MultinomialNB())]) # Allows for classification using discrete features, allows tf-idf
-        
+
+        # Old MNB pipeline with TFIDF
         # self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
         #              ('chi2', SelectKBest(chi2, k=1000)),
         #              ('nb', MultinomialNB())])
+
+        self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=self.chiK)),
+                      ('nb', MultinomialNB())])
         return
 
 	# Overriding func to train multinomial NB classifier
