@@ -1,6 +1,11 @@
 # Author: Elizabeth Brooks
 # Date Modified: 07/10/2015
 
+# sources:
+#   http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
+#   http://stackoverflow.com/questions/10098533/implementing-bag-of-words-naive-bayes-classifier-in-nltk
+#   http://www.nltk.org/book/ch06.html
+
 # PreProcessor Directives
 import os
 import inspect
@@ -27,7 +32,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
 # Size of chi2 sample, can tune for best results with MNB
-chiK = 1000
+chiK = 2000
 
 # Define class to classify tweet relevance
 class RelevanceClassifier(object):
@@ -118,6 +123,20 @@ class RelevanceClassifier(object):
         # Return the use of the classifier
         return self.classify(tweet_text) == 'relevant'
     # End isRelevant
+
+    def test(self, testSetRel, testSetIrr):
+        for each in testSetRel, testSetIrr:
+            for i in range(0, len(each)):
+                each[i] = self.extractFeatures(twc.cleanUpTweet(each[i]).split())
+        rel = np.array(self.classifier.classify_many(testSetRel))
+        irr = np.array(self.classifier.classify_many(testSetIrr))
+        tp = (rel == 'relevant').sum()
+        fn = (rel == 'irrelevant').sum()
+        fp = (irr == 'relevant').sum()
+        tn = (irr == 'irrelevant').sum() 
+        print "Confusion matrix:\n%d\t%d\n%d\t%d" % (tp, fn, fp, tn)
+        return
+
 # End class    
 
 # Sub class to weight term relevance and use Bag-Of-Words (MultinomialNB)
@@ -135,7 +154,6 @@ class RelevanceMNB(RelevanceClassifier):
         # The pipeline class behaves like a compound classifier
         # pipeline(steps=[...])
         self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=chiK)), # Select 1000 greatest chi-squared stats between features
-                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
                             ('nb', MultinomialNB())]) # Allows for classification using discrete features, allows tf-idf
         return
 
