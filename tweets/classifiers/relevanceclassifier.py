@@ -155,6 +155,10 @@ class RelevanceMNB(RelevanceClassifier):
         # pipeline(steps=[...])
         self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=chiK)), # Select 1000 greatest chi-squared stats between features
                             ('nb', MultinomialNB())]) # Allows for classification using discrete features, allows tf-idf
+        
+        # self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
+        #              ('chi2', SelectKBest(chi2, k=1000)),
+        #              ('nb', MultinomialNB())])
         return
 
 	# Overriding func to train multinomial NB classifier
