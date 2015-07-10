@@ -23,20 +23,22 @@ from sklearn.pipeline import Pipeline
 # Global field declarations
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
-# Define wrapper class
+# Define class to classify tweet relevance
 class RelevanceClassifier(object):
 
+	# Class constructor to initialize classifier
     def __init__(self, class1_path='/relevantTraining.txt', class2_path='/irrelevantTraining.txt'):
         # Initialize data sets
         self.trainingSet = [] # Labeled tweet training data set 
         self.labeledTweets = [] # Feature set of labeled tweet terms
-        self.allTerms = []
-		
+        self.allTerms = []		
 		# Begin functions for classification
-        self.initLabeledSet(class1_path, class2_path)
-		self.initTrainingSet()
+        self.initLabeledSet(class1_path, class2_path) # Initialize labeledTweets
+		self.initTrainingSet() # Initialize trainingSet
         self.trainClassifier()
+		# End func return
         return
+	# End class constructor
     
     # Function to initialize the feature sets
     def initLabeledSet(self, class1_path, class2_path):
@@ -51,6 +53,8 @@ class RelevanceClassifier(object):
                 self.labeledTweets.append((line.split(), 'irrelevant'))
         # Randomize the data
         random.shuffle(self.labeledTweets)
+		# End func return
+		return
     # End initDictSet
 	
 	# Function for initializing the labeled training data set
@@ -59,14 +63,15 @@ class RelevanceClassifier(object):
         self.getTerms()
         # The apply_features func processes a set of labeled tweet strings using the passed extractFeatures func
         self.trainingSet = apply_features(self.extractFeatures, self.labeledTweets)
+		# End func return
         return
 	# End initTrainingSet
 		
 	# Function to train the input NB classifier using it's apply_features func
-	# this function can be overridden for scikit learn wrapper for multinomialNB
+	# This function is overridden for the scikit learn wrapper for multinomial NB
     def trainClassifier(self):
 		self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
-        self.buildClassifier()
+		# End func return
         return
     # End trainClassifier
 	
@@ -75,7 +80,7 @@ class RelevanceClassifier(object):
         for (terms, relevance) in self.labeledTweets:
             self.allTerms.extend(terms)
         # End for
-        # Return statement
+		# End func return
         return
     # End getTweetText
 
@@ -83,7 +88,7 @@ class RelevanceClassifier(object):
     def getTerms(self):
         self.allTerms = nltk.FreqDist(self.allTerms)
         self.wordFeatures = self.allTerms.keys()
-        # Return statement
+		# End func return
         return
     # End getTerms
 
@@ -102,21 +107,29 @@ class RelevanceClassifier(object):
         # Return the use of the classifier
         return self.classifierNB.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split())) == "relevant"
     # End isRelevant
-# End Wrapper    
+# End class    
 
+# Sub class to weight term relevance
 class WeightedRelevanceClassifier(RelevanceClassifier):
+
+	# Sub class constructor
     def __init__(self):
         super(WeightedRelevanceClassifier, self).__init__()
+		# End func return
         return
-
-    def buildClassifier(self):
+	# End wrapper class constructor
+		
+	# Overriding func to train multinomial NB classifier
+    def trainClassifier(self):
         #insert scikit learn
         pipeline = Pipeline([('tfidf', TfidfTransformer()),
                      ('chi2', SelectKBest(chi2, k=1000)),
                      ('nb', MultinomialNB())])
         self.classifierNB = SklearnClassifier(pipeline)
         self.classifierNB.train(self.trainingSet)
+		# End func return
         return
-
+	# End trainClassifier override
+# End sub class
 # End script
 
