@@ -1,15 +1,15 @@
 # Author: Elizabeth Brooks
-# Date Modified: 07/09/2015
+# Date Modified: 07/10/2015
 
 # PreProcessor Directives
 import os
 import inspect
 import sys
-sys.path.append(os.path.realpath('../'))
 import csv
 import yaml
 import re
 import random
+sys.path.append(os.path.realpath('../'))
 import twittercriteria as twc
 # Classification function imports
 import nltk
@@ -26,6 +26,9 @@ from sklearn.feature_extraction.text import CountVectorizer
 # Global field declarations
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
+# Size of chi2 sample, can tune for best results with MNB
+chiK = 1000
+
 # Define class to classify tweet relevance
 class RelevanceClassifier(object):
 	# Class constructor to initialize classifier
@@ -34,11 +37,11 @@ class RelevanceClassifier(object):
         self.trainingSet = [] # Labeled tweet training data set 
         self.labeledTweets = [] # Feature set of labeled tweet terms
         self.allTerms = []		
-		# Begin functions for classification
+        # Begin functions for classification
         self.initLabeledSet(class1_path, class2_path) # Initialize labeledTweets
-		self.initTrainingSet() # Initialize trainingSet
+        self.initTrainingSet() # Initialize trainingSet
         self.trainClassifier()
-		# End func return
+        # End func return
         return
 	# End class constructor
     
@@ -55,8 +58,8 @@ class RelevanceClassifier(object):
                 self.labeledTweets.append((line.split(), 'irrelevant'))
         # Randomize the data
         random.shuffle(self.labeledTweets)
-		# End func return
-		return
+        # End func return
+        return
     # End initDictSet
 	
 	# Function for initializing the labeled training data set
@@ -88,6 +91,7 @@ class RelevanceClassifier(object):
 
     # Function to extract features from tweets
     def extractFeatures(self, tweet_terms):
+        tweet_terms = set(tweet_terms)
 		# Set of unique tweet terms
         tweetFeatures = {}
         for word in self.wordFeatures:
@@ -98,85 +102,74 @@ class RelevanceClassifier(object):
     # End extractFeatures
     
 	# Function to train the input NB classifier using it's apply_features func
-	# This function is overridden for the scikit learn wrapper for multinomial NB
+	# Should be overridden by child classes
     def trainClassifier(self):
-		self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
-		# End func return
+        self.classifier = nltk.NaiveBayesClassifier.train(self.trainingSet)
+    	# End func return
         return
     # End trainClassifier
-	
-    # Function to classify input tweet
-	# This function is overridden for the scikit learn wrapper for multinomial NB
+
+    # Function to classify input tweet	
+    def classify(self, tweet_text):
+        return self.classifier.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split()))
+
+    # Determines relevance
     def isRelevant(self, tweet_text):
         # Return the use of the classifier
-        return self.classifierNB.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split())) == "relevant"
+        return self.classify(tweet_text) == 'relevant'
     # End isRelevant
 # End class    
 
-# Sub class to weight term relevance
-class WeightedRelevanceClassifier(RelevanceClassifier):
+# Sub class to weight term relevance and use Bag-Of-Words (MultinomialNB)
+class RelevanceMNB(RelevanceClassifier):
 	# Sub class constructor
     def __init__(self):
 		# Call the super class constructor which initializes the classifier
-        super(WeightedRelevanceClassifier, self).__init__()
+        super(RelevanceMNB, self).__init__()
 		# End func return
         return
 	# End wrapper class constructor
-		
+	
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator
+        # The pipeline class behaves like a compound classifier
+        # pipeline(steps=[...])
+        self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=chiK)), # Select 1000 greatest chi-squared stats between features
+                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('nb', MultinomialNB())]) # Allows for classification using discrete features, allows tf-idf
+        return
+
 	# Overriding func to train multinomial NB classifier
     def trainClassifier(self):
-        # Pipeline of transformers with a final estimator
-		# The pipeline class behaves like a compound classifier
-		# pipeline(steps=[...])
-        pipeline = Pipeline([('chi2', SelectKBest(chi2, k=1000)), # Select 1000 greatest chi-squared stats between features
-							('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
-							('nb', MultinomialNB())]) # Allows for classification using discrete features, allows tf-idf
+        self.initPipeline()
         # Create the multinomial NB classifier
-		self.classifierMNB = SklearnClassifier(pipeline)
-		# Train the classifier
-        self.classifierMNB.train(self.trainingSet)
-		# End func return
+        self.classifier = SklearnClassifier(self.pipeline)
+        # Train the classifier
+        self.classifier.train(self.trainingSet)
+        # End func return
         return
 	# End trainClassifier override
-	
-	# Overriding func to classify input tweet
-    def isRelevant(self, tweet_text):
-        # Return the use of the classifier
-        return self.classifierMNB.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split())) == "relevant"
-    # End isRelevant override
 # End sub class
 
 # Sub class to perform SVM tweet classification
-class VectorizedRelevanceClassifier(RelevanceClassifier):
+class RelevanceSVM(RelevanceMNB):
 	# Class constructor
     def __init__(self):
-				# Call the super class constructor which initializes the classifier
-        super(WeightedRelevanceClassifier, self).__init__()
+		# Call the super class constructor which initializes the classifier
+        super(RelevanceSVM, self).__init__()
 		# End func return
         return
 	# End wrapper class constructor
-		
-	# Overriding func to train multinomial NB classifier
-    def trainClassifier(self):
+
+    # Overriding func to build SVM classifier
+    def initPipeline(self):
         # Pipeline of transformers with a final estimator
-		# The pipeline class behaves like a compound classifier
-		# pipeline(steps=[...])
-        pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-							('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
-							('svm', SGDClassifier())])
-        # Create the multinomial NB classifier
-		self.classifierSVM = SklearnClassifier(pipeline)
-		# Train the classifier
-        self.classifierSVM.train(self.trainingSet)
-		# End func return
+        # The pipeline class behaves like a compound classifier
+        # pipeline(steps=[...])
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('svm', SGDClassifier())])
         return
-	# End trainClassifier override
-	
-	# Overriding func to classify input tweet
-    def isRelevant(self, tweet_text):
-        # Return the use of the classifier
-        return self.classifierSVM.classify(self.extractFeatures(twc.cleanUpTweet(tweet_text).split())) == "relevant"
-    # End isRelevant override
 # End sub class
 # End script
 
