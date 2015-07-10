@@ -1,4 +1,6 @@
 import relevanceclassifier as rc
+import numpy as np
+import matplotlib.pyplot as plt
 
 testRelevant = None
 testIrrelevant = None
@@ -46,8 +48,27 @@ clsrNB = rc.RelevanceClassifier()
 
 testClassifier(clsrNB)
 
-clsrMNB = rc.RelevanceMNB(3000)
+print len(clsrNB.wordFeatures)
 
-testClassifier(clsrMNB)
+chis = range(1000, len(clsrNB.wordFeatures)+1, 2)
+
+fs = []
+
+for c in chis:
+    fs.append(scoreMND(c))
+
+chis = np.array(chis)
+fs = np.array(fs)
+
+bestF = np.amax(fs)
+bestChi = chis[np.argmax(fs)]
+
+print bestF
+print bestChi
+
+plt.plot(chis, fs, 'b')
+plt.plot(bestChi, bestF, '^g')
+
+plt.show()
 
 #clsrSVM = rc.RelevanceSVM()
