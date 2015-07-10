@@ -130,11 +130,20 @@ class RelevanceClassifier(object):
                 each[i] = self.extractFeatures(twc.cleanUpTweet(each[i]).split())
         rel = np.array(self.classifier.classify_many(testSetRel))
         irr = np.array(self.classifier.classify_many(testSetIrr))   
-        tp = (rel == 'relevant').sum()
-        fn = (rel == 'irrelevant').sum()
-        fp = (irr == 'relevant').sum()
-        tn = (irr == 'irrelevant').sum() 
-        print "Confusion matrix:\n%d\t%d\n%d\t%d" % (tp, fn, fp, tn)
+        self.tp = (rel == 'relevant').sum()
+        self.fn = (rel == 'irrelevant').sum()
+        self.fp = (irr == 'relevant').sum()
+        self.tn = (irr == 'irrelevant').sum()
+        return
+
+    def balancedF(self):
+        prec = float(self.tp)/(float(self.tp) + float(self.fp))
+        recall = float(self.tp)/(float(self.tp) + float(self.fn))
+        Fscore = 2*prec*recall/(prec + recall)
+        return Fscore
+
+    def confusionMatrix(self):
+        print "Confusion matrix:\n%d\t%d\n%d\t%d" % (self.tp, self.fn, self.fp, self.tn)
         return
 
 # End class    
