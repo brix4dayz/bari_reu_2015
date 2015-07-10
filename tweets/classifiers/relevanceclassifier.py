@@ -27,17 +27,19 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 class RelevanceClassifier(object):
 
     def __init__(self, class1_path='/relevantTraining.txt', class2_path='/irrelevantTraining.txt'):
-        # Initialize the training and dev data sets
-        self.trainingSet = []
-        self.labeledTweets = []
+        # Initialize data sets
+        self.trainingSet = [] # Labeled tweet training data set 
+        self.labeledTweets = [] # Feature set of labeled tweet terms
         self.allTerms = []
-        self.initDictSet(class1_path, class2_path)
+		
+		# Begin functions for classification
+        self.initLabeledSet(class1_path, class2_path)
+		self.initTrainingSet()
         self.trainClassifier()
         return
-
     
     # Function to initialize the feature sets
-    def initDictSet(self, class1_path, class2_path):
+    def initLabeledSet(self, class1_path, class2_path):
         # Loop through the txt files line by line
         # Assign labels to tweets
         # Two classes, relevant and irrelevant to the marathon
@@ -50,7 +52,24 @@ class RelevanceClassifier(object):
         # Randomize the data
         random.shuffle(self.labeledTweets)
     # End initDictSet
-
+	
+	# Function for initializing the labeled training data set
+    def initTrainingSet(self):
+        self.getTweetText()
+        self.getTerms()
+        # The apply_features func processes a set of labeled tweet strings using the passed extractFeatures func
+        self.trainingSet = apply_features(self.extractFeatures, self.labeledTweets)
+        return
+	# End initTrainingSet
+		
+	# Function to train the input NB classifier using it's apply_features func
+	# this function can be overridden for scikit learn wrapper for multinomialNB
+    def trainClassifier(self):
+		self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
+        self.buildClassifier()
+        return
+    # End trainClassifier
+	
     # Function to get relevant tweet terms
     def getTweetText(self):
         for (terms, relevance) in self.labeledTweets:
@@ -67,25 +86,6 @@ class RelevanceClassifier(object):
         # Return statement
         return
     # End getTerms
-
-    def buildTrainingSet(self):
-        self.getTweetText()
-        self.getTerms()
-        # The apply_features func processes a set of labeled tweet strings using the passed extractFeatures func
-        self.trainingSet = apply_features(self.extractFeatures, self.labeledTweets)
-        return
-
-    # Function to train the input NB classifier using it's apply_features func
-    def trainClassifier(self):
-        self.buildTrainingSet()
-        self.buildClassifier()
-        return
-    # End trainClassifier
-
-    # this function can be overriden for scikit learn wrapper for multinomialNB
-    def buildClassifier(self):
-        self.classifierNB = nltk.NaiveBayesClassifier.train(self.trainingSet)
-        return
 
     # Function to extract features from tweets
     def extractFeatures(self, tweet_terms):
