@@ -1,11 +1,6 @@
 # Author: Elizabeth Brooks
 # Date Modified: 07/10/2015
 
-# sources:
-#   http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
-#   http://stackoverflow.com/questions/10098533/implementing-bag-of-words-naive-bayes-classifier-in-nltk
-#   http://www.nltk.org/book/ch06.html
-
 # PreProcessor Directives
 import os
 import inspect
@@ -203,7 +198,27 @@ class RelevanceSVM(RelevanceMNB):
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
                             ('svm', SGDClassifier())])
+		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
+		# in the order in which they are chained, with the last object an estimator.
         return
+		
+	# Overriding func to train SVM classifier
+    def trainClassifier(self):
+        self.initPipeline()
+        # Create the multinomial NB classifier
+        self.classifier = SGDClassifier(self.pipeline)
+        # Train the classifier
+        self.classifier.train(self.trainingSet)
+        # End func return
+        return
+	# End trainClassifier override
 # End sub class
+
+# sources:
+#   http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
+#   http://stackoverflow.com/questions/10098533/implementing-bag-of-words-naive-bayes-classifier-in-nltk
+#   http://www.nltk.org/book/ch06.html
+#	http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+
 # End script
 
