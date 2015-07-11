@@ -202,11 +202,21 @@ class RelevanceSVM(RelevanceMNB):
 		# in the order in which they are chained, with the last object an estimator.
         return
 		
+	# Function to initialize the vectorizer
 	def initVector(self):
+		# CountVectorizer supports counts of N-grams of words or consecutive characters
 		countVect = countVectorizer()
+		# Learn the vocabulary dictionary and return term-document matrix
 		xTrainCounts = countVect.fit_transform(self.trainingSet)
 		xTrainCounts.shape
 	# End initVector
+	
+	# Function to initialize TF-iDF transformer
+	def initTransformer(self):
+		tfTransformer = TfidfTransformer(use_idf=False).fit(xTrainCounts)
+		xTrainTF = tfTransformer.transform(xTrainCounts)
+		xTrainTF.shape
+	# End initTransformer
 		
 	# Overriding func to train SVM classifier
     def trainClassifier(self):
@@ -225,6 +235,7 @@ class RelevanceSVM(RelevanceMNB):
 #   http://stackoverflow.com/questions/10098533/implementing-bag-of-words-naive-bayes-classifier-in-nltk
 #   http://www.nltk.org/book/ch06.html
 #	http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
+#	http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
 
 # End script
 
