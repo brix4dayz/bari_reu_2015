@@ -213,7 +213,9 @@ class RelevanceSVM(RelevanceMNB):
 	
 	# Function to initialize TF-iDF transformer
 	def initTransformer(self):
+		# Fit the estimator to the data
 		tfTransformer = TfidfTransformer(use_idf=False).fit(xTrainCounts)
+		# Transform the count matrix to a TF-iDF representation
 		xTrainTF = tfTransformer.transform(xTrainCounts)
 		xTrainTF.shape
 	# End initTransformer
