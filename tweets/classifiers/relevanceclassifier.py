@@ -202,6 +202,12 @@ class RelevanceSVM(RelevanceMNB):
 		# in the order in which they are chained, with the last object an estimator.
         return
 		
+	def initVector(self):
+		countVect = countVectorizer()
+		xTrainCounts = countVect.fit_transform(self.trainingSet)
+		xTrainCounts.shape
+	# End initVector
+		
 	# Overriding func to train SVM classifier
     def trainClassifier(self):
         self.initPipeline()
