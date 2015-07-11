@@ -29,4 +29,9 @@
 	- look into arcpy (arcgis)
 - Sentiment Analysis
 - Determine when popular hashtags (i.e. #bostonstrong) started to appear
+- For RelevantMNB:
+	- Best F score: 0.846153846154
+	- Corresponding best chiK: 3368
+
+
 
