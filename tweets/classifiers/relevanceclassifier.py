@@ -207,17 +207,19 @@ class RelevanceSVM(RelevanceMNB):
 		# CountVectorizer supports counts of N-grams of words or consecutive characters
 		countVect = countVectorizer()
 		# Learn the vocabulary dictionary and return term-document matrix
-		xTrainCounts = countVect.fit_transform(self.trainingSet)
-		xTrainCounts.shape
+		# The index value of a word in the vocabulary is linked to its frequency in the training set
+		trainCounts = countVect.fit_transform(self.trainingSet) # Dictionary of feature indices
+		# xTrainCounts.shape
 	# End initVector
 	
 	# Function to initialize TF-iDF transformer
 	def initTransformer(self):
 		# Fit the estimator to the data
-		tfTransformer = TfidfTransformer(use_idf=False).fit(xTrainCounts)
+		tfTransformer = TfidfTransformer(use_idf=False).fit(trainCounts)
 		# Transform the count matrix to a TF-iDF representation
-		xTrainTF = tfTransformer.transform(xTrainCounts)
-		xTrainTF.shape
+		trainTF = tfTransformer.transform(trainCounts)
+		# Should math xTrainCounts.shape
+		# xTrainTF.shape
 	# End initTransformer
 		
 	# Overriding func to train SVM classifier
@@ -225,6 +227,8 @@ class RelevanceSVM(RelevanceMNB):
         self.initPipeline()
         # Create the multinomial NB classifier
         self.classifier = SGDClassifier(self.pipeline)
+		# Transform the fitted training data
+		newCounts = self.countVect.transform(self.trainingSet)
         # Train the classifier
         self.classifier.train(self.trainingSet)
         # End func return
