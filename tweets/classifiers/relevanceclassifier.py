@@ -1,5 +1,5 @@
 # Author: Elizabeth Brooks
-# Date Modified: 07/10/2015
+# Date Modified: 07/12/2015
 
 # PreProcessor Directives
 import os
@@ -154,6 +154,7 @@ class RelevanceMNB(RelevanceClassifier):
         return
 	# End wrapper class constructor
 	
+	# Function to initialize the classifier pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator
         # The pipeline class behaves like a compound classifier
@@ -166,8 +167,10 @@ class RelevanceMNB(RelevanceClassifier):
 
         self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=self.chiK)),
                       ('nb', MultinomialNB())])
+		# End func return
         return
-
+	# End initPipeline
+		
 	# Overriding func to train multinomial NB classifier
     def trainClassifier(self):
         self.initPipeline()
@@ -180,8 +183,70 @@ class RelevanceMNB(RelevanceClassifier):
 	# End trainClassifier override
 # End sub class
 
+# Sub class to perform linear Multinomial NB tweet classification on transformed data
+class TransformedRelevanceMNB(RelevanceClassifier):
+	# Class constructor
+    def __init__(self):
+		# Call the super class constructor which initializes the classifier
+        super(RelevanceSVM, self).__init__()
+		# End func return
+        return
+	# End wrapper class constructor
+
+    # Overriding func to build MNB classifier
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator
+        # The pipeline class behaves like a compound classifier
+        # pipeline(steps=[...])
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('svm', SGDClassifier())])
+		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
+		# in the order in which they are chained, with the last object an estimator.
+        return
+	# End initPipeline
+		
+	# Function to initialize the vectorizer
+	def initVector(self):
+		# CountVectorizer supports counts of N-grams of words or consecutive characters
+		self.countVect = countVectorizer()
+		# Learn the vocabulary dictionary and return term-document matrix
+		# The index value of a word in the vocabulary is linked to its frequency in the training set
+		self.trainCounts = self.countVect.fit_transform(self.trainingSet) # Dictionary of feature indices
+		# xTrainCounts.shape
+	# End initVector
+	
+	# Function to initialize TF-iDF transformer
+	def initTransformer(self):
+		# Fit the estimator to the data
+		self.tfTransformer = TfidfTransformer(use_idf=False).fit(self.trainCounts)
+		# Transform the count matrix to a TF-iDF representation
+		self.trainTF = self.tfTransformer.transform(self.trainCounts)
+		# Should math xTrainCounts.shape
+		# xTrainTF.shape
+	# End initTransformer
+		
+	# Overriding func to train SVM classifier
+    def trainClassifier(self):
+		# Initialize the term vector
+		self.initVector()
+		# Initialize the transformer
+		self.initTransformer()
+		# Initialize the pipeline
+        self.initPipeline()
+        # Create the multinomial NB classifier
+        self.classifier = SGDClassifier(self.pipeline)
+		# Transform the fitted training data
+		newCounts = self.countVect.transform(self.trainingSet)
+        # Train the classifier
+        self.classifier.train(self.trainingSet)
+        # End func return
+        return
+	# End trainClassifier override
+# End TransformedRelevanceMNB sub class
+
 # Sub class to perform SVM tweet classification
-class RelevanceSVM(RelevanceMNB):
+class TransformedRelevanceMNB(RelevanceClassifier):
 	# Class constructor
     def __init__(self):
 		# Call the super class constructor which initializes the classifier
@@ -201,29 +266,15 @@ class RelevanceSVM(RelevanceMNB):
 		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
 		# in the order in which they are chained, with the last object an estimator.
         return
-		
-	# Function to initialize the vectorizer
-	def initVector(self):
-		# CountVectorizer supports counts of N-grams of words or consecutive characters
-		countVect = countVectorizer()
-		# Learn the vocabulary dictionary and return term-document matrix
-		# The index value of a word in the vocabulary is linked to its frequency in the training set
-		trainCounts = countVect.fit_transform(self.trainingSet) # Dictionary of feature indices
-		# xTrainCounts.shape
-	# End initVector
+	# End initPipeline override
 	
-	# Function to initialize TF-iDF transformer
-	def initTransformer(self):
-		# Fit the estimator to the data
-		tfTransformer = TfidfTransformer(use_idf=False).fit(trainCounts)
-		# Transform the count matrix to a TF-iDF representation
-		trainTF = tfTransformer.transform(trainCounts)
-		# Should math xTrainCounts.shape
-		# xTrainTF.shape
-	# End initTransformer
-		
 	# Overriding func to train SVM classifier
     def trainClassifier(self):
+		# Initialize the term vector
+		self.initVector()
+		# Initialize the transformer
+		self.initTransformer()
+		# Initialize the pipeline
         self.initPipeline()
         # Create the multinomial NB classifier
         self.classifier = SGDClassifier(self.pipeline)
@@ -234,7 +285,7 @@ class RelevanceSVM(RelevanceMNB):
         # End func return
         return
 	# End trainClassifier override
-# End sub class
+# End TransformedRelevanceSVM sub class
 
 # sources:
 #   http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
