@@ -63,4 +63,4 @@ def cleanUpTweet(tweet_text):
 def cleanForSentiment(tweet_text):
   global markup_regex, handle_regex
   temp = markup_regex.sub(r"", tweet_text)
-  return handle_regex.sub(r"", temp)
+  return handle_regex.sub(r"<HANDLE>", temp)
