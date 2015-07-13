@@ -188,23 +188,10 @@ class TransformedRelevanceMNB(RelevanceClassifier):
 	# Class constructor
     def __init__(self):
 		# Call the super class constructor which initializes the classifier
-        super(RelevanceSVM, self).__init__()
+        super(TransformedRelevanceMNB, self).__init__()
 		# End func return
         return
 	# End wrapper class constructor
-
-    # Overriding func to build MNB classifier
-    def initPipeline(self):
-        # Pipeline of transformers with a final estimator
-        # The pipeline class behaves like a compound classifier
-        # pipeline(steps=[...])
-        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
-                            ('svm', SGDClassifier())])
-		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
-		# in the order in which they are chained, with the last object an estimator.
-        return
-	# End initPipeline
 		
 	# Function to initialize the vectorizer
 	def initVector(self):
@@ -226,18 +213,31 @@ class TransformedRelevanceMNB(RelevanceClassifier):
 		# xTrainTF.shape
 	# End initTransformer
 		
-	# Overriding func to train SVM classifier
-    def trainClassifier(self):
+	# Overriding func to build MNB classifier
+    def initPipeline(self):
 		# Initialize the term vector
 		self.initVector()
 		# Initialize the transformer
 		self.initTransformer()
+        # Pipeline of transformers with a final estimator
+        # In order to make the vectorizer => transformer => classifier easier to work with, 
+		# scikit-learn provides a Pipeline class that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('svm', MultinomialNB())]) # Use the multinomial NB classifier
+		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
+		# in the order in which they are chained, with the last object an estimator.
+        return
+	# End initPipeline
+	
+	# Overriding func to train SVM classifier
+    def trainClassifier(self):
 		# Initialize the pipeline
         self.initPipeline()
-        # Create the multinomial NB classifier
-        self.classifier = SGDClassifier(self.pipeline)
-		# Transform the fitted training data
-		newCounts = self.countVect.transform(self.trainingSet)
+		# Save the input tweets to memory
+		tweetTest = self.trainingSet.data
+		# Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(tweetTest.data, tweetTest.target)
         # Train the classifier
         self.classifier.train(self.trainingSet)
         # End func return
@@ -245,24 +245,48 @@ class TransformedRelevanceMNB(RelevanceClassifier):
 	# End trainClassifier override
 # End TransformedRelevanceMNB sub class
 
-# Sub class to perform SVM tweet classification
-class TransformedRelevanceMNB(RelevanceClassifier):
+# Sub class to perform linear support vector machine (SVM) tweet classification
+class TransformedRelevanceSVM(RelevanceClassifier):
 	# Class constructor
     def __init__(self):
 		# Call the super class constructor which initializes the classifier
-        super(RelevanceSVM, self).__init__()
+        super(TransformedRelevanceSVM, self).__init__()
 		# End func return
         return
 	# End wrapper class constructor
-
-    # Overriding func to build SVM classifier
+	
+	# Function to initialize the vectorizer
+	def initVector(self):
+		# CountVectorizer supports counts of N-grams of words or consecutive characters
+		self.countVect = countVectorizer()
+		# Learn the vocabulary dictionary and return term-document matrix
+		# The index value of a word in the vocabulary is linked to its frequency in the training set
+		self.trainCounts = self.countVect.fit_transform(self.trainingSet) # Dictionary of feature indices
+		# xTrainCounts.shape
+	# End initVector
+	
+	# Function to initialize TF-iDF transformer
+	def initTransformer(self):
+		# Fit the estimator to the data
+		self.tfTransformer = TfidfTransformer(use_idf=False).fit(self.trainCounts)
+		# Transform the count matrix to a TF-iDF representation
+		self.trainTF = self.tfTransformer.transform(self.trainCounts)
+		# Should math xTrainCounts.shape
+		# xTrainTF.shape
+	# End initTransformer
+	
+	# Overriding func to build SVM classifier
     def initPipeline(self):
+		# Initialize the term vector
+		self.initVector()
+		# Initialize the transformer
+		self.initTransformer()
         # Pipeline of transformers with a final estimator
-        # The pipeline class behaves like a compound classifier
-        # pipeline(steps=[...])
+        # In order to make the vectorizer => transformer => classifier easier to work with, 
+		# scikit-learn provides a Pipeline class that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
-                            ('svm', SGDClassifier())])
+                            ('svm', SGDClassifier())]) # Use the SVM classifier
 		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
 		# in the order in which they are chained, with the last object an estimator.
         return
@@ -270,19 +294,14 @@ class TransformedRelevanceMNB(RelevanceClassifier):
 	
 	# Overriding func to train SVM classifier
     def trainClassifier(self):
-		# Initialize the term vector
-		self.initVector()
-		# Initialize the transformer
-		self.initTransformer()
 		# Initialize the pipeline
         self.initPipeline()
-        # Create the multinomial NB classifier
-        self.classifier = SGDClassifier(self.pipeline)
-		# Transform the fitted training data
-		newCounts = self.countVect.transform(self.trainingSet)
+		# Save the input tweets to memory
+		tweetTest = self.trainingSet.data
+		# Fit the created SVM classifier
+        self.classifier = self.pipeline.fit(tweetTest.data, tweetTest.target)
         # Train the classifier
         self.classifier.train(self.trainingSet)
-        # End func return
         return
 	# End trainClassifier override
 # End TransformedRelevanceSVM sub class
