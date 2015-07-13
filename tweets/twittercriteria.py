@@ -2,6 +2,7 @@ import yaml
 import os
 import inspect
 import re
+import time
 
 # author: Hayden Fuss
 
@@ -36,6 +37,14 @@ def getHandleRegex():
   global handle_regex
   return handle_regex
 
+def getHandlesFromTweet(tweet):
+  global handle_regex
+  return handle_regex.findall(tweet)
+
+def getTweetDate(tweet_time):
+  global criteria
+  return time.strptime(tweet_time, criteria['time_fmt'])
+
 def tweetContainsKeyword(tweet):
   global kw_regex
   return kw_regex.search(tweet) is not None
@@ -50,3 +59,8 @@ def cleanUpTweet(tweet_text):
   # for removing undesired characters
   temp = markup_regex.sub(r"", temp)
   return temp
+
+def cleanForSentiment(tweet_text):
+  global markup_regex, handle_regex
+  temp = markup_regex.sub(r"", tweet_text)
+  return handle_regex.sub(r"", temp)

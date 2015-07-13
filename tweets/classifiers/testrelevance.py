@@ -17,7 +17,11 @@ def initTests():
         "boston bombers are brothers. #watertown #boston",
         "wait it says hes cornered. it says he his cornered #watertown",
         "bomb at the finish line??",
-        "boston, what is going on? #prayforbostom #mitshooting"]
+        "boston, what is going on? #prayforbostom #mitshooting",
+        "#watertown stay vigilant, there is no where for this asshole to go. each minute that goes by they are closer to finding him.",
+        "boston is all fucked up and shut down to lockdown died not a soul in sight they need to catch the 2nd suspect #watertown",
+        "video of the explosion taken from the finish line. just horrible.",
+        "@dailystarnews: boston marathon bombings kill 3, hurt over 100 "]
 
     testIrrelevant = ["it\'s not a #bostonmarathon until @theeisnotsilent has stolen cheese off a stranger\'s duck plate on their front lawn.",
         "sir, the cowbell around your neck is unnecessary. #bostonmarathon",
@@ -27,7 +31,13 @@ def initTests():
         "happy hump day! time to #getnaked drinking a naked hopularity by @slumbrew at @hopsexplosion",
         "good luck to all of those at the boston marathon finish line today. sending love and good thoughts!",
         "praying for good health!!!",
-        "watertown chief of police had a very strange interview on cnn today, anyone have an explanation for it?"]
+        "love seeing all those marathon runners rocking their jackets",
+        ".2 to go #youcandoit @ almost the finish line ",
+        "#marathonmonday #gocrazy #cheerloud @go4th_",
+        "i'm at not your average joe's - @nyajoes (watertown, ma)",
+        "midnight marathon bike ride ",
+        "it's good to be home. #bostonstrong @ fenway park ",
+        "happy birthdayyy @jordancollier23"]
     return
 
 def scoreMND(chiK):
@@ -47,28 +57,34 @@ def testClassifier(clssr):
 clsrNB = rc.RelevanceClassifier()
 
 testClassifier(clsrNB)
+print clsrNB.balancedF()
 
-print len(clsrNB.wordFeatures)
+clsrMNB = rc.RelevanceMNB(3368)
 
-chis = range(1000, len(clsrNB.wordFeatures)+1, 2)
+testClassifier(clsrMNB)
+print clsrMNB.balancedF()
 
-fs = []
+# print len(clsrNB.wordFeatures)
 
-for c in chis:
-    fs.append(scoreMND(c))
+# chis = range(1000, len(clsrNB.wordFeatures)+1, 2)
 
-chis = np.array(chis)
-fs = np.array(fs)
+# fs = []
 
-bestF = np.amax(fs)
-bestChi = chis[np.argmax(fs)]
+# for c in chis:
+#     fs.append(scoreMND(c))
 
-print bestF
-print bestChi
+# chis = np.array(chis)
+# fs = np.array(fs)
 
-plt.plot(chis, fs, 'b')
-plt.plot(bestChi, bestF, '^g')
+# bestF = np.amax(fs)
+# bestChi = chis[np.argmax(fs)]
 
-plt.show()
+# print bestF
+# print bestChi
+
+# plt.plot(chis, fs, 'b')
+# plt.plot(bestChi, bestF, '^g')
+
+# plt.show()
 
 #clsrSVM = rc.RelevanceSVM()

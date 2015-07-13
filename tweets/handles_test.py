@@ -1,11 +1,8 @@
 import csv
 import twittercriteria as twc
-import time
 import matplotlib.pyplot as plt
 
 # author: Hayden Fuss
-time_fmt = twc.getTwitterTimeFmt()
-handle_pattern = twc.getHandleRegex()
 
 handles = {}
 
@@ -15,14 +12,14 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
   twitterData = csv.DictReader(csvfile)
   for tweet in twitterData:
     if tweet['time'] != "":
-      date = time.strptime(tweet['time'], time_fmt)
+      date = twc.getTweetDate(tweet['time'])
       if date.tm_mday > 15 or (date.tm_mday == 15 and date.tm_hour >= 14):
         if twc.tweetContainsKeyword(tweet['tweet_text'].lower()):
           if not tweet['sender_name'] in senders.keys():
             senders[tweet['sender_name']] = 1
           else:
             senders[tweet['sender_name']] += 1
-          results = handle_pattern.findall(tweet['tweet_text'])
+          results = twc.getHandlesFromTweet(tweet['tweet_text'])
           for r in results:
             handle = r.strip("@").lower()
             if not handle in handles.keys():
