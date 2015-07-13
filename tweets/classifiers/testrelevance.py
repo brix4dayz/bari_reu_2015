@@ -1,4 +1,5 @@
-import relevanceclassifier as rc
+import tweetclassifier as tc
+import twittercriteria as twc
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -42,29 +43,35 @@ def initTests():
         "happy birthdayyy @jordancollier23"]
     return
 
-def scoreMND(chiK):
-    initTests()
-    clssr = rc.RelevanceMNB(chiK)
-    clssr.test(testRelevant, testIrrelevant)
-    return clssr.balancedF()
+# def scoreMND(chiK):
+#     initTests()
+#     clssr = rc.RelevanceMNB(chiK)
+#     clssr.test(testRelevant, testIrrelevant)
+#     return clssr.balancedF()
 
-def testClassifier(clssr):
+def testRelevantClassifier(clssr):
     initTests()
     print "Testing " + type(clssr).__name__ + "..."
-    clssr.test(testRelevant, testIrrelevant)
-    clssr.confusionMatrix()
+    rel = clssr.classify(testRelevant)
+    irr = clssr.classify(testIrrelevant)
+    trueRel = np.empty(len(rel))
+    trueRel.fill(0)
+    trueIrr = np.empty(len(irr))
+    trueIrr.fill(1)
+    print clssr.getConfusionMatrix(np.append(trueRel, trueIrr), np.append(rel, irr))
     print "...done.\n"      
 
+relClssr = tc.TweetClassifierMNB(trainingPaths, twc.cleanUpTweet)
 
-clsrNB = rc.RelevanceClassifier()
+testRelevantClassifier(relClssr)
 
-testClassifier(clsrNB)
-print clsrNB.balancedF()
+relClssr = tc.TweetClassifierSVM(trainingPaths, twc.cleanUpTweet)
 
-clsrMNB = rc.RelevanceMNB(3368)
+testRelevantClassifier(relClssr)
 
-testClassifier(clsrMNB)
-print clsrMNB.balancedF()
+# relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
+
+# testRelevantClassifier(relClssr)
 
 # print len(clsrNB.wordFeatures)
 

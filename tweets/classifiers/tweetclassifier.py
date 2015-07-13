@@ -53,8 +53,7 @@ class TweetClassifier(object):
                 for line in trainingFile:
                     self.tweets.append(line)
                     self.labels.append(self.categories.index(category))
-        # Randomize the data
-        random.shuffle(self.labeledTweets)
+        self.labels = np.array(self.labels)
         # End func return
         return
     # End initDictSet
@@ -67,12 +66,12 @@ class TweetClassifier(object):
         # pipeline(steps=[...])
 
         # Old MNB pipeline with TFIDF
-        # self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
-        #              ('chi2', SelectKBest(chi2, k=1000)),
-        #              ('nb', MultinomialNB())])
-
-        self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=self.chiK)),
+        self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
+                      ('chi2', SelectKBest(chi2, k=1000)),
                       ('nb', MultinomialNB())])
+
+        #self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=1000)),
+        #              ('nb', MultinomialNB())])
         return
     # End initPipeline
 
@@ -89,7 +88,7 @@ class TweetClassifier(object):
     # Function to classify input tweet  
     def classify(self, tweet_list):
         # Clean the input list of tweets
-        for i in range(0,len(tweet_list))
+        for i in range(0,len(tweet_list)):
             tweet_list[i] = self.cleaner(tweet_list[i])
 
         # Return classified the input tweet text
@@ -98,17 +97,18 @@ class TweetClassifier(object):
 
     # Function to get the predicted classifiers confusion matrix
     def getConfusionMatrix(self, actual, predicted):
+        print(metrics.classification_report(actual, predicted, target_names=self.categories))
         # Return the confusion matrix
-        return metrics.confusionMatrix(actual,predicted)
+        return metrics.confusion_matrix(actual,predicted)
     # End getConfusionMatrix
 # End class TweetClassifier
 
 # Sub class to perform linear Multinomial NB tweet classification on transformed data
 class TweetClassifierMNB(TweetClassifier):
     # Class constructor
-    def __init__(self):
+    def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierMNB, self).__init__()
+        super(TweetClassifierMNB, self).__init__(paths, cleaner)
         # End func return
         return
     # End wrapper class constructor
@@ -131,9 +131,9 @@ class TweetClassifierMNB(TweetClassifier):
 # Sub class to perform linear support vector machine (SVM) tweet classification
 class TweetClassifierSVM(TweetClassifier):
     # Class constructor
-    def __init__(self):
+    def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierSVM, self).__init__()
+        super(TweetClassifierSVM, self).__init__(paths, cleaner)
         # End func return
         return
     # End wrapper class constructor
