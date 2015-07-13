@@ -224,20 +224,18 @@ class TransformedRelevanceMNB(RelevanceClassifier):
 		# scikit-learn provides a Pipeline class that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
-                            ('svm', MultinomialNB())]) # Use the multinomial NB classifier
+                            ('mnb', MultinomialNB())]) # Use the multinomial NB classifier
 		# List of (name, transform) tuples (implementing fit/transform) that are chained, 
 		# in the order in which they are chained, with the last object an estimator.
         return
 	# End initPipeline
 	
-	# Overriding func to train SVM classifier
+	# Overriding func to train the MNB classifier
     def trainClassifier(self):
 		# Initialize the pipeline
         self.initPipeline()
-		# Save the input tweets to memory
-		tweetTest = self.trainingSet.data
 		# Fit the created multinomial NB classifier
-        self.classifier = self.pipeline.fit(tweetTest.data, tweetTest.target)
+        self.classifier = self.pipeline.fit(self.trainingSet)
         # Train the classifier
         self.classifier.train(self.trainingSet)
         # End func return
@@ -296,10 +294,8 @@ class TransformedRelevanceSVM(RelevanceClassifier):
     def trainClassifier(self):
 		# Initialize the pipeline
         self.initPipeline()
-		# Save the input tweets to memory
-		tweetTest = self.trainingSet.data
 		# Fit the created SVM classifier
-        self.classifier = self.pipeline.fit(tweetTest.data, tweetTest.target)
+        self.classifier = self.pipeline.fit(self.trainingSet)
         # Train the classifier
         self.classifier.train(self.trainingSet)
         return
@@ -312,6 +308,7 @@ class TransformedRelevanceSVM(RelevanceClassifier):
 #   http://www.nltk.org/book/ch06.html
 #	http://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html
 #	http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
+#	http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
 
 # End script
 
