@@ -184,11 +184,11 @@ class RelevanceMNB(RelevanceClassifier):
 # End sub class
 
 # Sub class to perform linear Multinomial NB tweet classification on transformed data
-class TransformedRelevanceMNB(RelevanceClassifier):
+class RelevanceLinearMNB(RelevanceClassifier):
 	# Class constructor
     def __init__(self):
 		# Call the super class constructor which initializes the classifier
-        super(TransformedRelevanceMNB, self).__init__()
+        super(RelevanceLinearMNB, self).__init__()
 		# End func return
         return
 	# End wrapper class constructor
@@ -241,14 +241,14 @@ class TransformedRelevanceMNB(RelevanceClassifier):
         # End func return
         return
 	# End trainClassifier override
-# End TransformedRelevanceMNB sub class
+# End RelevanceLinearMNB sub class
 
 # Sub class to perform linear support vector machine (SVM) tweet classification
-class TransformedRelevanceSVM(RelevanceClassifier):
+class RelevanceLinearSVM(RelevanceClassifier):
 	# Class constructor
     def __init__(self):
 		# Call the super class constructor which initializes the classifier
-        super(TransformedRelevanceSVM, self).__init__()
+        super(RelevanceLinearSVM, self).__init__()
 		# End func return
         return
 	# End wrapper class constructor
@@ -300,7 +300,7 @@ class TransformedRelevanceSVM(RelevanceClassifier):
         self.classifier.train(self.trainingSet)
         return
 	# End trainClassifier override
-# End TransformedRelevanceSVM sub class
+# End RelevanceLinearSVM sub class
 
 # sources:
 #   http://www.laurentluce.com/posts/twitter-sentiment-analysis-using-python-and-nltk/
