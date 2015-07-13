@@ -193,26 +193,6 @@ class RelevanceLinearMNB(RelevanceClassifier):
         return
     # End wrapper class constructor
         
-    # Function to initialize the vectorizer
-    def initVector(self):
-        # CountVectorizer supports counts of N-grams of words or consecutive characters
-        self.countVect = countVectorizer()
-        # Learn the vocabulary dictionary and return term-document matrix
-        # The index value of a word in the vocabulary is linked to its frequency in the training set
-        self.trainCounts = self.countVect.fit_transform(self.trainingSet) # Dictionary of feature indices
-        # xTrainCounts.shape
-    # End initVector
-    
-    # Function to initialize TF-iDF transformer
-    def initTransformer(self):
-        # Fit the estimator to the data
-        self.tfTransformer = TfidfTransformer(use_idf=False).fit(self.trainCounts)
-        # Transform the count matrix to a TF-iDF representation
-        self.trainTF = self.tfTransformer.transform(self.trainCounts)
-        # Should math xTrainCounts.shape
-        # xTrainTF.shape
-    # End initTransformer
-        
     # Overriding func to build MNB classifier
     def initPipeline(self):
         # Initialize the term vector
@@ -234,10 +214,12 @@ class RelevanceLinearMNB(RelevanceClassifier):
     def trainClassifier(self):
         # Initialize the pipeline
         self.initPipeline()
+        # Save the trainingSet to memory
+        tweetTest = self.trainingSet.data
         # Fit the created multinomial NB classifier
-        self.classifier = self.pipeline.fit(self.trainingSet)
+        self.classifier = self.pipeline.fit(self.trainingSet, self.trainingSet.target)
         # Train the classifier
-        self.classifier.train(self.trainingSet)
+        self.classifier.predict(tweetTest)
         # End func return
         return
     # End trainClassifier override
@@ -252,26 +234,6 @@ class RelevanceLinearSVM(RelevanceClassifier):
         # End func return
         return
     # End wrapper class constructor
-    
-    # Function to initialize the vectorizer
-    def initVector(self):
-        # CountVectorizer supports counts of N-grams of words or consecutive characters
-        self.countVect = countVectorizer()
-        # Learn the vocabulary dictionary and return term-document matrix
-        # The index value of a word in the vocabulary is linked to its frequency in the training set
-        self.trainCounts = self.countVect.fit_transform(self.trainingSet) # Dictionary of feature indices
-        # xTrainCounts.shape
-    # End initVector
-    
-    # Function to initialize TF-iDF transformer
-    def initTransformer(self):
-        # Fit the estimator to the data
-        self.tfTransformer = TfidfTransformer(use_idf=False).fit(self.trainCounts)
-        # Transform the count matrix to a TF-iDF representation
-        self.trainTF = self.tfTransformer.transform(self.trainCounts)
-        # Should math xTrainCounts.shape
-        # xTrainTF.shape
-    # End initTransformer
     
     # Overriding func to build SVM classifier
     def initPipeline(self):
@@ -294,10 +256,12 @@ class RelevanceLinearSVM(RelevanceClassifier):
     def trainClassifier(self):
         # Initialize the pipeline
         self.initPipeline()
+        # Save the trainingSet to memory
+        tweetTest = self.trainingSet.data
         # Fit the created SVM classifier
-        self.classifier = self.pipeline.fit(self.trainingSet)
-        # Train the classifier
-        self.classifier.train(self.trainingSet)
+        self.classifier = self.pipeline.fit(self.trainingSet, self.trainingSet.target)
+        # Predict using the classifier
+        self.classifier.predict(tweetTest)
         return
     # End trainClassifier override
 # End RelevanceLinearSVM sub class
