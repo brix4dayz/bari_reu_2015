@@ -1,7 +1,3 @@
-# Author: Elizabeth Brooks, Hayden Fuss
-# Adapted from: tweetclassifier.py
-# Date Modified: 07/13/2015
-
 # PreProcessor Directives
 import os
 import inspect
@@ -14,7 +10,6 @@ sys.path.append(os.path.realpath('../'))
 import twittercriteria as twc
 # Classification function imports
 import nltk
-from nltk.classify import apply_features
 from nltk.classify import SklearnClassifier
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest, chi2
@@ -65,15 +60,19 @@ class TweetClassifier(object):
     # End initDictSet
     
     # Function to build classifier pipeline
+    # Default multinomial NB using chi sqaured statistics
     def initPipeline(self):
         # Pipeline of transformers with a final estimator
-        # In order to make the vectorizer => transformer => classifier easier to work with, 
-        # scikit-learn provides a Pipeline class that behaves like a compound classifier
-        self.classifier = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                                    ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
-                                    ('mnb', MultinomialNB())]) # Use the multinomial NB classifier
-        # List of (name, transform) tuples (implementing fit/transform) that are chained, 
-        # in the order in which they are chained, with the last object an estimator.
+        # The pipeline class behaves like a compound classifier
+        # pipeline(steps=[...])
+
+        # Old MNB pipeline with TFIDF
+        # self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
+        #              ('chi2', SelectKBest(chi2, k=1000)),
+        #              ('nb', MultinomialNB())])
+
+        self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=self.chiK)),
+                      ('nb', MultinomialNB())])
         return
     # End initPipeline
 
