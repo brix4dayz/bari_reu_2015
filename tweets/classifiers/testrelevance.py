@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 testRelevant = None
 testIrrelevant = None
 
+trainingPaths = {'relevant':'/relevantTraining.txt', 'irrelevant':'/irrelevantTraining.txt'}
+
 def initTests():
     global testRelevant, testIrrelevant
     testRelevant = ["being 10 miles away from this explosion scares the shit out of me #prayersforboston",
