@@ -9,8 +9,6 @@ import random
 sys.path.append(os.path.realpath('../'))
 import twittercriteria as twc
 # Classification function imports
-import nltk
-from nltk.classify import SklearnClassifier
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.naive_bayes import MultinomialNB
@@ -22,8 +20,6 @@ from sklearn import metrics
 
 # Global field declarations
 current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-
-# Size of chi2 sample, needs to be tuned for best results with MNB
 
 # Define class to classify tweet relevance
 class TweetClassifier(object):
@@ -152,3 +148,6 @@ class TweetClassifierSVM(TweetClassifier):
         return
     # End initPipeline override
 # End TweetClassifierSVM sub class
+
+# sources:
+#   http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
