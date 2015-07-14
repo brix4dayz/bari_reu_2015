@@ -101,6 +101,21 @@ class TweetClassifier(object):
         # Return the confusion matrix
         return metrics.confusion_matrix(actual,predicted)
     # End getConfusionMatrix
+	
+	# Function to perform a grid search for best features
+	def getGridSearch(self):
+		# Set the search parameters
+		parameters = {'ngram_range': [(1,1),(1,2)], # Try either words or birgrams
+					'idf_use':(True,False), # Either with or with out idf are included
+					'alpha':(1e-2,1e-3)} # Try a penalty parameter of 0.01 or 0.001
+		# Use all cores to create a grid search
+		gs = GridSearchCV(self.classifier, parameters, n_jobs=-1)
+		# Get the scores
+		bestParam, score, _ = max(gs.grid_scores_, key=lambda x: x[1])
+		#Return the scores
+		for param_name in sorted(parameters.keys()):
+			return ("%s: %r" % (param_name,bestParam[param_name]))
+	# End getGridSearch	
 # End class TweetClassifier
 
 # Sub class to perform linear Multinomial NB tweet classification on transformed data
