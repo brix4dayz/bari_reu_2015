@@ -61,47 +61,58 @@ def testRelevantClassifier(clssr):
     print clssr.getConfusionMatrix(np.append(trueRel, trueIrr), np.append(rel, irr))
     print "...done.\n"      
 
-relClssr = tc.TweetClassifierMNB(trainingPaths, twc.cleanUpTweet)
+if __name__ == "__main__":
+    relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
 
-testRelevantClassifier(relClssr)
+    testRelevantClassifier(relClssr)
 
-relClssr = tc.TweetClassifierSVM(trainingPaths, twc.cleanUpTweet)
+    relClssr = tc.TweetClassifierMNB(trainingPaths, twc.cleanUpTweet)
 
-testRelevantClassifier(relClssr)
+    testRelevantClassifier(relClssr)
 
-relClssr = tc.TweetClassifierMaxEnt(trainingPaths, twc.cleanUpTweet)
+    relClssr = tc.TweetClassifierLinearSVM(trainingPaths, twc.cleanUpTweet)
 
-testRelevantClassifier(relClssr)
+    testRelevantClassifier(relClssr)
 
-relClssr = tc.TweetClassifierBNB(trainingPaths, twc.cleanUpTweet)
+    #relClssr.getGridSearch()
 
-testRelevantClassifier(relClssr)
+    relClssr = tc.TweetClassifierModifiedSVM(trainingPaths, twc.cleanUpTweet)
 
-# relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
+    testRelevantClassifier(relClssr)
 
-# testRelevantClassifier(relClssr)
+    #relClssr.getGridSearch()
 
-# print len(clsrNB.wordFeatures)
+    relClssr = tc.TweetClassifierQuadraticSVM(trainingPaths, twc.cleanUpTweet)
 
-# chis = range(1000, len(clsrNB.wordFeatures)+1, 2)
+    testRelevantClassifier(relClssr)
 
-# fs = []
+    #relClssr.getGridSearch()
 
-# for c in chis:
-#     fs.append(scoreMND(c))
+    # relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
 
-# chis = np.array(chis)
-# fs = np.array(fs)
+    # testRelevantClassifier(relClssr)
 
-# bestF = np.amax(fs)
-# bestChi = chis[np.argmax(fs)]
+    # print len(clsrNB.wordFeatures)
 
-# print bestF
-# print bestChi
+    # chis = range(1000, len(clsrNB.wordFeatures)+1, 2)
 
-# plt.plot(chis, fs, 'b')
-# plt.plot(bestChi, bestF, '^g')
+    # fs = []
 
-# plt.show()
+    # for c in chis:
+    #     fs.append(scoreMND(c))
 
-#clsrSVM = rc.RelevanceSVM()
+    # chis = np.array(chis)
+    # fs = np.array(fs)
+
+    # bestF = np.amax(fs)
+    # bestChi = chis[np.argmax(fs)]
+
+    # print bestF
+    # print bestChi
+
+    # plt.plot(chis, fs, 'b')
+    # plt.plot(bestChi, bestF, '^g')
+
+    # plt.show()
+
+    #clsrSVM = rc.RelevanceSVM()
