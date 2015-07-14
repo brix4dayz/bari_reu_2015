@@ -1,8 +1,8 @@
 ############################################################################################################################
 # author: Hayden Fuss
-# last edited: Tuesday, July 7, 2015
+# last edited: Tuesday, July 14, 2015
 #
-# Module for plotting data over a map of greater Boston using census data. Given a tuple of dictionaries, which
+# Module for plotting data over a map of greater Boston using census data. Given a tuple/list of dictionaries, which
 # have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both scatter
 # and density plotters.
 #
@@ -46,6 +46,7 @@ countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7
                 '007':'#7E7125', '009':'#4E65EF', '011':'#BC4638', '013':'#C8C736', 
                 '015':'#F0BF26', '021':'#02896F', '025':'#6E95A3', '023':'#50658C',
                 '027':'#32B126', '019':'#B66497'}
+suffolkID = '025'
 
 #####################################################################################################################
 
@@ -196,9 +197,9 @@ class BostonScatter(BostonMap):
 
   def patchesDF(self):
     self.df_map['patches'] = [PolygonPatch(row['poly'],
-      fc=countyColors[row['land_info']['COUNTY']],
-      ec='k', lw=.25, alpha=.9,
-      zorder=4) for i,row in self.df_map.iterrows()]
+      fc=countyColors[row['land_info']['COUNTY']], ec='k',
+      lw=0.25 if (row['land_info']['COUNTY'] != suffolkID) else 0.8,
+      alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
     return
 
 #####################################################################################################################
@@ -278,6 +279,7 @@ def cmap_discretize(cmap, N):
       cdict[key] = [(indices[i], colors_rgba[i - 1, ki], colors_rgba[i, ki]) for i in xrange(N + 1)]
     return mplc.LinearSegmentedColormap(cmap.name + "_%d" % N, cdict, 1024)
 
+##########################################################################################################################
 
 class BostonDensity(BostonScatter):
   def __init__(self, dataPoints):
@@ -307,15 +309,26 @@ class BostonDensity(BostonScatter):
   def patchesDF(self):
     # use a blue colour ramp - we'll be converting it to a map using cmap()
     self.cmap = plt.get_cmap('Blues')
-    # draw wards with grey outlines
-    self.df_map['patches'] = self.df_map['poly'].map(lambda x: PolygonPatch(x, ec='#555555', lw=.2, alpha=1., zorder=4))
-    
+    # draw tracts with black outline. make suffolk (boston) thicker
+    self.df_map['patches'] = [PolygonPatch(row['poly'], ec='k',
+      lw=0.25 if (row['land_info']['COUNTY'] != suffolkID) else 0.8,
+      alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
+
     self.jenks_labels = ["<= %0.1f/km$^2$(%s tracts)" % (b, c) for b, c in zip(
     self.breaks.bins, self.breaks.counts)]
     self.jenks_labels.insert(0, '<= 0.0/km$^2$(%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
     return
 
   def data(self):
+    highest = '\n'.join([row['land_info']['TRACT'] + " => " + 
+                        str(row['density_km']) for i, row in self.df_map[
+                        (self.df_map['jenks_bins'] == 4)][:30].sort(columns='density_km',
+                        ascending=False).iterrows()])
+    highest = 'Most Dense Wards:\n\n' + highest
+    print highest
+    for each in self.df_map['land_info'][0:10]:
+      print
+
     return
 
   def tracts(self):
@@ -332,6 +345,8 @@ class BostonDensity(BostonScatter):
     cb.ax.tick_params(labelsize=6)
     return
 
+#########################################################################################################################
+
 class GreaterBostonScatter(BostonScatter):
   def __init__(self, dataPoints):
     self.dataPoints = dataPoints
@@ -347,6 +362,8 @@ class GreaterBostonScatter(BostonScatter):
     self.fig.set_size_inches((self.w/self.h)*10, 10)
     plt.savefig(outname + '.png', dpi=100, alpha=True)
     return
+
+#########################################################################################################################
 
 class GreaterBostonDensity(BostonDensity):
   def __init__(self, dataPoints):
