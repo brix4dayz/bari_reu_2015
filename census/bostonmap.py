@@ -51,14 +51,12 @@ countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7
 
 class BostonMap(object):
   def __init__(self):
-    # shp = fiona.open(myDir + bostonTracts + '.shp')
-    # bds = shp.bounds
-    # shp.close()
+    shp = fiona.open(myDir + bostonTracts + '.shp')
+    bds = shp.bounds
+    shp.close()
     self.extra = 0.01
-    # self.ll = (bds[0], bds[1])
-    # self.ur = (bds[2], bds[3])
-    self.ll = (-71.5457, 42.1697)
-    self.ur = (-70.8975, 42.4014)
+    self.ll = (bds[0], bds[1])
+    self.ur = (bds[2], bds[3])
     self.coords = list(chain(self.ll, self.ur))
     self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
     return
@@ -153,7 +151,7 @@ class BostonMap(object):
 
   def makePlot(self, outname, title):
     plt.title(title)
-    self.fig.set_size_inches((self.w/self.h)*10, 10)
+    self.fig.set_size_inches(10, (self.h/self.w)*10)
     plt.savefig(outname + '.png', dpi=100, alpha=True)
     return
 
@@ -205,7 +203,7 @@ class BostonScatter(BostonMap):
 
 #####################################################################################################################
 
-class GreaterBostonScatter(BostonScatter):
+class CoastlineBostonScatter(BostonScatter):
   def __init__(self, dataPoints):
     super(GreaterBostonScatter, self).__init__(dataPoints)
     return
@@ -332,6 +330,38 @@ class BostonDensity(BostonScatter):
     # Add a colour bar
     cb = colorbar_index(ncolors=len(self.jenks_labels), cmap=self.cmap, shrink=0.5, labels=self.jenks_labels)
     cb.ax.tick_params(labelsize=6)
+    return
+
+class GreaterBostonScatter(BostonScatter):
+  def __init__(self, dataPoints):
+    self.dataPoints = dataPoints
+    self.extra = 0.01
+    self.ll = (-71.5457, 42.1697)
+    self.ur = (-70.8975, 42.4014)
+    self.coords = list(chain(self.ll, self.ur))
+    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
+    return
+
+  def makePlot(self, outname, title):
+    plt.title(title)
+    self.fig.set_size_inches((self.w/self.h)*10, 10)
+    plt.savefig(outname + '.png', dpi=100, alpha=True)
+    return
+
+class GreaterBostonDensity(BostonDensity):
+  def __init__(self, dataPoints):
+    self.dataPoints = dataPoints
+    self.extra = 0.01
+    self.ll = (-71.5457, 42.1697)
+    self.ur = (-70.8975, 42.4014)
+    self.coords = list(chain(self.ll, self.ur))
+    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
+    return
+
+  def makePlot(self, outname, title):
+    plt.title(title)
+    self.fig.set_size_inches((self.w/self.h)*10, 10)
+    plt.savefig(outname + '.png', dpi=100, alpha=True)
     return
 
 #######################################################################################################################
