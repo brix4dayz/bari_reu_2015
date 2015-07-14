@@ -109,18 +109,20 @@ class TweetClassifier(object):
     #   except that the parameters of the classifier used to predict is optimized by cross-validation.
 	def getGridSearch(self):
 		# Set the search parameters
-		parameters = {'ngram_range': [(1,1),(1,2)], # Try either words or birgrams
-					'idf_use':(True,False), # Either with or with out idf are included
-					'alpha':(1e-2,1e-3)} # Try a penalty parameter of 0.01 or 0.001
+		parameters = {'nGram_range': [(1,1),(1,2)], # Try either words or birgrams
+					'iDF_use':(True,False), # Either with or with out idf are included
+					'alpha_penalty':(1e-2,1e-3)} # Try a penalty parameter of 0.01 or 0.001
 		# Use all cores to create a grid search
-		gs = GridSearchCV(self.classifier, parameters, n_jobs=-1)
-        # Fit the gs estimator
-        gs = gs.fit(self.tweets, self.labels)
-		# Get the scores
-		bestParam, score, _ = max(gs.grid_scores_, key=lambda x: x[1])
-		# Print the scores
+		classifierGS = GridSearchCV(self.classifier, parameters, n_jobs=-1)
+        # Fit the CS estimator for use as a classifier
+        classifierGS = classifierGS.fit(self.tweets, self.labels)
+		# Get the scores using the GS classifier
+		bestParam, score, _ = max(classifierGS.grid_scores_, key=lambda x: x[1])
+		# Print the parameter values
 		for param_name in sorted(parameters.keys()):
 			print("%s: %r" % (param_name,bestParam[param_name]))
+        # Print the classifier score
+        print("Classifier score: " + score)
         # End of func return statement
         return
 	# End getGridSearch	
