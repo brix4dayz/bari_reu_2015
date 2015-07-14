@@ -143,11 +143,11 @@ class TweetClassifierMNB(TweetClassifier):
 # End TweetClassifierMNB sub class
 
 # Sub class to perform linear support vector machine (SVM) tweet classification
-class TweetClassifierSVM(TweetClassifier):
+class TweetClassifierLinearSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierSVM, self).__init__(paths, cleaner)
+        super(TweetClassifierLinearSVM, self).__init__(paths, cleaner)
         # End func return
         return
     # End wrapper class constructor
@@ -169,8 +169,70 @@ class TweetClassifierSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
+# End TweetClassifierLinearSVM sub class
 
-# End TweetClassifierSVM sub class
+# Sub class to perform quadratic support vector machine (SVM) tweet classification
+class TweetClassifierQuadraticSVM(TweetClassifier):
+    # Class constructor
+    def __init__(self, paths, cleaner):
+        # Call the super class constructor which initializes the classifier
+        super(TweetClassifierQuadraticSVM, self).__init__(paths, cleaner)
+        # End func return
+        return
+    # End wrapper class constructor
+    
+    # Overriding function to build SVM classifier using a pipeline
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator
+        # In order to make the vectorizer => transformer => classifier easier to work with, 
+        # scikit-learn provides a Pipeline class that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('svm', SGDClassifier(loss='squared_hinge'))]) # Use the SVM classifier
+        # The SGD estimator implememts regularlized linear models with stochastic gradient descent learning
+        # By default, SGD supports a linear support vector machine (SVM) using the default args below
+        # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
+        #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
+        #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
+        # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
+        # 'squared_hinge’ is like hinge, which is used for linear SVM, but is quadratically penalized.
+        # End of func return statement
+        return
+    # End initPipeline override
+# End TweetClassifierQuadraticSVM sub class
+
+# Sub class to perform less sensitive support vector machine (SVM) tweet classification
+class TweetClassifierModifiedSVM(TweetClassifier):
+    # Class constructor
+    def __init__(self, paths, cleaner):
+        # Call the super class constructor which initializes the classifier
+        super(TweetClassifierModifiedSVM, self).__init__(paths, cleaner)
+        # End func return
+        return
+    # End wrapper class constructor
+    
+    # Overriding function to build SVM classifier using a pipeline
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator
+        # In order to make the vectorizer => transformer => classifier easier to work with, 
+        # scikit-learn provides a Pipeline class that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('svm', SGDClassifier(loss='modified_huber'))]) # Use the SVM classifier
+        # The SGD estimator implememts regularlized linear models with stochastic gradient descent learning
+        # By default, SGD supports a linear support vector machine (SVM) using the default args below
+        # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
+        #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
+        #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
+        # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
+        # 'modified_huber’ is another smooth loss that brings tolerance to outliers as well as probability estimates.
+        # The other losses that may be used are designed for regression but can be useful in classification as well.
+        # The epsilon arg for ‘huber’, determines the threshold at which it becomes less important to get 
+        #   the prediction exactly right. 
+        # End of func return statement
+        return
+    # End initPipeline override
+# End TweetClassifierModifiedSVM sub class
 
 class TweetClassifierMaxEnt(TweetClassifier):
 
