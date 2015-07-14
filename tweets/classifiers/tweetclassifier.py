@@ -22,6 +22,7 @@ import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.grid_search import GridSearchCV
 from sklearn import metrics
 
 # Global field declarations
