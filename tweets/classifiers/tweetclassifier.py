@@ -35,7 +35,7 @@ class TweetClassifier(object):
         # Begin functions for classification
         self.initTrainingSet(paths) # Initialize classes
         self.trainClassifier()
-        # End func return
+        # End func return statement
         return
     # End class constructor
     
@@ -50,7 +50,7 @@ class TweetClassifier(object):
                     self.tweets.append(line)
                     self.labels.append(self.categories.index(category))
         self.labels = np.array(self.labels)
-        # End func return
+        # End func return statement
         return
     # End initDictSet
     
@@ -61,13 +61,15 @@ class TweetClassifier(object):
         # The pipeline class behaves like a compound classifier
         # pipeline(steps=[...])
 
-        # Old MNB pipeline with TFIDF
+        # Multinomial NB pipeline with TFIDF
         self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
                       ('chi2', SelectKBest(chi2, k=1000)),
                       ('nb', MultinomialNB())])
 
         #self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=1000)),
         #              ('nb', MultinomialNB())])
+		
+		# End func return statement
         return
     # End initPipeline
 
@@ -77,7 +79,7 @@ class TweetClassifier(object):
         self.initPipeline()
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
-        # End func return
+        # End func return statement
         return
     # End trainClassifier
 
@@ -105,11 +107,11 @@ class TweetClassifierMNB(TweetClassifier):
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
         super(TweetClassifierMNB, self).__init__(paths, cleaner)
-        # End func return
+        # End func return statement
         return
     # End wrapper class constructor
         
-    # Overriding func to build MNB classifier using a pipeline
+    # Overriding function to build MNB classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator
         # In order to make the vectorizer => transformer => classifier easier to work with, 
@@ -119,9 +121,19 @@ class TweetClassifierMNB(TweetClassifier):
                                     ('mnb', MultinomialNB())]) # Use the multinomial NB classifier
         # List of (name, transform) tuples (implementing fit/transform) that are chained, 
         # in the order in which they are chained, with the last object an estimator.
-        # End of func return statement
+        # End func return statement
         return
-    # End initPipeline
+    # End initPipeline override
+	
+	# Overriding function to classify input tweet  
+    def classify(self, tweet_list):
+        # Clean the input list of tweets
+        for i in range(0,len(tweet_list)):
+            tweet_list[i] = self.cleaner(tweet_list[i])
+
+        # Return classified the input tweet text
+        return self.classifier.predict(tweet_list)
+    # End classify override
 # End TweetClassifierMNB sub class
 
 # Sub class to perform linear support vector machine (SVM) tweet classification
@@ -134,7 +146,7 @@ class TweetClassifierSVM(TweetClassifier):
         return
     # End wrapper class constructor
     
-    # Overriding func to build SVM classifier using a pipeline
+    # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator
         # In order to make the vectorizer => transformer => classifier easier to work with, 
@@ -147,6 +159,16 @@ class TweetClassifierSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
+	
+	# Overriding function to classify input tweet  
+    def classify(self, tweet_list):
+        # Clean the input list of tweets
+        for i in range(0,len(tweet_list)):
+            tweet_list[i] = self.cleaner(tweet_list[i])
+
+        # Return classified the input tweet text
+        return self.classifier.predict(tweet_list)
+    # End classify override
 # End TweetClassifierSVM sub class
 
 # sources:
