@@ -136,8 +136,6 @@ class TweetClassifierMNB(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                                     ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
                                     ('mnb', MultinomialNB())]) # Use the multinomial NB classifier
-        # List of (name, transform) tuples (implementing fit/transform) that are chained, 
-        # in the order in which they are chained, with the last object an estimator.
         # End func return statement
         return
     # End initPipeline override
@@ -162,8 +160,12 @@ class TweetClassifierSVM(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
                             ('svm', SGDClassifier())]) # Use the SVM classifier
-        # List of (name, transform) tuples (implementing fit/transform) that are chained, 
-        # in the order in which they are chained, with the last object an estimator.
+        # The SGD estimator implememts regularlized linear models with stochastic gradient descent learning
+        # By default, SGD supports a linear support vector machine (SVM) using the default args below
+        # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
+        #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
+        #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
+        # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
         # End of func return statement
         return
     # End initPipeline override
