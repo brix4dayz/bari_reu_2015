@@ -1,6 +1,7 @@
-# Author: Elizabeth Brooks, Hayden Fuss
+# Author: Elizabeth Brooks
 # Adapted from: tweetclassifier.py
 # Date Modified: 07/14/2015
+# Edited: Hayden Fuss
 
 # PreProcessor Directives
 import os
@@ -103,6 +104,9 @@ class TweetClassifier(object):
     # End getConfusionMatrix
 	
 	# Function to perform a grid search for best features
+    # http://scikit-learn.org/stable/modules/generated/sklearn.grid_search.GridSearchCV.html
+    # GridSearchCV implements a “fit” method and a “predict” method like any classifier 
+    #   except that the parameters of the classifier used to predict is optimized by cross-validation.
 	def getGridSearch(self):
 		# Set the search parameters
 		parameters = {'ngram_range': [(1,1),(1,2)], # Try either words or birgrams
@@ -110,9 +114,11 @@ class TweetClassifier(object):
 					'alpha':(1e-2,1e-3)} # Try a penalty parameter of 0.01 or 0.001
 		# Use all cores to create a grid search
 		gs = GridSearchCV(self.classifier, parameters, n_jobs=-1)
+        # Fit the gs estimator
+        gs = gs.fit(self.tweets, self.labels)
 		# Get the scores
 		bestParam, score, _ = max(gs.grid_scores_, key=lambda x: x[1])
-		#Return the scores
+		# Print the scores
 		for param_name in sorted(parameters.keys()):
 			print("%s: %r" % (param_name,bestParam[param_name]))
         # End of func return statement
