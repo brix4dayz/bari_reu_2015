@@ -1,3 +1,7 @@
+# Author: Elizabeth Brooks, Hayden Fuss
+# Adapted from: tweetclassifier.py
+# Date Modified: 07/14/2015
+
 # PreProcessor Directives
 import os
 import inspect
@@ -36,7 +40,8 @@ class TweetClassifier(object):
         self.allTerms = []      
         # Begin functions for classification
         self.initTrainingSet(paths) # Initialize classes
-        self.trainClassifier()
+        # Initialize the pipeline
+        self.initPipeline()
         # End func return statement
         return
     # End class constructor
@@ -64,26 +69,20 @@ class TweetClassifier(object):
         # pipeline(steps=[...])
 
         # Multinomial NB pipeline with TFIDF
-        self.pipeline = Pipeline([('tfidf', TfidfTransformer()),
-                      ('chi2', SelectKBest(chi2, k=1000)),
-                      ('nb', MultinomialNB())])
+        self.pipeline = Pipeline([('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                      ('chi2', SelectKBest(chi2, k=1000)), # Use chi squared statistics to select the 1000 best features
+                      ('vect', CountVectorizer()), # Create a vector of feature frequencies
+                      ('nb', MultinomialNB())]) # Use the multinomial NB classifier
 
         #self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=1000)),
         #              ('nb', MultinomialNB())])
 		
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
+
 		# End func return statement
         return
     # End initPipeline
-
-   # Function to train the classifier using the built pipeline
-    def trainClassifier(self):
-        # Initialize the pipeline
-        self.initPipeline()
-        # Fit the created multinomial NB classifier
-        self.classifier = self.pipeline.fit(self.tweets, self.labels)
-        # End func return statement
-        return
-    # End trainClassifier
 
     # Function to classify input tweet  
     def classify(self, tweet_list):
@@ -114,7 +113,9 @@ class TweetClassifier(object):
 		bestParam, score, _ = max(gs.grid_scores_, key=lambda x: x[1])
 		#Return the scores
 		for param_name in sorted(parameters.keys()):
-			return ("%s: %r" % (param_name,bestParam[param_name]))
+			print("%s: %r" % (param_name,bestParam[param_name]))
+        # End of func return statement
+        return
 	# End getGridSearch	
 # End class TweetClassifier
 
@@ -136,6 +137,8 @@ class TweetClassifierMNB(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                                     ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
                                     ('mnb', MultinomialNB())]) # Use the multinomial NB classifier
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
         # End func return statement
         return
     # End initPipeline override
@@ -166,6 +169,9 @@ class TweetClassifierLinearSVM(TweetClassifier):
         #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
         #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
         # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
+
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
         # End of func return statement
         return
     # End initPipeline override
@@ -196,6 +202,9 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
         #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
         # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
         # 'squared_hinge’ is like hinge, which is used for linear SVM, but is quadratically penalized.
+
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
         # End of func return statement
         return
     # End initPipeline override
@@ -229,6 +238,9 @@ class TweetClassifierModifiedSVM(TweetClassifier):
         # The other losses that may be used are designed for regression but can be useful in classification as well.
         # The epsilon arg for ‘huber’, determines the threshold at which it becomes less important to get 
         #   the prediction exactly right. 
+
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
         # End of func return statement
         return
     # End initPipeline override
@@ -244,6 +256,8 @@ class TweetClassifierMaxEnt(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()),
                             ('tfidf', TfidfTransformer()),
                             ('lr', LogisticRegression())])
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
         return
 
 
@@ -258,6 +272,8 @@ class TweetClassifierBNB(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()),
                             ('tfidf', TfidfTransformer()),
                             ('bnb', BernoulliNB())])
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
         return
 
 # sources:
