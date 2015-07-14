@@ -12,9 +12,11 @@ import twittercriteria as twc
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.pipeline import Pipeline
 import numpy as np
 from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn import metrics
 
@@ -125,15 +127,6 @@ class TweetClassifierMNB(TweetClassifier):
         return
     # End initPipeline override
 	
-	# Overriding function to classify input tweet  
-    def classify(self, tweet_list):
-        # Clean the input list of tweets
-        for i in range(0,len(tweet_list)):
-            tweet_list[i] = self.cleaner(tweet_list[i])
-
-        # Return classified the input tweet text
-        return self.classifier.predict(tweet_list)
-    # End classify override
 # End TweetClassifierMNB sub class
 
 # Sub class to perform linear support vector machine (SVM) tweet classification
@@ -159,17 +152,34 @@ class TweetClassifierSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-	
-	# Overriding function to classify input tweet  
-    def classify(self, tweet_list):
-        # Clean the input list of tweets
-        for i in range(0,len(tweet_list)):
-            tweet_list[i] = self.cleaner(tweet_list[i])
 
-        # Return classified the input tweet text
-        return self.classifier.predict(tweet_list)
-    # End classify override
 # End TweetClassifierSVM sub class
+
+class TweetClassifierMaxEnt(TweetClassifier):
+
+    def __init__(self, paths, cleaner):
+        super(TweetClassifierMaxEnt, self).__init__(paths, cleaner)
+        return
+
+    def initPipeline(self):
+        self.pipeline = Pipeline([('vect', CountVectorizer()),
+                            ('tfidf', TfidfTransformer()),
+                            ('lr', LogisticRegression())])
+        return
+
+
+
+class TweetClassifierBNB(TweetClassifier):
+
+    def __init__(self, paths, cleaner):
+        super(TweetClassifierBNB, self).__init__(paths, cleaner)
+        return
+
+    def initPipeline(self):
+        self.pipeline = Pipeline([('vect', CountVectorizer()),
+                            ('tfidf', TfidfTransformer()),
+                            ('bnb', BernoulliNB())])
+        return
 
 # sources:
 #   http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html

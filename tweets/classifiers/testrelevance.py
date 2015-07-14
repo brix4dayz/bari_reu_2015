@@ -69,6 +69,14 @@ relClssr = tc.TweetClassifierSVM(trainingPaths, twc.cleanUpTweet)
 
 testRelevantClassifier(relClssr)
 
+relClssr = tc.TweetClassifierMaxEnt(trainingPaths, twc.cleanUpTweet)
+
+testRelevantClassifier(relClssr)
+
+relClssr = tc.TweetClassifierBNB(trainingPaths, twc.cleanUpTweet)
+
+testRelevantClassifier(relClssr)
+
 # relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
 
 # testRelevantClassifier(relClssr)
