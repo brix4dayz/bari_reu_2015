@@ -71,19 +71,12 @@ class TweetClassifier(object):
     # Function to build classifier pipeline
     # Default multinomial NB using chi squared statistics
     def initPipeline(self):
-        # Pipeline of transformers with a final estimator
-        # The pipeline class behaves like a compound classifier
-        # pipeline(steps=[...])
-
-        # Multinomial NB pipeline with TFIDF
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                       ('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
                       ('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the 1000 best features
                       ('clf', MultinomialNB())]) # Use the multinomial NB classifier
 
-        #self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=1000)),
-        #              ('nb', MultinomialNB())])
-        
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
 
@@ -109,7 +102,6 @@ class TweetClassifier(object):
     # End getConfusionMatrix
     
     # Function to perform a grid search for best features
-    # http://scikit-learn.org/stable/modules/generated/sklearn.grid_search.GridSearchCV.html
     # GridSearchCV implements a "fit" method and a "predict" method like any classifier 
     #   except that the parameters of the classifier used to predict is optimized by cross-validation.
     def getGridSearch(self):
@@ -153,12 +145,11 @@ class TweetClassifierMNB(TweetClassifier):
         
     # Overriding function to build MNB classifier using a pipeline
     def initPipeline(self):
-        # Pipeline of transformers with a final estimator
-        # In order to make the vectorizer => transformer => classifier easier to work with, 
-        # scikit-learn provides a Pipeline class that behaves like a compound classifier
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                                     ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                                     ('clf', MultinomialNB())]) # Use the multinomial NB classifier
+									
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
         # End func return statement
@@ -169,6 +160,7 @@ class TweetClassifierMNB(TweetClassifier):
 ##########################################################################################################################
 
 # Sub class to perform linear support vector machine (SVM) tweet classification
+# SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
 class TweetClassifierLinearSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -180,9 +172,7 @@ class TweetClassifierLinearSVM(TweetClassifier):
     
     # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
-        # Pipeline of transformers with a final estimator
-        # In order to make the vectorizer => transformer => classifier easier to work with, 
-        # scikit-learn provides a Pipeline class that behaves like a compound classifier
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42))]) # Use the SVM classifier
@@ -191,7 +181,6 @@ class TweetClassifierLinearSVM(TweetClassifier):
         # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
         #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
         #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
-        # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
 
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -203,6 +192,8 @@ class TweetClassifierLinearSVM(TweetClassifier):
 ##########################################################################################################################
 
 # Sub class to perform quadratic support vector machine (SVM) tweet classification
+# SGDClassifier arg loss='squared_hinge' is like hinge, 
+#	which is used for linear SVM, but is quadratically penalized
 class TweetClassifierQuadraticSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -214,19 +205,11 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
     
     # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
-        # Pipeline of transformers with a final estimator
-        # In order to make the vectorizer => transformer => classifier easier to work with, 
-        # scikit-learn provides a Pipeline class that behaves like a compound classifier
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer(max_df=0.5, ngram_range=(1,1))), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='squared_hinge', random_state=42, n_iter=80, penalty='elasticnet', alpha=1e-05))]) # Use the SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
-        # By default, SGD supports a linear support vector machine (SVM) using the default args below
-        # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
-        #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
-        #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
-        # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
-        # 'squared_hinge' is like hinge, which is used for linear SVM, but is quadratically penalized.
 
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -238,6 +221,8 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
 ##########################################################################################################################
 
 # Sub class to perform less sensitive support vector machine (SVM) tweet classification
+# SGDClassifier arg loss='modified_huber' is another smooth loss that brings tolerance to 
+#	outliers as well as probability estimates.
 class TweetClassifierModifiedSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -249,22 +234,11 @@ class TweetClassifierModifiedSVM(TweetClassifier):
     
     # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
-        # Pipeline of transformers with a final estimator
-        # In order to make the vectorizer => transformer => classifier easier to work with, 
-        # scikit-learn provides a Pipeline class that behaves like a compound classifier
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.5)), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='modified_huber', random_state=0, penalty='l2', n_iter=80, alpha=1e-05))]) # Use the SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
-        # By default, SGD supports a linear support vector machine (SVM) using the default args below
-        # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
-        #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
-        #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
-        # http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.SGDClassifier.html
-        # 'modified_huber' is another smooth loss that brings tolerance to outliers as well as probability estimates.
-        # The other losses that may be used are designed for regression but can be useful in classification as well.
-        # The epsilon arg for 'huber', determines the threshold at which it becomes less important to get 
-        #   the prediction exactly right. 
 
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -280,6 +254,7 @@ class TweetClassifierMaxEnt(TweetClassifier):
 
 	# Sub class constructor
     def __init__(self, paths, cleaner):
+		# Call the super class constructor
         super(TweetClassifierMaxEnt, self).__init__(paths, cleaner)
 		# End of func return statement
         return
@@ -287,9 +262,11 @@ class TweetClassifierMaxEnt(TweetClassifier):
 		
 	# Overriding function to build LogisticRegression classifier using a pipeline
     def initPipeline(self):
+	    # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()),
                             ('tfidf', TfidfTransformer()),
                             ('clf', LogisticRegression())])
+							
         # Fit the created LogisticRegression classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
 		# End of func return statement
@@ -304,6 +281,7 @@ class TweetClassifierBNB(TweetClassifier):
 
 	# Sub class constructor
     def __init__(self, paths, cleaner):
+		# Call the super class constructor
         super(TweetClassifierBNB, self).__init__(paths, cleaner)
 		# End of func return statement
         return
@@ -311,9 +289,11 @@ class TweetClassifierBNB(TweetClassifier):
 		
 	# Overriding function to build BernoulliNB classifier using a pipeline
     def initPipeline(self):
+		# Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()),
                             ('tfidf', TfidfTransformer()),
                             ('clf', BernoulliNB())])
+							
         # Fit the created BernoulliNB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
 		# End of func return statement
