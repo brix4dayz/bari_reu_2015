@@ -52,21 +52,21 @@ with open(filename) as csvfile:
             if e['lat'] != 'NA':
                 if d == currentDay:
                     reports.append(e)
-                elif d == currentDay + 1:
-                    currentDay += 1
+                elif d == currentDay + 1:                    
                     boston = bm.BostonScatter(reports)
-                    boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay-1),
-                        title='Locations of 311 Reports on 4-' + str(currentDay-1) + '-13')
+                    boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
+                        title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
                     boston = bm.BostonDensity(reports)
-                    boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay-1),
-                        title='Locations of 311 Reports in 4-' + str(currentDay-1) + '-13')
+                    boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay),
+                        title='Locations of 311 Reports in 4-' + str(currentDay) + '-13')
                     reports = [e]  # clears list of previous day and adds first of this day
+					currentDay += 1
                     
-currentDay += 1                    
+                 
 boston = bm.BostonScatter(reports)
-boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay-1),
-    title='Locations of 311 Reports on 4-' + str(currentDay-1) + '-13')
+boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
+    title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
 boston = bm.BostonDensity(reports)
-boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay-1),
-    title='Locations of 311 Reports in 4-' + str(currentDay-1) + '-13')
+boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay),
+    title='Locations of 311 Reports in 4-' + str(currentDay) + '-13')
 

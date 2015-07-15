@@ -320,14 +320,12 @@ class BostonDensity(BostonScatter):
     return
 
   def data(self):
-    highest = '\n'.join([row['land_info']['TRACT'] + " => " + 
+    highest = '\n'.join([row['land_info']['TRACT'] + "," + 
                         str(row['density_km']) for i, row in self.df_map[
                         (self.df_map['jenks_bins'] == 4)][:30].sort(columns='density_km',
                         ascending=False).iterrows()])
-    highest = 'Most Dense Wards:\n\n' + highest
-    print highest
-
-    return highest
+    self.highest = 'TRACT_ID,DENSITY\n' + highest
+    return # function returns nothing
 
   def tracts(self):
     self.pc = PatchCollection(self.df_map['patches'], match_original=True)
