@@ -1,5 +1,5 @@
 # Author: Elizabeth Brooks
-# Adapted from: tweetclassifier.py
+# File: tweetclassifier.py
 # Date Modified: 07/14/2015
 # Edited: Hayden Fuss
 
@@ -61,6 +61,9 @@ class TweetClassifier(object):
                     self.tweets.append(line)
                     self.labels.append(self.categories.index(category))
         self.labels = np.array(self.labels)
+		# As other classifiers, SGD has to be fitted with two arrays: 
+		#	an array X of size [n_samples, n_features] holding the training samples
+		#	and an array Y of size [n_samples] holding the target values (class labels) for the training samples
         # End func return statement
         return
     # End initDictSet
