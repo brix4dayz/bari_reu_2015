@@ -90,9 +90,12 @@ class TweetClassifier(object):
         for i in range(0,len(tweet_list)):
             tweet_list[i] = self.cleaner(tweet_list[i])
 
-        # Return classified input tweet text
+        # Return predicted class labels for samples in tweet_list
         return self.classifier.predict(tweet_list)
     # End classify func
+	# Note: predict_log_proba method, log of probability estimates, is only available for log loss and modified Huber loss
+	#	This is because when loss=”modified_huber”, probability estimates may be hard zeros and ones, 
+	#	so taking the logarithm is not possible.
 
     # Function to get the predicted classifiers confusion matrix
     def getConfusionMatrix(self, actual, predicted):
@@ -161,6 +164,8 @@ class TweetClassifierMNB(TweetClassifier):
 
 # Sub class to perform linear support vector machine (SVM) tweet classification
 # SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
+# SGDClassifier supports multi-class classification by combining multiple 
+#	binary classifiers in a “one versus all” (OVA) scheme
 class TweetClassifierLinearSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -223,6 +228,8 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
 # Sub class to perform less sensitive support vector machine (SVM) tweet classification
 # SGDClassifier arg loss='modified_huber' is another smooth loss that brings tolerance to 
 #	outliers as well as probability estimates.
+# Note: since they allow to create a probability model, loss="log" 
+#	and loss="modified_huber" are more suitable for OVA classification
 class TweetClassifierModifiedSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -249,6 +256,68 @@ class TweetClassifierModifiedSVM(TweetClassifier):
 
 ##########################################################################################################################
 
+# Sub class to perform logistic regression tweet classification
+# SGDClassifier arg loss='log' performs logistic regression
+# Note: since they allow to create a probability model, loss="log" 
+#	and loss="modified_huber" are more suitable for OVA classification
+class TweetClassifierLogSVM(TweetClassifier):
+    # Class constructor
+    def __init__(self, paths, cleaner):
+        # Call the super class constructor which initializes the classifier
+        super(TweetClassifierLogSVM, self).__init__(paths, cleaner)
+        # End of func return statement
+        return
+    # End sub class constructor
+    
+    # Overriding function to build SVM classifier using a pipeline
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='log'))]) # Use the SVM classifier
+        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
+
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
+        # End of func return statement
+        return
+    # End initPipeline override
+# End TweetClassifierLogSVM sub class
+# Note: Using loss="log" or loss="modified_huber" enables the predict_proba method, 
+#	which gives a vector of probability estimates P(y|x) per sample x
+
+##########################################################################################################################
+
+# Sub class to perform logistic regression tweet classification
+# SGDClassifier arg loss='huber' 
+class TweetClassifierHuberSVM(TweetClassifier):
+    # Class constructor
+    def __init__(self, paths, cleaner):
+        # Call the super class constructor which initializes the classifier
+        super(TweetClassifierHuberSVM, self).__init__(paths, cleaner)
+        # End of func return statement
+        return
+    # End sub class constructor
+    
+    # Overriding function to build SVM classifier using a pipeline
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='huber'))]) # Use the SVM classifier
+        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
+		# The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
+		#	For 'huber' it determines the threshold at which it becomes less important to get the prediction exactly right
+
+        # Fit the created multinomial NB classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
+        # End of func return statement
+        return
+    # End initPipeline override
+# End TweetClassifierHuberSVM sub class
+
+##########################################################################################################################
+
 # Sub class for creating a classifier for maximum entropy tweet analysis
 class TweetClassifierMaxEnt(TweetClassifier):
 
@@ -263,9 +332,9 @@ class TweetClassifierMaxEnt(TweetClassifier):
 	# Overriding function to build LogisticRegression classifier using a pipeline
     def initPipeline(self):
 	    # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer()),
-                            ('tfidf', TfidfTransformer()),
-                            ('clf', LogisticRegression())])
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
+                            ('clf', LogisticRegression())]) # Use LogisticRegression as the estimator
 							
         # Fit the created LogisticRegression classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -290,9 +359,9 @@ class TweetClassifierBNB(TweetClassifier):
 	# Overriding function to build BernoulliNB classifier using a pipeline
     def initPipeline(self):
 		# Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer()),
-                            ('tfidf', TfidfTransformer()),
-                            ('clf', BernoulliNB())])
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
+                            ('clf', BernoulliNB())]) # Use the BernoulliNB classifier
 							
         # Fit the created BernoulliNB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -301,6 +370,3 @@ class TweetClassifierBNB(TweetClassifier):
 	# End initPipeline override
 # End TweetClassifierModifiedSVM sub class
 # End Script
-
-# sources:
-#   http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
