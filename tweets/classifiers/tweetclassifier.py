@@ -97,7 +97,7 @@ class TweetClassifier(object):
         return self.classifier.predict(tweet_list)
     # End classify func
 	## Note: predict_log_proba method, log of probability estimates, is only available for log loss and modified Huber loss
-	## This is because when loss=”modified_huber”, probability estimates may be hard zeros and ones, 
+	## This is because when loss="modified_huber", probability estimates may be hard zeros and ones, 
 	# 	so taking the logarithm is not possible.
 	## It returns the log-probability of the sample for each class in the model
 	# 	where classes are ordered as they are in self.classes_.
@@ -174,7 +174,7 @@ class TweetClassifierMNB(TweetClassifier):
 ## Sub class to perform linear support vector machine (SVM) tweet classification
 ## SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
 ## Note: SGDClassifier supports multi class classification by combining multiple 
-#	binary classifiers in a “one versus all” (OVA) scheme
+#	binary classifiers in a "one versus all" (OVA) scheme
 class TweetClassifierLinearSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
