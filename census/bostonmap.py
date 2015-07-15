@@ -326,10 +326,8 @@ class BostonDensity(BostonScatter):
                         ascending=False).iterrows()])
     highest = 'Most Dense Wards:\n\n' + highest
     print highest
-    for each in self.df_map['land_info'][0:10]:
-      print
 
-    return
+    return highest
 
   def tracts(self):
     self.pc = PatchCollection(self.df_map['patches'], match_original=True)
