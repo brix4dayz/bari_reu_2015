@@ -37,21 +37,21 @@ class TweetClassifier(object):
     def __init__(self, paths, cleaner):
         self.cleaner = cleaner
         # Initialize data sets
-        self.trainingSet = [] # Labeled tweet training data set
-        self.categories = []
-        self.tweets = []
-        self.labels = []
-        self.allTerms = []      
+        self.categories = [] # Feature/Term, category/class set
+        self.tweets = [] # Tweet text/feature strings
+        self.labels = [] # Tweet categories/classes
         # Begin functions for classification
-        self.initTrainingSet(paths) # Initialize classes
-        # Initialize the pipeline
+		# Initialize classes using input txt file paths
+        self.initCategories(paths)
+        # Initialize the classifier specific pipelines
+		# Classifier selected by the sub class object in use
         self.initPipeline()
-        # End func return statement
+        # End of func return statement
         return
     # End class constructor
     
     # Function to initialize the feature sets
-    def initTrainingSet(self, paths):
+    def initCategories(self, paths):
         self.categories = paths.keys()
         # Loop through the txt files line by line
         # Assign labels to tweets for sentiments in class paths
@@ -64,7 +64,7 @@ class TweetClassifier(object):
 		# The classifiers have to be fitted with two arrays: 
 		#	an array X of size [n_samples, n_features] holding the training samples
 		#	and an array Y of size [n_samples] holding the target values (class labels) for the training samples
-        # End func return statement
+        # End of func return statement
         return
     # End initDictSet
     
@@ -97,7 +97,7 @@ class TweetClassifier(object):
         for i in range(0,len(tweet_list)):
             tweet_list[i] = self.cleaner(tweet_list[i])
 
-        # Return classified the input tweet text
+        # Return classified input tweet text
         return self.classifier.predict(tweet_list)
     # End classify func
 
@@ -149,7 +149,7 @@ class TweetClassifierMNB(TweetClassifier):
         super(TweetClassifierMNB, self).__init__(paths, cleaner)
         # End func return statement
         return
-    # End wrapper class constructor
+    # End sub class constructor
         
     # Overriding function to build MNB classifier using a pipeline
     def initPipeline(self):
@@ -174,9 +174,9 @@ class TweetClassifierLinearSVM(TweetClassifier):
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
         super(TweetClassifierLinearSVM, self).__init__(paths, cleaner)
-        # End func return
+        # End of func return statement
         return
-    # End wrapper class constructor
+    # End sub class constructor
     
     # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
@@ -208,9 +208,9 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
         super(TweetClassifierQuadraticSVM, self).__init__(paths, cleaner)
-        # End func return
+		# End of func return statement
         return
-    # End wrapper class constructor
+    # End sub class constructor
     
     # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
@@ -243,9 +243,9 @@ class TweetClassifierModifiedSVM(TweetClassifier):
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
         super(TweetClassifierModifiedSVM, self).__init__(paths, cleaner)
-        # End func return
+        # End of func return statement
         return
-    # End wrapper class constructor
+    # End sub class constructor
     
     # Overriding function to build SVM classifier using a pipeline
     def initPipeline(self):
@@ -275,35 +275,52 @@ class TweetClassifierModifiedSVM(TweetClassifier):
 
 ##########################################################################################################################
 
+# Sub class for creating a classifier for maximum entropy tweet analysis
 class TweetClassifierMaxEnt(TweetClassifier):
 
+	# Sub class constructor
     def __init__(self, paths, cleaner):
         super(TweetClassifierMaxEnt, self).__init__(paths, cleaner)
+		# End of func return statement
         return
-
+	# End sub class constructor
+		
+	# Overriding function to build LogisticRegression classifier using a pipeline
     def initPipeline(self):
         self.pipeline = Pipeline([('vect', CountVectorizer()),
                             ('tfidf', TfidfTransformer()),
                             ('clf', LogisticRegression())])
-        # Fit the created multinomial NB classifier
+        # Fit the created LogisticRegression classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
+		# End of func return statement
         return
+	# End initPipeline override
+# End TweetClassifierModifiedSVM sub class
 
 ##########################################################################################################################
 
+# Sub class for creating a Bernoulli NB classifier for tweet analysis
 class TweetClassifierBNB(TweetClassifier):
 
+	# Sub class constructor
     def __init__(self, paths, cleaner):
         super(TweetClassifierBNB, self).__init__(paths, cleaner)
+		# End of func return statement
         return
-
+	# End sub class constructor
+		
+	# Overriding function to build BernoulliNB classifier using a pipeline
     def initPipeline(self):
         self.pipeline = Pipeline([('vect', CountVectorizer()),
                             ('tfidf', TfidfTransformer()),
                             ('clf', BernoulliNB())])
-        # Fit the created multinomial NB classifier
+        # Fit the created BernoulliNB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
+		# End of func return statement
         return
+	# End initPipeline override
+# End TweetClassifierModifiedSVM sub class
+# End Script
 
 # sources:
 #   http://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html
