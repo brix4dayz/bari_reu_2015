@@ -61,7 +61,7 @@ class TweetClassifier(object):
                     self.tweets.append(line)
                     self.labels.append(self.categories.index(category))
         self.labels = np.array(self.labels)
-		# As other classifiers, SGD has to be fitted with two arrays: 
+		# The classifiers have to be fitted with two arrays: 
 		#	an array X of size [n_samples, n_features] holding the training samples
 		#	and an array Y of size [n_samples] holding the target values (class labels) for the training samples
         # End func return statement
@@ -69,7 +69,7 @@ class TweetClassifier(object):
     # End initDictSet
     
     # Function to build classifier pipeline
-    # Default multinomial NB using chi sqaured statistics
+    # Default multinomial NB using chi squared statistics
     def initPipeline(self):
         # Pipeline of transformers with a final estimator
         # The pipeline class behaves like a compound classifier
@@ -77,9 +77,9 @@ class TweetClassifier(object):
 
         # Multinomial NB pipeline with TFIDF
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                      ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                      ('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
                       ('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the 1000 best features
-                      ('nb', MultinomialNB())]) # Use the multinomial NB classifier
+                      ('clf', MultinomialNB())]) # Use the multinomial NB classifier
 
         #self.pipeline = Pipeline([('chi2', SelectKBest(chi2, k=1000)),
         #              ('nb', MultinomialNB())])
@@ -157,7 +157,7 @@ class TweetClassifierMNB(TweetClassifier):
         # In order to make the vectorizer => transformer => classifier easier to work with, 
         # scikit-learn provides a Pipeline class that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                                    ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                                    ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                                     ('clf', MultinomialNB())]) # Use the multinomial NB classifier
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -184,9 +184,9 @@ class TweetClassifierLinearSVM(TweetClassifier):
         # In order to make the vectorizer => transformer => classifier easier to work with, 
         # scikit-learn provides a Pipeline class that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform tf-idf weighting on features
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42))]) # Use the SVM classifier
-        # The SGD estimator implememts regularlized linear models with stochastic gradient descent learning
+        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
         # By default, SGD supports a linear support vector machine (SVM) using the default args below
         # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
         #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
@@ -218,9 +218,9 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
         # In order to make the vectorizer => transformer => classifier easier to work with, 
         # scikit-learn provides a Pipeline class that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer(max_df=0.5, ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform tf-idf weighting on features
+                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='squared_hinge', random_state=42, n_iter=80, penalty='elasticnet', alpha=1e-05))]) # Use the SVM classifier
-        # The SGD estimator implememts regularlized linear models with stochastic gradient descent learning
+        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
         # By default, SGD supports a linear support vector machine (SVM) using the default args below
         # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
         #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
@@ -253,9 +253,9 @@ class TweetClassifierModifiedSVM(TweetClassifier):
         # In order to make the vectorizer => transformer => classifier easier to work with, 
         # scikit-learn provides a Pipeline class that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.5)), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform tf-idf weighting on features
+                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='modified_huber', random_state=0, penalty='l2', n_iter=80, alpha=1e-05))]) # Use the SVM classifier
-        # The SGD estimator implememts regularlized linear models with stochastic gradient descent learning
+        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
         # By default, SGD supports a linear support vector machine (SVM) using the default args below
         # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
         #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
