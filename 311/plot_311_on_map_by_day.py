@@ -60,8 +60,10 @@ with open(filename) as csvfile:
                     boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay),
                         title='Locations of 311 Reports in 4-' + str(currentDay) + '-13')
                     reports = [e]  # clears list of previous day and adds first of this day
-					currentDay += 1
-                    
+                    f = open(prefix + "_most_dense_311_4-" + str(currentDay) + "-13.csv", "w")
+                    currentDay += 1
+                    f.write(boston.highest)
+                    f.close()
                  
 boston = bm.BostonScatter(reports)
 boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
@@ -69,4 +71,7 @@ boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
 boston = bm.BostonDensity(reports)
 boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay),
     title='Locations of 311 Reports in 4-' + str(currentDay) + '-13')
-
+f = open(prefix + "_most_dense_311_4-" + str(currentDay) + "-13.csv", "w")
+currentDay += 1
+f.write(boston.highest)
+f.close()
