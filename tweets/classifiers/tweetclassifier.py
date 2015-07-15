@@ -3,6 +3,8 @@
 # Date Modified: 07/14/2015
 # Edited: Hayden Fuss
 
+# Begin script
+
 # PreProcessor Directives
 import os
 import inspect
@@ -61,15 +63,16 @@ class TweetClassifier(object):
                     self.tweets.append(line)
                     self.labels.append(self.categories.index(category))
         self.labels = np.array(self.labels)
-		# The classifiers have to be fitted with two arrays: 
-		#	an array X of size [n_samples, n_features] holding the training samples
-		#	and an array Y of size [n_samples] holding the target values (class labels) for the training samples
-        # End of func return statement
+		## The classifiers have to be fitted with two arrays: 
+		# 	an array X of size [n_samples, n_features] holding the training samples
+		# 	and an array Y of size [n_samples] holding the target values (class labels) for the training samples
+        
+		# End of func return statement
         return
     # End initDictSet
     
-    # Function to build classifier pipeline
-    # Default multinomial NB using chi squared statistics
+    ## Function to build classifier pipeline
+    ## Default multinomial NB using chi squared statistics
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
@@ -93,9 +96,15 @@ class TweetClassifier(object):
         # Return predicted class labels for samples in tweet_list
         return self.classifier.predict(tweet_list)
     # End classify func
-	# Note: predict_log_proba method, log of probability estimates, is only available for log loss and modified Huber loss
-	#	This is because when loss=”modified_huber”, probability estimates may be hard zeros and ones, 
-	#	so taking the logarithm is not possible.
+	## Note: predict_log_proba method, log of probability estimates, is only available for log loss and modified Huber loss
+	## This is because when loss=”modified_huber”, probability estimates may be hard zeros and ones, 
+	# 	so taking the logarithm is not possible.
+	## It returns the log-probability of the sample for each class in the model
+	# 	where classes are ordered as they are in self.classes_.
+	## Note: predict_proba, probability estimates, is only available for log loss and modified Huber loss
+	## This is because multi class probability estimates are derived from binary (one-versus-all, OVA) estimates 
+	# 	by simple normalization, as recommended by Zadrozny and Elkan.
+	## It returns the mean accuracy on the given test data and labels
 
     # Function to get the predicted classifiers confusion matrix
     def getConfusionMatrix(self, actual, predicted):
@@ -104,8 +113,8 @@ class TweetClassifier(object):
         return metrics.confusion_matrix(actual,predicted)
     # End getConfusionMatrix
     
-    # Function to perform a grid search for best features
-    # GridSearchCV implements a "fit" method and a "predict" method like any classifier 
+    ## Function to perform a grid search for best features
+    ## GridSearchCV implements a "fit" method and a "predict" method like any classifier 
     #   except that the parameters of the classifier used to predict is optimized by cross-validation.
     def getGridSearch(self):
         # Set the search parameters
@@ -162,9 +171,9 @@ class TweetClassifierMNB(TweetClassifier):
 
 ##########################################################################################################################
 
-# Sub class to perform linear support vector machine (SVM) tweet classification
-# SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
-# SGDClassifier supports multi-class classification by combining multiple 
+## Sub class to perform linear support vector machine (SVM) tweet classification
+## SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
+## Note: SGDClassifier supports multi class classification by combining multiple 
 #	binary classifiers in a “one versus all” (OVA) scheme
 class TweetClassifierLinearSVM(TweetClassifier):
     # Class constructor
@@ -181,9 +190,9 @@ class TweetClassifierLinearSVM(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42))]) # Use the SVM classifier
-        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
-        # By default, SGD supports a linear support vector machine (SVM) using the default args below
-        # SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
+        ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
+        ## By default, SGD supports a linear support vector machine (SVM) using the default args below
+        ## SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
         #   shuffle=True, verbose=0, epsilon=0.1, n_jobs=1, random_state=None, learning_rate='optimal', 
         #   eta0=0.0, power_t=0.5, class_weight=None, warm_start=False, average=False)
 
@@ -196,9 +205,9 @@ class TweetClassifierLinearSVM(TweetClassifier):
 
 ##########################################################################################################################
 
-# Sub class to perform quadratic support vector machine (SVM) tweet classification
-# SGDClassifier arg loss='squared_hinge' is like hinge, 
-#	which is used for linear SVM, but is quadratically penalized
+## Sub class to perform quadratic support vector machine (SVM) tweet classification
+## SGDClassifier arg loss='squared_hinge' is like hinge, 
+#	which is used for linear SVM, but is quadratically penalized.
 class TweetClassifierQuadraticSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -225,11 +234,11 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
 
 ##########################################################################################################################
 
-# Sub class to perform less sensitive support vector machine (SVM) tweet classification
-# SGDClassifier arg loss='modified_huber' is another smooth loss that brings tolerance to 
+## Sub class to perform less sensitive support vector machine (SVM) tweet classification
+## SGDClassifier arg loss='modified_huber' is another smooth loss that brings tolerance to 
 #	outliers as well as probability estimates.
-# Note: since they allow to create a probability model, loss="log" 
-#	and loss="modified_huber" are more suitable for OVA classification
+## Note: since they allow to create a probability model, loss="log" 
+#	and loss="modified_huber" are more suitable for OVA classification.
 class TweetClassifierModifiedSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -256,10 +265,10 @@ class TweetClassifierModifiedSVM(TweetClassifier):
 
 ##########################################################################################################################
 
-# Sub class to perform logistic regression tweet classification
-# SGDClassifier arg loss='log' performs logistic regression
-# Note: since they allow to create a probability model, loss="log" 
-#	and loss="modified_huber" are more suitable for OVA classification
+## Sub class to perform logistic regression tweet classification
+## SGDClassifier arg loss='log' performs logistic regression
+## Note: since they allow to create a probability model, loss="log" 
+#	and loss="modified_huber" are more suitable for OVA classification.
 class TweetClassifierLogSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -284,12 +293,12 @@ class TweetClassifierLogSVM(TweetClassifier):
     # End initPipeline override
 # End TweetClassifierLogSVM sub class
 # Note: Using loss="log" or loss="modified_huber" enables the predict_proba method, 
-#	which gives a vector of probability estimates P(y|x) per sample x
+#	which gives a vector of probability estimates per sample.
 
 ##########################################################################################################################
 
-# Sub class to perform logistic regression tweet classification
-# SGDClassifier arg loss='huber' 
+## Sub class to perform logistic regression tweet classification
+## SGDClassifier arg loss='huber' 
 class TweetClassifierHuberSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
@@ -305,9 +314,9 @@ class TweetClassifierHuberSVM(TweetClassifier):
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='huber'))]) # Use the SVM classifier
-        # The SGD estimator implements regularized linear models with stochastic gradient descent learning
-		# The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
-		#	For 'huber' it determines the threshold at which it becomes less important to get the prediction exactly right
+        ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
+		## The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
+		#	For 'huber' it determines the threshold at which it becomes less important to get the prediction exactly right.
 
         # Fit the created multinomial NB classifier
         self.classifier = self.pipeline.fit(self.tweets, self.labels)
@@ -341,7 +350,7 @@ class TweetClassifierMaxEnt(TweetClassifier):
 		# End of func return statement
         return
 	# End initPipeline override
-# End TweetClassifierModifiedSVM sub class
+# End TweetClassifierMaxEnt sub class
 
 ##########################################################################################################################
 
@@ -368,5 +377,6 @@ class TweetClassifierBNB(TweetClassifier):
 		# End of func return statement
         return
 	# End initPipeline override
-# End TweetClassifierModifiedSVM sub class
-# End Script
+# End TweetClassifierBNB sub class
+
+# End script
