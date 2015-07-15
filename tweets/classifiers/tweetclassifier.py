@@ -118,7 +118,7 @@ class TweetClassifier(object):
     #   except that the parameters of the classifier used to predict is optimized by cross-validation.
     def getGridSearch(self):
         # Set the search parameters
-        parameters = {'vect__ngram_range': [(1,1),(1,2)], # Try either words or birgrams
+        parameters = {'vect__ngram_range': [(1,1),(1,2)], # Try either words or bi grams
                     'vect__max_df': (0.5, 0.75, 1.0),
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
@@ -298,15 +298,44 @@ class TweetClassifierLogSVM(TweetClassifier):
 ##########################################################################################################################
 
 ## Sub class to perform linear regression tweet classification
+## SGDClassifier arg loss='perceptron' is the linear loss used by the perceptron algorithm
+## Note: The perceptron algorithm is used for learning weights for features/terms
+class TweetClassifierPerceptronSVM(TweetClassifier):
+    # Class constructor
+    def __init__(self, paths, cleaner):
+        # Call the super class constructor which initializes the classifier
+        super(TweetClassifierPerceptronSVM, self).__init__(paths, cleaner)
+        # End of func return statement
+        return
+    # End sub class constructor
+    
+    # Overriding function to build the perceptron algorithm using classifier via a pipeline
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='perceptron'))]) # Use the perceptron algorithm for classification
+		## The SGD estimator implements regularized linear models with stochastic gradient descent learning
+
+        # Fit the created perceptron algorithm using classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
+        # End of func return statement
+        return
+    # End initPipeline override
+# End TweetClassifierPerceptronSVM sub class
+
+##########################################################################################################################
+
+## Sub class to perform linear regression tweet classification
 ## SGDClassifier arg loss='huber' transforms the squared loss into a linear loss 
 # 	over a certain distance, see epsilon arg description in initPipeline func below
 ## SGDRegressor can also act as a linear SVR using the epsilon_insensitive loss 
 # 	function or the slightly different squared_epsilon_insensitive (which penalizes outliers more)
-class TweetClassifierRegressSVM(TweetClassifier):
+class TweetClassifierRegression(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierRegressSVM, self).__init__(paths, cleaner)
+        super(TweetClassifierRegression, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -326,7 +355,35 @@ class TweetClassifierRegressSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierRegressSVM sub class
+# End TweetClassifierRegression sub class
+
+##########################################################################################################################
+
+## Sub class to perform tweet classification with linear loss
+## SGDClassifier arg loss='squred_loss' allows for linear modelling similar to the default SGDRegressor
+class TweetClassifierLossSquared(TweetClassifier):
+    # Class constructor
+    def __init__(self, paths, cleaner):
+        # Call the super class constructor which initializes the classifier
+        super(TweetClassifierLossSquared, self).__init__(paths, cleaner)
+        # End of func return statement
+        return
+    # End sub class constructor
+    
+    # Overriding function to build the linear loss classifier using a pipeline
+    def initPipeline(self):
+        # Pipeline of transformers with a final estimator that behaves like a compound classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='squared_loss'))]) # Use the classifier for linear loss
+        ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
+		
+        # Fit the created linear loss classifier
+        self.classifier = self.pipeline.fit(self.tweets, self.labels)
+        # End of func return statement
+        return
+    # End initPipeline override
+# End TweetClassifierLossSquared sub class
 
 ##########################################################################################################################
 
