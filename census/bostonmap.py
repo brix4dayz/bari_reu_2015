@@ -52,6 +52,7 @@ suffolkID = '025'
 
 class BostonMap(object):
   def __init__(self):
+    self.shpfile = myDir + bostonTracts
     shp = fiona.open(myDir + bostonTracts + '.shp')
     bds = shp.bounds
     shp.close()
@@ -82,7 +83,7 @@ class BostonMap(object):
 
   def loadShapeFile(self):
     self.map.readshapefile(
-      myDir + stateTracts,
+      self.shpfile,
       'boston',
       color='none',
       zorder=2)
@@ -104,7 +105,7 @@ class BostonMap(object):
     self.df_map['patches'] = self.df_map['poly'].map(lambda x: PolygonPatch(
       x,
       fc='#000055',
-      ec='#787878', lw=.25, alpha=.9,
+      ec='k', lw=.5, alpha=.9,
       zorder=4))
     return
 
@@ -193,13 +194,6 @@ class BostonScatter(BostonMap):
       10, marker='o', lw=.25,
       facecolor='#33ccff', edgecolor='w',
       alpha=0.9, antialiased=True, zorder=3)
-    return
-
-  def patchesDF(self):
-    self.df_map['patches'] = [PolygonPatch(row['poly'],
-      fc=countyColors[row['land_info']['COUNTY']], ec='k',
-      lw=0.25 if (row['land_info']['COUNTY'] != suffolkID) else 0.8,
-      alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
     return
 
 #####################################################################################################################
@@ -306,6 +300,79 @@ class BostonDensity(BostonScatter):
 
     return
 
+  def tracts(self):
+    self.pc = PatchCollection(self.df_map['patches'], match_original=True)
+    # impose our colour map onto the patch collection
+    norm = mplc.Normalize()
+    self.pc.set_facecolor(self.cmap(norm(self.df_map['jenks_bins'].values)))
+    self.ax.add_collection(self.pc)
+    return
+
+  def colorScale(self):
+    # Add a colour bar
+    cb = colorbar_index(ncolors=len(self.jenks_labels), cmap=self.cmap, shrink=0.5, labels=self.jenks_labels)
+    cb.ax.tick_params(labelsize=6)
+    return
+
+  def patchesDF(self):
+    # use a blue colour ramp - we'll be converting it to a map using cmap()
+    self.cmap = plt.get_cmap('Blues')
+    # draw tracts with black outline. make suffolk (boston) thicker
+    super(BostonDensity, self).patchesDF()
+
+    self.jenks_labels = ["<= %0.1f/km$^2$(%s tracts)" % (b, c) for b, c in zip(
+    self.breaks.bins, self.breaks.counts)]
+    self.jenks_labels.insert(0, '<= 0.0/km$^2$(%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
+    return
+
+  def data(self):
+    return
+
+#########################################################################################################################
+
+class GreaterBostonScatter(BostonScatter):
+  def __init__(self, dataPoints):
+    self.dataPoints = dataPoints
+    self.shpfile = myDir + stateTracts
+    self.extra = 0.01
+    self.ll = (-71.5457, 42.1697)
+    self.ur = (-70.8975, 42.4014)
+    self.coords = list(chain(self.ll, self.ur))
+    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
+    return
+
+  def makePlot(self, outname, title):
+    plt.title(title)
+    self.fig.set_size_inches((self.w/self.h)*10, 10)
+    plt.savefig(outname + '.png', dpi=100, alpha=True)
+    return
+
+  def patchesDF(self):
+    self.df_map['patches'] = [PolygonPatch(row['poly'],
+      fc=countyColors[row['land_info']['COUNTY']], ec='k',
+      lw=0.25 if (row['land_info']['COUNTY'] != suffolkID) else 0.8,
+      alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
+    return
+
+#########################################################################################################################
+
+class GreaterBostonDensity(BostonDensity):
+  def __init__(self, dataPoints):
+    self.dataPoints = dataPoints
+    self.shpfile = myDir + stateTracts
+    self.extra = 0.01
+    self.ll = (-71.5457, 42.1697)
+    self.ur = (-70.8975, 42.4014)
+    self.coords = list(chain(self.ll, self.ur))
+    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
+    return
+
+  def makePlot(self, outname, title):
+    plt.title(title)
+    self.fig.set_size_inches((self.w/self.h)*10, 10)
+    plt.savefig(outname + '.png', dpi=100, alpha=True)
+    return
+
   def patchesDF(self):
     # use a blue colour ramp - we'll be converting it to a map using cmap()
     self.cmap = plt.get_cmap('Blues')
@@ -326,56 +393,6 @@ class BostonDensity(BostonScatter):
                         ascending=False).iterrows()])
     self.highest = 'TRACT_ID,DENSITY\n' + highest
     return # function returns nothing
-
-  def tracts(self):
-    self.pc = PatchCollection(self.df_map['patches'], match_original=True)
-    # impose our colour map onto the patch collection
-    norm = mplc.Normalize()
-    self.pc.set_facecolor(self.cmap(norm(self.df_map['jenks_bins'].values)))
-    self.ax.add_collection(self.pc)
-    return
-
-  def colorScale(self):
-    # Add a colour bar
-    cb = colorbar_index(ncolors=len(self.jenks_labels), cmap=self.cmap, shrink=0.5, labels=self.jenks_labels)
-    cb.ax.tick_params(labelsize=6)
-    return
-
-#########################################################################################################################
-
-class GreaterBostonScatter(BostonScatter):
-  def __init__(self, dataPoints):
-    self.dataPoints = dataPoints
-    self.extra = 0.01
-    self.ll = (-71.5457, 42.1697)
-    self.ur = (-70.8975, 42.4014)
-    self.coords = list(chain(self.ll, self.ur))
-    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
-    return
-
-  def makePlot(self, outname, title):
-    plt.title(title)
-    self.fig.set_size_inches((self.w/self.h)*10, 10)
-    plt.savefig(outname + '.png', dpi=100, alpha=True)
-    return
-
-#########################################################################################################################
-
-class GreaterBostonDensity(BostonDensity):
-  def __init__(self, dataPoints):
-    self.dataPoints = dataPoints
-    self.extra = 0.01
-    self.ll = (-71.5457, 42.1697)
-    self.ur = (-70.8975, 42.4014)
-    self.coords = list(chain(self.ll, self.ur))
-    self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
-    return
-
-  def makePlot(self, outname, title):
-    plt.title(title)
-    self.fig.set_size_inches((self.w/self.h)*10, 10)
-    plt.savefig(outname + '.png', dpi=100, alpha=True)
-    return
 
 #######################################################################################################################
 
