@@ -1,6 +1,6 @@
 ############################################################################################################################
 # author: Hayden Fuss
-# last edited: Tuesday, July 14, 2015
+# last edited: Tuesday, July 16, 2015
 #
 # Module for plotting data over a map of greater Boston using census data. Given a tuple/list of dictionaries, which
 # have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both scatter
@@ -9,7 +9,7 @@
 # source for making maps: http://sensitivecities.com/so-youd-like-to-make-a-map-using-python-EN.html#.VZGG_VyZ65Y
 #
 # mass. census tracts: 
-#   source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile   07/06/2015
+#   source: http://catalog.data.gov/dataset/tiger-line-shapefile-2014-state-massachusetts-current-census-tract-state-based-shapefile
 #   date accessed: 07/06/2015
 #
 # cb tracts: 
@@ -104,7 +104,7 @@ class BostonMap(object):
     # draw tract patches from polygons
     self.df_map['patches'] = self.df_map['poly'].map(lambda x: PolygonPatch(
       x,
-      fc='#000055',
+      fc='#6E95A3',
       ec='k', lw=.5, alpha=.9,
       zorder=4))
     return
