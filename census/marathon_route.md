@@ -6,6 +6,7 @@ Map (lon=x,lat=y)
 - Upper right: -70.8975, 42.4014 
 
 
-Marathon Route  
+Marathon Route: http://www.bostonmagazine.com/news/blog/2015/04/15/boston-marathon-google-map/
 
 + Mile 0: -71.5166, 42.2307
++ 
