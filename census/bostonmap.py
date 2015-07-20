@@ -98,6 +98,9 @@ class BostonMap(object):
     self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
     self.df_map['area_km'] = self.df_map['area_m'] / 100000
     
+    print self.df_map['land_info'].iloc[0]
+    
+
     return
 
   def patchesDF(self):
@@ -326,6 +329,11 @@ class BostonDensity(BostonScatter):
     return
 
   def data(self):
+    highest = '\n'.join([row['land_info']['CT_ID_10'] + "," + 
+                        str(row['density_km']) for i, row in self.df_map[
+                        (self.df_map['jenks_bins'] == 4)][:30].sort(columns='density_km',
+                        ascending=False).iterrows()])
+    self.highest = 'TRACT_ID,DENSITY\n' + highest
     return
 
 #########################################################################################################################
@@ -415,5 +423,5 @@ def testScatter():
 #####################################################################################################################
 
 if __name__ == "__main__":
-  testScatter()
+  testMap()
   plt.show()
