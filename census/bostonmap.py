@@ -1,6 +1,6 @@
 ############################################################################################################################
 # author: Hayden Fuss
-# last edited: Tuesday, July 16, 2015
+# last edited: Monday, July 20, 2015
 #
 # Module for plotting data over a map of greater Boston using census data. Given a tuple/list of dictionaries, which
 # have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both scatter
@@ -98,8 +98,7 @@ class BostonMap(object):
     self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
     self.df_map['area_km'] = self.df_map['area_m'] / 100000
     
-    print self.df_map['land_info'].iloc[0]
-    
+    #print self.df_map['land_info'].iloc[0]
 
     return
 

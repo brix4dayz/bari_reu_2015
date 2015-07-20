@@ -26,4 +26,5 @@ time_fmt: "%Y-%m-%d %H:%M:%S"
 twitterMarkup: ['&amp;',
                 'https*://t.co/.*',
                 '&lt;',
-                '\[pic\]']
+                '\[pic\]',
+                '&gt;']
