@@ -48,6 +48,34 @@ countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7
                 '027':'#32B126', '019':'#B66497'}
 suffolkID = '025'
 
+route = [(-71.5166, 42.2307),
+         (-71.501906, 42.236432),
+         (-71.484327, 42.242133),
+         (-71.470611, 42.252309),
+         (-71.454387, 42.258677),
+         (-71.443434, 42.271264),
+         (-71.426132, 42.273688),
+         (-71.408342, 42.278576),
+         (-71.390666, 42.281906),
+         (-71.371493, 42.283226),
+         (-71.352490, 42.283102),
+         (-71.334102, 42.287443),
+         (-71.315958, 42.295366),
+         (-71.296851, 42.296043),
+         (-71.283885, 42.304547),
+         (-71.270346, 42.315472),
+         (-71.257041, 42.325545),
+         (-71.242516, 42.335414),
+         (-71.228362, 42.338986),
+         (-71.211998, 42.338043),
+         (-71.192377, 42.336168),
+         (-71.172446, 42.337110),
+         (-71.155507, 42.338646),
+         (-71.140426, 42.337966),
+         (-71.119073, 42.342605),
+         (-71.100720, 42.347817),
+         (-71.078440, 42.349800)]
+
 #####################################################################################################################
 
 class BostonMap(object):
@@ -345,11 +373,11 @@ class BostonDensityCT(BostonDensity):
   def dataDF(self):
     temp = []
     for d in self.dataPoints:
-      temp.append(d['CT_ID'])
+      temp.append(int(d['CT_ID']))
 
     self.dataPoints = np.array(temp)
 
-    self.df_map['count'] = self.df_map['land_info'].map(lambda x: (self.dataPoints == x['CT_ID_10']).sum())
+    self.df_map['count'] = self.df_map['land_info'].map(lambda x: (self.dataPoints == int(x['CT_ID_10'])).sum())
     self.df_map['density_m'] = self.df_map['count'] / self.df_map['area_m']
     self.df_map['density_km'] = self.df_map['count'] / self.df_map['area_km']
     # it's easier to work with NaN values when classifying
@@ -391,6 +419,11 @@ class GreaterBostonScatter(BostonScatter):
       lw=0.25 if (row['land_info']['COUNTY'] != suffolkID) else 0.8,
       alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
     return
+
+  def marathon(self):
+    for p in route:
+      x,y = self.map(p[0], p[1])
+
 
 #########################################################################################################################
 
