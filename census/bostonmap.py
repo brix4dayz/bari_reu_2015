@@ -335,6 +335,37 @@ class BostonDensity(BostonScatter):
     self.highest = 'TRACT_ID,DENSITY\n' + highest
     return
 
+##########################################################################################################################
+
+class BostonDensityCT(BostonDensity):
+  def __init__(self, dataPoints):
+    super(BostonDensityCT, self).__init__(dataPoints)
+    return
+
+  def dataDF(self):
+    temp = []
+    for d in self.dataPoints:
+      temp.append(d['CT_ID'])
+
+    self.dataPoints = np.array(temp)
+
+    self.df_map['count'] = self.df_map['land_info'].map(lambda x: (self.dataPoints == x['CT_ID_10']).sum())
+    self.df_map['density_m'] = self.df_map['count'] / self.df_map['area_m']
+    self.df_map['density_km'] = self.df_map['count'] / self.df_map['area_km']
+    # it's easier to work with NaN values when classifying
+    self.df_map.replace(to_replace={'density_m': {0: np.nan}, 'density_km': {0: np.nan}}, inplace=True)
+
+    self.breaks = nb(
+      self.df_map[self.df_map['density_km'].notnull()].density_km.values,
+      initial=300,
+      k=5)
+    # the notnull method lets us match indices when joining
+    jb = pd.DataFrame({'jenks_bins': self.breaks.yb}, index=self.df_map[self.df_map['density_km'].notnull()].index)
+    self.df_map = self.df_map.join(jb)
+    self.df_map.jenks_bins.fillna(-1, inplace=True)
+    return
+
+
 #########################################################################################################################
 
 class GreaterBostonScatter(BostonScatter):
