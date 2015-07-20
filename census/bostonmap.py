@@ -408,6 +408,7 @@ class GreaterBostonScatter(BostonScatter):
     return
 
   def makePlot(self, outname, title):
+    self.marathon()
     plt.title(title)
     self.fig.set_size_inches((self.w/self.h)*10, 10)
     plt.savefig(outname + '.png', dpi=100, alpha=True)
@@ -421,8 +422,28 @@ class GreaterBostonScatter(BostonScatter):
     return
 
   def marathon(self):
+    lon = []
+    lat = []
     for p in route:
-      x,y = self.map(p[0], p[1])
+      lon.append(p[0])
+      lat.append(p[1])
+    lon = np.array(lon)
+    lat = np.array(lat)
+    x,y = self.map(lon, lat)
+    self.map.plot(x, y, 'w-', markersize=20)
+
+    lon = route[0][0]
+    lat = route[0][1]
+    x,y = self.map(lon, lat)
+    self.map.plot(x, y, 'wo', markersize=8)
+
+
+    lon = route[-1][0]
+    lat = route[-1][1]
+    x,y = self.map(lon, lat)
+    self.map.plot(x, y, 'wo', markersize=8)
+
+    return
 
 
 #########################################################################################################################
@@ -439,6 +460,7 @@ class GreaterBostonDensity(BostonDensity):
     return
 
   def makePlot(self, outname, title):
+    self.marathon()
     plt.title(title)
     self.fig.set_size_inches((self.w/self.h)*10, 10)
     plt.savefig(outname + '.png', dpi=100, alpha=True)
@@ -464,6 +486,30 @@ class GreaterBostonDensity(BostonDensity):
                         ascending=False).iterrows()])
     self.highest = 'TRACT_ID,DENSITY\n' + highest
     return # function returns nothing
+
+  def marathon(self):
+    lon = []
+    lat = []
+    for p in route:
+      lon.append(p[0])
+      lat.append(p[1])
+    lon = np.array(lon)
+    lat = np.array(lat)
+    x,y = self.map(lon, lat)
+    self.map.plot(x, y, 'r-', markersize=20)
+
+    lon = route[0][0]
+    lat = route[0][1]
+    x,y = self.map(lon, lat)
+    self.map.plot(x, y, 'ro', markersize=8)
+
+
+    lon = route[-1][0]
+    lat = route[-1][1]
+    x,y = self.map(lon, lat)
+    self.map.plot(x, y, 'ro', markersize=8)
+
+    return
 
 #######################################################################################################################
 
