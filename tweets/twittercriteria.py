@@ -3,6 +3,7 @@ import os
 import inspect
 import re
 import time
+import string
 
 # author: Hayden Fuss
 
@@ -60,8 +61,28 @@ def cleanUpTweet(tweet_text):
   temp = markup_regex.sub(r"", temp)
   return temp
 
+def has_punc(s):
+  for i in range(0, len(s)):
+    if s[i] in '!,.;#':
+      return True
+  return
+
+def not_part_of_handle(s):
+  return s != 'HANDLE' and s != ' <' and s != '> '
+
 def cleanForSentiment(tweet_text):
   global markup_regex, handle_regex
   temp = markup_regex.sub(r"", tweet_text)
   temp = re.sub(r"\r|\r\n|\n", r" ", temp)
-  return handle_regex.sub(r"<HANDLE>", temp)
+  temp = handle_regex.sub(r"<HANDLE>", temp)
+  res = re.split('(\W+)', temp)
+  print res
+  flag = False
+  for i in range(0, len(res)):
+    if has_punc(res[i]) or res[i] == 'RT':
+      flag = False
+    if flag and res[i] != ' ' and not_part_of_handle(res[i]):
+      res[i] = 'NOT_' + res[i]
+    if res[i] == 'not' or res[i] == 't' or res[i][-2:] == 'nt':
+      flag = True
+  return ''.join(res)
