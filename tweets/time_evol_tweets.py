@@ -14,6 +14,18 @@ sys.path.append(os.path.realpath('../census/'))
 import bostonmap as bm
 
 
+def getTimeString(currentHour):
+    timeStr = ""
+    if currentHour != 12 or currentHour != 24:
+        timeStr += str(currentHour%12)
+    else:
+        timeStr += str(12)
+    if currentHour < 12:
+        timeStr += ' AM'
+    else:
+        timeStr += ' PM'
+    return timeStr
+
 # ## Retrieving useful data with our `twitter_criteria` module
 # retrieve the time format string from the criteria dictionary in twc
 tweet_time_fmt = twc.getTwitterTimeFmt()
@@ -21,9 +33,9 @@ tweet_time_fmt = twc.getTwitterTimeFmt()
 ### get data
 
 kwTweets = []
-currentHour = 14
+currentHour = 0
 
-with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
+with open('recleaned_geo_tweets_12-22.csv') as csvfile:
     # reads first line of csv to determine keys for the tweet hash, tweets 
     # is an iterator through the list of tweet hashes the DictReader makes
     tweets = csv.DictReader(csvfile)
@@ -33,27 +45,31 @@ with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
         if tweetData['time'] != "":
             # parse date/time into object
             date = time.strptime(tweetData['time'], tweet_time_fmt)
-            if date.tm_mday == 15 and twc.tweetContainsKeyword(tweetData['tweet_text']):
+            if date.tm_mday == 19 and twc.tweetContainsKeyword(tweetData['tweet_text']):
                 if date.tm_hour == currentHour:
                     kwTweets.append(tweetData)
                 elif date.tm_hour == currentHour + 1:
                     currentHour += 1
-                    boston = bm.BostonDensity(kwTweets)
-                    boston.plotMap(outname='bombingDay_density_'+str(currentHour), 
-                        title='Density of Keyword Tweets At ' + str(currentHour-12) + ' PM')
-                    boston = bm.BostonScatter(kwTweets)
-                    boston.plotMap(outname='bombingDay_scatter_'+str(currentHour),
-                        title='Locations of Keyword Tweets At ' + str(currentHour-12) + ' PM')
+                    timeStr = getTimeString(currentHour)
+                    boston = bm.GreaterBostonDensity(kwTweets)
+                    boston.plotMap(outname='manhuntDay_density_'+str(currentHour), 
+                        title='Density of Keyword Tweets At ' + timeStr)
+                    boston = bm.GreaterBostonScatter(kwTweets)
+                    boston.plotMap(outname='manhuntDay_scatter_'+str(currentHour),
+                        title='Locations of Keyword Tweets At ' + timeStr)
                     kwTweets.append(tweetData)
+                    plt.close('all')
 
 
 currentHour += 1
-boston = bm.BostonScatter(kwTweets)
-boston.plotMap(outname='bombingDay_scatter_'+str(currentHour),
+timeStr = getTimeString(currentHour)
+boston = bm.GreaterBostonScatter(kwTweets)
+boston.plotMap(outname='manhuntDay_scatter_'+str(currentHour),
     title='Locations of Keyword Tweets At ' + str(currentHour-12) + ' PM')
 
-boston = bm.BostonDensity(kwTweets)
+boston = bm.GreaterBostonDensity(kwTweets)
 del(kwTweets)
-boston.plotMap(outname='bombingDay_density_'+str(currentHour), 
+boston.plotMap(outname='manhuntDay_density_'+str(currentHour), 
     title='Density of Keyword Tweets At ' + str(currentHour-12) + ' PM')
+plt.close('all')
 
