@@ -10,6 +10,7 @@ sad = []
 positive = []
 calm = []
 negative = []
+neutral = []
 
 with open(name + "_training.txt", "r") as inFile:
   for tweet in inFile:
@@ -17,22 +18,24 @@ with open(name + "_training.txt", "r") as inFile:
     print tweet
     sentiment = ""
     while (sentiment == ""):
-      sentiment = raw_input("Enter the tweets sentiment: (c-alm, e-xcited, a-angry, f-earful, s-ad, p-ositive, n-egative, or o-ther (not English)): ")
+      sentiment = raw_input("Enter the tweets sentiment: (c-alm, e-xcited, a-angry, f-earful, s-ad, p-ositive, n-egative, u-neutral, or o-ther (not English)): ")
     sentiment = sentiment.lower()[0]
     if sentiment == 'c':
-      calm.append(sentiment)
+      calm.append(tweet)
     elif sentiment == 'a':
-      angry.append(sentiment)
+      angry.append(tweet)
     elif sentiment == 'f':
-      fearful.append(sentiment)
+      fearful.append(tweet)
     elif sentiment == 's':
-      sad.append(sentiment)
+      sad.append(tweet)
     elif sentiment == 'p':
-      positive.append(sentiment)
+      positive.append(tweet)
     elif sentiment =='n':
-      negative.append(sentiment)
+      negative.append(tweet)
     elif sentiment == 'e':
-      excited.append(sentiment)
+      excited.append(tweet)
+    elif sentiment == 'u':
+      neutral.append(tweet)
 
 with open(name + "_fearful.txt", "w") as out:
   out.write('\n'.join(fearful))
@@ -60,3 +63,6 @@ with open(name + "_positive.txt", "w") as out:
 
 with open(name + "_negative.txt", "w") as out:
   out.write('\n'.join(negative))
+
+with open(name + "_neutral.txt", "w") as out:
+  out.write('\n'.join(neutral))
