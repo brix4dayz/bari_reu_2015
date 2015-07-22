@@ -63,26 +63,36 @@ def cleanUpTweet(tweet_text):
 
 def has_punc(s):
   for i in range(0, len(s)):
-    if s[i] in '!,.;#':
+    if s[i] in '!,.;':
       return True
   return
 
-def not_part_of_handle(s):
-  return s != 'HANDLE' and s != ' <' and s != '> '
+def negation(s):
+  s = s.lower()
+  return (s == 'not' or 'n\'t' in s or s == 'cant' or s == 'dont' 
+    or s == 'cannot')
 
 def cleanForSentiment(tweet_text):
   global markup_regex, handle_regex
-  temp = markup_regex.sub(r"", tweet_text)
-  temp = re.sub(r"\r|\r\n|\n", r" ", temp)
-  temp = handle_regex.sub(r"<HANDLE>", temp)
-  res = re.split('(\W+)', temp)
-  print res
+  temp = markup_regex.sub(r"", tweet_text)             # removes markup like pictures and &amp;
+  temp = re.sub(r"\r|\r\n|\n", r" ", temp)             # replaces newlines with spaces
+  temp = handle_regex.sub(r"<HANDLE>", temp)           # replaces @<name> with <HANDLE>
+  temp = unicode(temp, 'utf-8')                        # converts string to utf-8
+  temp = temp.encode('unicode_escape')                 # encodes with escape sequences, putting emojis in raw form
+  temp = re.sub(r"\\U", r" \\U", temp)                 # puts a space in front of every emoji
+  temp = re.sub(r"\\u", r" \\u", temp)                 # puts a space in front of every emoji
+  temp = re.sub(r"0fc|\\u201c|\\u201d|\"", r"", temp)  # remove unicode quotes and other markup
+  res = re.split(' ', temp)                            # splits the string by spaces
+  # adds NOT_ in front of every word between a negation and punctuation
   flag = False
   for i in range(0, len(res)):
-    if has_punc(res[i]) or res[i] == 'RT':
+    if res[i] == 'RT' or '#' in res[i]:
       flag = False
-    if flag and res[i] != ' ' and not_part_of_handle(res[i]):
+    if flag and (res[i] != '' and res[i][0] != '<' and 
+     res[i][:2] != '\U' and res[i][:2] != '\u'):
       res[i] = 'NOT_' + res[i]
-    if res[i] == 'not' or res[i] == 't' or res[i][-2:] == 'nt':
+    if has_punc(res[i]):
+      flag = False
+    elif negation(res[i]):
       flag = True
-  return ''.join(res)
+  return ' '.join(res)
