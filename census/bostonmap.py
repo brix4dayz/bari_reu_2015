@@ -123,8 +123,9 @@ class BostonMap(object):
       'poly': [Polygon(xy) for xy in self.map.boston],
       'land_info': [info for info in self.map.boston_info]})
 
+    # are these units in meters? and if so shouldnt conversion be 1,000,000 not 100,000?
     self.df_map['area_m'] = self.df_map['poly'].map(lambda x: x.area)
-    self.df_map['area_km'] = self.df_map['area_m'] / 100000
+    self.df_map['area_km'] = self.df_map['area_m'] / 100000 
     
     #print self.df_map['land_info'].iloc[0]
 
