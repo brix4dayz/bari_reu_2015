@@ -77,7 +77,7 @@ class TweetClassifier(object):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                       ('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
-                      ('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the 1000 best features
+                      ('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the k best features
                       ('clf', MultinomialNB())]) # Use the multinomial NB classifier
 
         # Fit the created multinomial NB classifier
