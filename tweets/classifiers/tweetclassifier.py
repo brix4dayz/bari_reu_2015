@@ -145,32 +145,6 @@ class TweetClassifier(object):
 
 ##########################################################################################################################
 
-# Sub class to perform linear Multinomial NB tweet classification on transformed data
-class TweetClassifierMNB(TweetClassifier):
-    # Class constructor
-    def __init__(self, paths, cleaner):
-        # Call the super class constructor which initializes the classifier
-        super(TweetClassifierMNB, self).__init__(paths, cleaner)
-        # End func return statement
-        return
-    # End sub class constructor
-        
-    # Overriding function to build the multinomial NB classifier using a pipeline
-    def initPipeline(self):
-        # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                                    ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                                    ('clf', MultinomialNB())]) # Use the multinomial NB classifier
-									
-        # Fit the created multinomial NB classifier
-        self.classifier = self.pipeline.fit(self.tweets, self.labels)
-        # End func return statement
-        return
-    # End initPipeline override
-# End TweetClassifierMNB sub class
-
-##########################################################################################################################
-
 ## Sub class to perform linear support vector machine (SVM) tweet classification
 ## SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
 ## Note: SGDClassifier supports multi class classification by combining multiple 
