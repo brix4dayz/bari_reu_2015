@@ -24,6 +24,7 @@ from sklearn.pipeline import Pipeline
 import numpy as np
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import SGDRegressor
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.grid_search import GridSearchCV
 from sklearn import metrics
