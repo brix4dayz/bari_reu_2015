@@ -9,7 +9,7 @@ import twittercriteria as twc
 paths = {'sad':'/sadTraining.txt', 'fearful':'/fearfulTraining.txt', 'angry':'/angryTraining.txt', 'calm':'/calmTraining.txt',
  'excited':'/excitedTraining.txt', 'other':'/otherTraining.txt'}
 
-objs = {'mnb':tc.TweetClassifierMNB, 'linSVM':tc.TweetClassifierLinearSVM, 'quadSVM':tc.TweetClassifierQuadraticSVM,
+objs = {'mnb':tc.TweetClassifier, 'linSVM':tc.TweetClassifierLinearSVM, 'quadSVM':tc.TweetClassifierQuadraticSVM,
   'modSVM':tc.TweetClassifierModifiedSVM, 'logSVM':tc.TweetClassifierLogSVM, 'percSVM':tc.TweetClassifierPerceptronSVM,
   'regrSVM':tc.TweetClassifierRegression, 'lsqrdSVM':tc.TweetClassifierLossSquared, 'regressor':tc.TweetRegressor, 
   'maxent':tc.TweetClassifierMaxEnt, 'bnb':tc.TweetClassifierBNB}
