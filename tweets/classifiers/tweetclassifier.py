@@ -78,7 +78,7 @@ class TweetClassifier(object):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                       ('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
-                      ('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the 1000 best features
+                      ('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the k best features
                       ('clf', MultinomialNB())]) # Use the multinomial NB classifier
 
         # Fit the created multinomial NB classifier
@@ -143,32 +143,6 @@ class TweetClassifier(object):
         return
     # End getGridSearch 
 # End class TweetClassifier
-
-##########################################################################################################################
-
-# Sub class to perform linear Multinomial NB tweet classification on transformed data
-class TweetClassifierMNB(TweetClassifier):
-    # Class constructor
-    def __init__(self, paths, cleaner):
-        # Call the super class constructor which initializes the classifier
-        super(TweetClassifierMNB, self).__init__(paths, cleaner)
-        # End func return statement
-        return
-    # End sub class constructor
-        
-    # Overriding function to build the multinomial NB classifier using a pipeline
-    def initPipeline(self):
-        # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
-                                    ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                                    ('clf', MultinomialNB())]) # Use the multinomial NB classifier
-									
-        # Fit the created multinomial NB classifier
-        self.classifier = self.pipeline.fit(self.tweets, self.labels)
-        # End func return statement
-        return
-    # End initPipeline override
-# End TweetClassifierMNB sub class
 
 ##########################################################################################################################
 
@@ -330,7 +304,7 @@ class TweetClassifierPerceptronSVM(TweetClassifier):
 ## Sub class to perform linear regression tweet classification
 ## SGDClassifier arg loss='huber' transforms the squared loss into a linear loss 
 # 	over a certain distance, see epsilon arg description in initPipeline func below
-## SGDRegressor can also act as a linear SVR using the epsilon_insensitive loss 
+## SGDRegressor can also act as a linear SVM using the epsilon_insensitive loss 
 # 	function or the slightly different squared_epsilon_insensitive (which penalizes outliers more)
 class TweetClassifierRegression(TweetClassifier):
     # Class constructor
@@ -391,7 +365,7 @@ class TweetClassifierLossSquared(TweetClassifier):
 ## Sub class to perform linear regression tweet classification
 ## SGDRegressor is a linear model fitted by minimizing a regularized empirical loss with SGD
 ## SGDRegressor mimics a linear regression using the squared_loss loss parameter and it can also act as
-# 	a linear SVR using the epsilon_insensitive loss function or the slightly different squared_epsilon_insensitive 
+# 	a linear SVM using the epsilon_insensitive loss function or the slightly different squared_epsilon_insensitive 
 # 	(which penalizes outliers more)
 class TweetRegressor(TweetClassifier):
     # Class constructor
