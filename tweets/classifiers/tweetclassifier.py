@@ -303,7 +303,7 @@ class TweetClassifierPerceptronSVM(TweetClassifier):
 ## Sub class to perform linear regression tweet classification
 ## SGDClassifier arg loss='huber' transforms the squared loss into a linear loss 
 # 	over a certain distance, see epsilon arg description in initPipeline func below
-## SGDRegressor can also act as a linear SVR using the epsilon_insensitive loss 
+## SGDRegressor can also act as a linear SVM using the epsilon_insensitive loss 
 # 	function or the slightly different squared_epsilon_insensitive (which penalizes outliers more)
 class TweetClassifierRegression(TweetClassifier):
     # Class constructor
@@ -364,7 +364,7 @@ class TweetClassifierLossSquared(TweetClassifier):
 ## Sub class to perform linear regression tweet classification
 ## SGDRegressor is a linear model fitted by minimizing a regularized empirical loss with SGD
 ## SGDRegressor mimics a linear regression using the squared_loss loss parameter and it can also act as
-# 	a linear SVR using the epsilon_insensitive loss function or the slightly different squared_epsilon_insensitive 
+# 	a linear SVM using the epsilon_insensitive loss function or the slightly different squared_epsilon_insensitive 
 # 	(which penalizes outliers more)
 class TweetRegressor(TweetClassifier):
     # Class constructor
