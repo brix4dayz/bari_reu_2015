@@ -7,7 +7,7 @@ import sys
 
 import os
 sys.path.append(os.path.realpath('../census'))
-import bostonmap as bm
+import bostonmap2 as bm
 
 # time_fmt declares the format for the time data
 
@@ -43,12 +43,13 @@ for l in latents:
 
     boston.dataPoints = np.array(temp)
 
-    boston.df_map['count'] = boston.df_map['land_info'].map(lambda x: (boston.dataPoints == int(x['CT_ID_10'])).sum())
-    boston.df_map['density_km'] = boston.df_map['count'] / boston.df_map['area_km']
-    boston.df_map.density_km.fillna(0, inplace=True)
-    densities.append(list(boston.df_map['density_km']))
-    boston.df_map['avg'] += boston.df_map['density_km']
-    boston.df_map.drop(['count', 'density_km'], axis=1, inplace=True)
+    boston.df_map['count'] = boston.df_map['CT_ID_10'].map(lambda x: float((boston.dataPoints == int(x)).sum()))
+    boston.df_map['POP100'] = boston.df_map['POP100'].apply(int)
+    boston.df_map['density'] = (boston.df_map['count'] * 1000) / boston.df_map['POP100']
+    boston.df_map.density.fillna(0, inplace=True)
+    densities.append(list(boston.df_map['density']))
+    boston.df_map['avg'] += boston.df_map['density']
+    boston.df_map.drop(['count', 'density'], axis=1, inplace=True)
 
   boston.df_map['avg'] /= ttlDays
 
@@ -70,14 +71,14 @@ for l in latents:
   boston.df_map['med'] = medians
 
   for d in densities:
-    boston.df_map['density_km'] = d
-    boston.df_map['stdev'] += (boston.df_map['avg'] - boston.df_map['density_km'])**2
+    boston.df_map['density'] = d
+    boston.df_map['stdev'] += (boston.df_map['avg'] - boston.df_map['density'])**2
 
   boston.df_map['stdev'] = (boston.df_map['stdev']/ttlDays)**0.5
 
   strings = []
   for i, row in boston.df_map.iterrows():
-    temp = row['land_info']['CT_ID_10'] + "," + str(row['avg']) + "," + str(row['stdev']) + "," + str(row['med'])
+    temp = row['CT_ID_10'] + "," + str(row['avg']) + "," + str(row['stdev']) + "," + str(row['med'])
     strings.append(temp)
 
   with open(l + '_2013_daily_avg.csv', 'w') as f:

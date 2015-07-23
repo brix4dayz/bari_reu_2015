@@ -13,7 +13,7 @@ import sys
 
 import os
 sys.path.append(os.path.realpath('../census'))
-import bostonmap as bm
+import bostonmap2 as bm
 
 
 # time_fmt declares the format for the time data
@@ -53,9 +53,9 @@ with open(filename) as csvfile:
                 if d == currentDay:
                     reports.append(e)
                 elif d == currentDay + 1:                    
-                    boston = bm.BostonScatter(reports)
-                    boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
-                        title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
+                    # boston = bm.BostonScatter(reports)
+                    # boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
+                    #     title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
                     boston = bm.BostonDensity(reports)
                     boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay),
                         title='Locations of 311 Reports in 4-' + str(currentDay) + '-13')
@@ -64,10 +64,11 @@ with open(filename) as csvfile:
                     f.write(boston.highest)
                     f.close()
                     currentDay += 1
+                    plt.close('all')
                  
-boston = bm.BostonScatter(reports)
-boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
-    title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
+# boston = bm.BostonScatter(reports)
+# boston.plotMap(outname=prefix + '_bombday_scatter_311_' + str(currentDay),
+#     title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
 boston = bm.BostonDensity(reports)
 boston.plotMap(outname=prefix + '_bombday_density_311_' + str(currentDay),
     title='Locations of 311 Reports in 4-' + str(currentDay) + '-13')
@@ -75,3 +76,4 @@ f = open(prefix + "_most_dense_311_4-" + str(currentDay) + "-13.csv", "w")
 currentDay += 1
 f.write(boston.highest)
 f.close()
+plt.close('all')
