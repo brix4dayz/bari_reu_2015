@@ -220,7 +220,7 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
     # Overriding function to build the quadratic SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(), # Create a vector of feature frequencies
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='squared_hinge'))]) # Use the quadratic SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
@@ -251,7 +251,7 @@ class TweetClassifierModifiedSVM(TweetClassifier):
     # Overriding function to build the smoothed SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(), # Create a vector of feature frequencies
+        self.pipeline = Pipeline([('vect', CountVectorizer()), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(loss='modified_huber'))]) # Use the smoothed SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning

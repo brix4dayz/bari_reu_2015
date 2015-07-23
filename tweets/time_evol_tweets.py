@@ -12,6 +12,15 @@ import os
 import sys
 sys.path.append(os.path.realpath('../census/'))
 import bostonmap as bm
+sys.path.append(os.path.realpath('./classifiers/'))
+import tweetclassifier as tc
+
+paths = {'sad':'/sadTraining.txt', 'fearful':'/fearfulTraining.txt', 'angry':'/angryTraining.txt', 'calm':'/calmTraining.txt',
+ 'excited':'/excitedTraining.txt', 'other':'/otherTraining.txt'}
+
+cats = paths.keys()
+
+clssfr = tc.TweetClassifierLinearSVM(paths, twc.cleanForSentiment)
 
 
 def getTimeString(currentHour):
@@ -35,6 +44,13 @@ tweet_time_fmt = twc.getTwitterTimeFmt()
 kwTweets = []
 currentHour = 14
 
+sentimentTweets = {}
+for c in cats:
+    sentimentTweets[c] = []
+
+tweetList = []
+textList = []
+
 with open('recleaned_geo_tweets_12-22.csv') as csvfile:
     # reads first line of csv to determine keys for the tweet hash, tweets 
     # is an iterator through the list of tweet hashes the DictReader makes
@@ -45,28 +61,55 @@ with open('recleaned_geo_tweets_12-22.csv') as csvfile:
         if tweetData['time'] != "":
             # parse date/time into object
             date = time.strptime(tweetData['time'], tweet_time_fmt)
-            if date.tm_mday == 15 and twc.tweetContainsKeyword(tweetData['tweet_text']):
+            #if date.tm_mday == 15 and twc.tweetContainsKeyword(tweetData['tweet_text']):
+            if date.tm_mday == 15:
                 if date.tm_hour == currentHour:
-                    kwTweets.append(tweetData)
+                    #kwTweets.append(tweetData)
+                    tweetList.append(tweetData)
+                    textList.append(tweetData['tweet_text'])
                 elif date.tm_hour == currentHour + 1:
                     currentHour += 1
                     timeStr = getTimeString(currentHour)
+                    results = clssfr.classify(textList)
+                    for i in range(0, len(results)):
+                        sentimentTweets[cats[results[i]]].append(tweetList[i])
+
+                    for sentiment in sentimentTweets.keys():
+                        boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
+                        boston.plotMap(outname=sentiment + '_bombing_scatter_' + str(currentHour),
+                            title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
                     # boston = bm.GreaterBostonDensity(kwTweets)
                     # boston.plotMap(outname='bombingDay_density_'+str(currentHour), 
                     #     title='Density of Keyword Tweets At ' + timeStr)
-                    boston = bm.GreaterBostonScatter(kwTweets)
-                    boston.plotMap(outname='bombingDay_scatter_'+str(currentHour),
-                        title='Locations of Keyword Tweets At ' + timeStr)
-                    kwTweets.append(tweetData)
+                    # boston = bm.GreaterBostonScatter(kwTweets)
+                    # boston.plotMap(outname='bombingDay_scatter_'+str(currentHour),
+                    #     title='Locations of Keyword Tweets At ' + timeStr)
+                    # kwTweets.append(tweetData)
                     plt.close('all')
                     print "Done with " + timeStr
+                    del tweetList
+                    del textList
+                    tweetList = [tweetData]
+                    textList = [tweetData['tweet_text']]
 
 
 currentHour += 1
 timeStr = getTimeString(currentHour)
-boston = bm.GreaterBostonScatter(kwTweets)
-boston.plotMap(outname='bombingDay_scatter_'+str(currentHour),
-    title='Locations of Keyword Tweets At ' + timeStr)
+results = clssfr.classify(textList)
+for i in range(0, len(results)):
+    sentimentTweets[cats[results[i]]].append(tweetList[i])
+
+for sentiment in sentimentTweets.keys():
+    boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
+    boston.plotMap(outname=sentiment + '_bombing_scatter_' + str(currentHour),
+        title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
+
+    boston = bm.GreaterBostonDensity(sentimentTweets[sentiment])
+    boston.plotMap(outname=sentiment + '_bombing_density_' + str(currentHour),
+        title='Density of ' + sentiment.title() + ' Tweets At ' + timeStr)
+# boston = bm.GreaterBostonScatter(kwTweets)
+# boston.plotMap(outname='bombingDay_scatter_'+str(currentHour),
+#     title='Locations of Keyword Tweets At ' + timeStr)
 
 # boston = bm.GreaterBostonDensity(kwTweets)
 # del(kwTweets)
