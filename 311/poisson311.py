@@ -11,8 +11,6 @@ avgs = {}
 for k in keys:
   with open(k + '_avgs.pkl', 'rb') as f:
     avgs[k] = cp.load(f)
-    print avgs[k]
-
 
 def poissonProb(dispatches, ct, latent):
   global avgs
