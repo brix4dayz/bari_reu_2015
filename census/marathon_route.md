@@ -2,8 +2,8 @@
 
 Map (lon=x,lat=y)
 
-- Lower left: -71.5457, 42.2084 
-- Upper right: -70.8975, 42.4014 
+- Lower left: -71.5688, 42.1575 
+- Upper right: -70.6616, 42.6296 
 
 
 Marathon Route: http://www.bostonmagazine.com/news/blog/2015/04/15/boston-marathon-google-map/

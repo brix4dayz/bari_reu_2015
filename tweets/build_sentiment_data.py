@@ -1,52 +1,58 @@
 # author: Hayden Fuss
 
 import csv
-import random
-import twittercriteria as twc
+import numpy as np
+import re
 
-ll = (-71.5457, 42.2084)
-ur = (-70.8975, 42.4014)
+unknownTweets = []
 
-def randomIndices(high, size=1500):
-  indx = []
-  deck = list(range(0, high))
-  random.shuffle(deck)
-  for i in range(0, size):
-    indx.append(deck.pop())
-  return indx
+fields = None
 
-yMax = 0.0
-
-outsideTweets = []
-
-with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
+with open('cleaned_geo_tweets_4_12_22.csv') as csvfile:
   tweets = csv.DictReader(csvfile)
+  fields = tweets.fieldnames
   for t in tweets:
-    if t['time'] != '' and t['lat'] != '':
-      x = float(t['lon'])
-      y = float(t['lat'])
-      check = ll[0] <= x and ur[0] >= x and ll[1] <= y and ur[1] >= y
-      if not check:
-        outsideTweets.append(t)
-        if y > yMax:
-          yMax = y
+    unknownTweets.append(t)
 
-print len(outsideTweets)
-print yMax
+print len(unknownTweets)
 
-indices = randomIndices(len(outsideTweets), 2100)
+trainingTweets = []
 
-data = {'indices':{}, 'tweets':{}}
+for i in range(0,3600):
+  j = np.random.randint(len(unknownTweets))
+  trainingTweets.append(unknownTweets.pop(j))
 
-data['indices']['hayden'] = indices[:700]
+print len(trainingTweets)
+print len(unknownTweets)
 
-data['indices']['jeremy'] = indices[700:1400]
+with open('test_tweets_4_12_22.csv', 'wb') as csvfile:
+  tweets = csv.DictWriter(csvfile, fieldnames=fields)
+  tweets.writeheader()
+  for t in unknownTweets:
+    tweets.writerow(t)
 
-data['indices']['liz'] = indices[1400:]
+trainingText = []
 
-for person in data['indices'].keys():
-  data['tweets'][person] = []
-  for i in data['indices'][person]:
-    data['tweets'][person].append(twc.cleanForSentiment(outsideTweets[i]['tweet_text']))
-  with open(person + '_training.txt', 'w') as f:
-    f.write('\n'.join(data['tweets'][person]))
+with open('training_tweets_4_12_22.csv', 'wb') as csvfile:
+  tweets = csv.DictWriter(csvfile, fieldnames=fields)
+  tweets.writeheader()
+  for t in trainingTweets:
+    trainingText.append(re.sub(r"\r|\r\n|\n", r" ", t['tweet_text']))
+    tweets.writerow(t)
+
+print len(trainingText)
+del unknownTweets
+del trainingTweets
+
+trainingTweets = {'hayden':{'1':trainingText[:400], '2':trainingText[1200:1600], '3':trainingText[2400:2800]},
+                  'liz':{'1':trainingText[400:800], '2':trainingText[1600:2000], '3':trainingText[2800:3200]},
+                  'jeremy':{'1':trainingText[800:1200], '2':trainingText[2000:2400], '3':trainingText[3200:3600]}}
+
+for name in trainingTweets.keys():
+  for num in trainingTweets[name].keys():
+    with open(name + '_' + num + '.txt', 'w') as f:
+      f.write('\n'.join(trainingTweets[name][num]))
+
+
+
+
