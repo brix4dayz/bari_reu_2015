@@ -1,6 +1,6 @@
 ############################################################################################################################
 # author: Hayden Fuss
-# last edited: Monday, July 20, 2015
+# last edited: Thursday, July 23, 2015
 #
 # Module for plotting data over a map of greater Boston using census data. Given a tuple/list of dictionaries, which
 # have 'lat' and 'lon' key/value pairs, these classes can plot the data over the map. There are both scatter
@@ -319,8 +319,8 @@ class BostonDensity(BostonScatter):
   def dataDF(self):
     super(BostonDensity, self).dataDF()
 
-    self.df_map['count'] = self.df_map['poly'].map(lambda x: float(len(filter(prep(x).contains, self.dataPoints))))
-    self.df_map['POP100'] = self.df_map['POP100'].apply(int)
+    self.df_map['count'] = self.df_map['poly'].map(lambda x: int(len(filter(prep(x).contains, self.dataPoints))))
+    self.df_map['POP100'] = self.df_map['POP100'].apply(float)
     self.df_map['density'] = (self.df_map['count'] * 1000) / self.df_map['POP100']
     # it's easier to work with NaN values when classifying
     self.df_map.replace(to_replace={'density': {0: np.nan}}, inplace=True)
@@ -383,8 +383,8 @@ class BostonDensityCT(BostonDensity):
 
     self.dataPoints = np.array(temp)
 
-    self.df_map['count'] = self.df_map['CT_ID_10'].map(lambda x: float((self.dataPoints == int(x)).sum()))
-    self.df_map['POP100'] = self.df_map['POP100'].apply(int)
+    self.df_map['count'] = self.df_map['CT_ID_10'].map(lambda x: int((self.dataPoints == int(x)).sum()))
+    self.df_map['POP100'] = self.df_map['POP100'].apply(float)
     self.df_map['density'] = (self.df_map['count'] * 1000) / self.df_map['POP100']
     # it's easier to work with NaN values when classifying
     self.df_map.replace(to_replace={'density': {0: np.nan}}, inplace=True)

@@ -4,6 +4,7 @@ import numpy as np               # arrays for plotting
 import matplotlib.pyplot as plt  # Plotting
 import math                      # ceiling for y-max in plots
 import sys
+import cPickle as cp
 
 import os
 sys.path.append(os.path.realpath('../census'))
@@ -34,7 +35,6 @@ for l in latents:
 
   boston.df_map['avg'] = 0
   ttlDays = len(data)
-  densities = []
   for d in sorted(data):
     boston.dataPoints = data[d]
     temp = []
@@ -43,47 +43,18 @@ for l in latents:
 
     boston.dataPoints = np.array(temp)
 
-    boston.df_map['count'] = boston.df_map['CT_ID_10'].map(lambda x: float((boston.dataPoints == int(x)).sum()))
-    boston.df_map['POP100'] = boston.df_map['POP100'].apply(int)
-    boston.df_map['density'] = (boston.df_map['count'] * 1000) / boston.df_map['POP100']
-    boston.df_map.density.fillna(0, inplace=True)
-    densities.append(list(boston.df_map['density']))
-    boston.df_map['avg'] += boston.df_map['density']
-    boston.df_map.drop(['count', 'density'], axis=1, inplace=True)
+    boston.df_map['count'] = boston.df_map['CT_ID_10'].map(lambda x: int((boston.dataPoints == int(x)).sum()))
+    boston.df_map['avg'] += boston.df_map['count']
+    boston.df_map.drop(['count'], axis=1, inplace=True)
 
   boston.df_map['avg'] /= ttlDays
 
-  boston.df_map['stdev'] = 0
-
-  densities = np.array(densities)
-  tracts = densities.T
-  medians = []
-  for t in tracts:
-    t = np.sort(t)
-    a = len(t)/2
-    med = 0
-    if len(t)%2 == 0:
-      med = (t[a] + t[a-1])/2
-    else:
-      med = t[a]
-    medians.append(med)
-
-  boston.df_map['med'] = medians
-
-  for d in densities:
-    boston.df_map['density'] = d
-    boston.df_map['stdev'] += (boston.df_map['avg'] - boston.df_map['density'])**2
-
-  boston.df_map['stdev'] = (boston.df_map['stdev']/ttlDays)**0.5
-
-  strings = []
+  avgs = {}
   for i, row in boston.df_map.iterrows():
-    temp = row['CT_ID_10'] + "," + str(row['avg']) + "," + str(row['stdev']) + "," + str(row['med'])
-    strings.append(temp)
+    avgs[row['CT_ID_10']] = row['avg']
 
-  with open(l + '_2013_daily_avg.csv', 'w') as f:
-    f.write('CT_ID,AVG,STDDEV,MEDIAN\n')
-    f.write('\n'.join(strings))
+  with open(l + '_avgs.pkl', 'wb') as f:
+    cp.dump(avgs, f)
 
   print "Done with " + l
 
