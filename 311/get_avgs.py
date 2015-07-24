@@ -56,9 +56,11 @@ for l in latents:
 
   boston.df_map['avg'] /= ttlDays
 
-  avgs = {}
-  for i, row in boston.df_map.iterrows():
-    avgs[row['CT_ID_10']] = row['avg']
+  # avgs = {}
+  # for i, row in boston.df_map.iterrows():
+  #   avgs[row['CT_ID_10']] = row['avg']
+
+  avgs = pd.Series(boston.df_map.avg.values, index=boston.df_map.CT_ID_10).to_dict()
 
   with open(l + '_avgs.pkl', 'wb') as f:
     cp.dump(avgs, f)
