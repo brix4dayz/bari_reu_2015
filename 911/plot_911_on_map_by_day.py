@@ -11,7 +11,7 @@ import sys
 import os
 sys.path.append(os.path.realpath('../census'))
 import bostonmap2 as bm
-import poissontracts as pts
+import poisson911 as pts
 
 # time_fmt declares the format for the time data
 
@@ -51,9 +51,9 @@ for l in latents:
         boston = bm.BostonDensityCT(data[d])
         boston.plotMap(outname=l + '_bombday_density_911_' + str(d),
             title='Density of ' + l.title() + ' 911 dispatches, 4-' + str(d) + '-13')
-        # f = open(l + "_most_dense_911_4-" + str(d) + "-13.csv", "w")
-        # f.write(boston.highest)
-        # f.close()
+        f = open(l + "_most_dense_911_4-" + str(d) + "-13.csv", "w")
+        f.write(boston.highest)
+        f.close()
 
         with open(l + "_response_tracts_911_4-" + str(d) + "-13.csv", "w") as f:
             ct_counts = []

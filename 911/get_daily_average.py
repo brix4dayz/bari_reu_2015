@@ -9,6 +9,7 @@ import cPickle as cp
 import os
 sys.path.append(os.path.realpath('../census'))
 import bostonmap2 as bm
+import pandas as pd
 
 # time_fmt declares the format for the time data
 
