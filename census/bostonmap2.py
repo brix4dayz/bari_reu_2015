@@ -48,6 +48,10 @@ countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7
                 '027':'#32B126', '019':'#B66497'}
 suffolkID = '025'
 
+# change these
+lowerLeft = (-71.5457, 42.1697)
+upperRight = (-70.8975, 42.4014)
+
 route = [(-71.5166, 42.2307),
          (-71.501906, 42.236432),
          (-71.484327, 42.242133),
@@ -407,8 +411,8 @@ class GreaterBostonScatter(BostonScatter):
     self.dataPoints = dataPoints
     self.shpfile = myDir + stateTracts
     self.extra = 0.01
-    self.ll = (-71.5457, 42.1697)
-    self.ur = (-70.8975, 42.4014)
+    self.ll = lowerLeft
+    self.ur = upperRight
     self.coords = list(chain(self.ll, self.ur))
     self.w, self.h = self.coords[2] - self.coords[0], self.coords[3] - self.coords[1]
     self.routeColor = 'w'
