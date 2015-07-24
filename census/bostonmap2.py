@@ -356,9 +356,9 @@ class BostonDensity(BostonScatter):
     # draw tracts with black outline. make suffolk (boston) thicker
     super(BostonDensity, self).patchesDF()
 
-    self.jenks_labels = ["<= %0.1f per 1000 people$(%s tracts)" % (b, c) for b, c in zip(
+    self.jenks_labels = ["<= %0.1f per 1000 people (%s tracts)" % (b, c) for b, c in zip(
     self.breaks.bins, self.breaks.counts)]
-    self.jenks_labels.insert(0, '<= 0.0 per 1000 people$(%s tracts)' % len(self.df_map[self.df_map['density'].isnull()]))
+    self.jenks_labels.insert(0, '<= 0.0 per 1000 people (%s tracts)' % len(self.df_map[self.df_map['density'].isnull()]))
     return
 
   def data(self):
@@ -489,9 +489,9 @@ class GreaterBostonDensity(GreaterBostonScatter):
       lw=0.25 if (row['COUNTY'] != suffolkID) else 0.8,
       alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
 
-    self.jenks_labels = ["<= %0.1f/km$^2$(%s tracts)" % (b, c) for b, c in zip(
+    self.jenks_labels = ["<=$%0.1f/km$^2$ (%s tracts)" % (b, c) for b, c in zip(
     self.breaks.bins, self.breaks.counts)]
-    self.jenks_labels.insert(0, '<= 0.0/km$^2$(%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
+    self.jenks_labels.insert(0, '<=$0.0/km$^2$ (%s tracts)' % len(self.df_map[self.df_map['density_km'].isnull()]))
     return
 
   def data(self):

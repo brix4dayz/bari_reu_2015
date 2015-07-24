@@ -50,7 +50,7 @@ for l in latents:
     for d in sorted(data):                              
         boston = bm.BostonDensityCT(data[d])
         boston.plotMap(outname=l + '_bombday_density_911_' + str(d),
-            title='Density of 911 dispatches, 4-' + str(d) + '-13')
+            title='Density of ' + l.title() + ' 911 dispatches, 4-' + str(d) + '-13')
         # f = open(l + "_most_dense_911_4-" + str(d) + "-13.csv", "w")
         # f.write(boston.highest)
         # f.close()
