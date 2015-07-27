@@ -31,8 +31,11 @@ with open(name + "_" + str(num) + ".txt", "r") as inFile:
     sentiment = ''
     while (not sentiment in sents):
       sentiment = raw_input("Enter the tweets sentiment: (c-alm, e-xcited, a-angry, f-earful, s-ad, p-ositive, n-egative, u-neutral, or o-ther (not English)): ")
-      sentiment = sentiment.lower()[0]
-    
+      if sentiment != "":
+        sentiment = sentiment.lower()[0]
+      else:
+        sentiment = ''
+
     if sentiment == 'c':
       calm.append(tweet)
     elif sentiment == 'a':
@@ -54,8 +57,11 @@ with open(name + "_" + str(num) + ".txt", "r") as inFile:
       relevance = ''
       while (not relevance in rels):
         relevance = raw_input("Enter the tweets relevance: (r-elevant, i-rrelevant or n-one (not English)): ")
-        relevance = relevance.lower()[0]
-      
+        if relevance != "":
+          relevance = relevance.lower()[0]
+        else:
+          relevance = ''
+
       if relevance == 'r':
         relevant.append(tweet)
       elif relevance == 'i':
