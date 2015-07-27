@@ -1,6 +1,6 @@
 # Author: Elizabeth Brooks
 # File: tweetclassifier.py
-# Date Modified: 07/14/2015
+# Date Modified: 07/27/2015
 # Edited: Hayden Fuss
 
 # Begin script
@@ -64,11 +64,11 @@ class TweetClassifier(object):
                     self.tweets.append(line)
                     self.labels.append(self.categories.index(category))
         self.labels = np.array(self.labels)
-		## The classifiers have to be fitted with two arrays: 
-		# 	an array X of size [n_samples, n_features] holding the training samples
-		# 	and an array Y of size [n_samples] holding the target values (class labels) for the training samples
+	## The classifiers have to be fitted with two arrays: 
+	#   an array X of size [n_samples, n_features] holding the training samples
+	#   and an array Y of size [n_samples] holding the target values (class labels) for the training samples
         
-		# End of func return statement
+	# End of func return statement
         return
     # End initDictSet
     
@@ -142,7 +142,7 @@ class TweetClassifier(object):
         # End of func return statement
         return
     # End getGridSearch 
-# End class TweetClassifier
+# End class TweetClassifier super class
 
 ##########################################################################################################################
 
