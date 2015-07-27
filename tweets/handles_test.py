@@ -8,7 +8,7 @@ handles = {}
 
 senders = {}
 
-with open('cleaned_geo_tweets_Apr_12_to_22.csv') as csvfile:
+with open('cleaned_geo_tweets_4_12_22.csv') as csvfile:
   twitterData = csv.DictReader(csvfile)
   for tweet in twitterData:
     if tweet['time'] != "":
