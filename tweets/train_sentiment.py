@@ -30,14 +30,7 @@ with open(name + "_" + str(num) + ".txt", "r") as inFile:
     tweet = twc.cleanForSentiment(tweet)
     sentiment = ''
     while (not sentiment in sents):
-      try:
         sentiment = raw_input("Enter the tweets sentiment: (c-alm, e-xcited, a-angry, f-earful, s-ad, p-ositive, n-egative, u-neutral, or o-ther (not English)): ")
-        if sentiment != "":
-          sentiment = sentiment.lower()[0]
-        else:
-          sentiment = ''
-      finally:
-        sentiment = raw_input("Please ReEnter the tweets sentiment: (c-alm, e-xcited, a-angry, f-earful, s-ad, p-ositive, n-egative, u-neutral, or o-ther (not English)): ")
         if sentiment != "":
           sentiment = sentiment.lower()[0]
         else:
@@ -63,14 +56,7 @@ with open(name + "_" + str(num) + ".txt", "r") as inFile:
     if num == 1:
       relevance = ''
       while (not relevance in rels):
-        try:
           relevance = raw_input("Enter the tweets relevance: (r-elevant, i-rrelevant or n-one (not English)): ")
-          if relevance != "":
-            relevance = relevance.lower()[0]
-          else:
-            relevance = ''
-        finally:
-          relevance = raw_input("Please ReEnter the tweets relevance: (r-elevant, i-rrelevant or n-one (not English)): ")
           if relevance != "":
             relevance = relevance.lower()[0]
           else:
