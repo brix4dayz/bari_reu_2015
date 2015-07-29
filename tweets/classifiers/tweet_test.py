@@ -7,15 +7,15 @@ currentDir = os.getcwd()
 def cleanNothing(tweet):
   return tweet
 
-trainingPaths = {'angry':'/sentimentData/angryTraining_1.txt', 'sad':'/sentimentData/sadTraining_1.txt',
- 'calm':'/sentimentData/calmTraining_1.txt', 'fearful':'/sentimentData/fearfulTraining_1.txt', 'positive':'/sentimentData/positiveTraining_1.txt',
- 'excited':'/sentimentData/excitedTraining_1.txt', 'negative':'/sentimentData/negativeTraining_1.txt', 'neutral':'/sentimentData/neutralTraining_1.txt'}
+trainingPaths = {'angry':'/sentimentData/angryTraining.txt', 'sad':'/sentimentData/sadTraining.txt',
+ 'calm':'/sentimentData/calmTraining.txt', 'fearful':'/sentimentData/fearfulTraining.txt', 'positive':'/sentimentData/positiveTraining.txt',
+ 'excited':'/sentimentData/excitedTraining.txt', 'negative':'/sentimentData/negativeTraining.txt', 'neutral':'/sentimentData/neutralTraining.txt'}
 
 categories = trainingPaths.keys()
 
-testPaths = {'angry':'/sentimentData/jeremy_2_angry.txt', 'sad':'/sentimentData/jeremy_2_sad.txt',
- 'calm':'/sentimentData/jeremy_2_calm.txt', 'fearful':'/sentimentData/jeremy_2_fearful.txt', 'positive':'/sentimentData/jeremy_2_positive.txt',
- 'excited':'/sentimentData/jeremy_2_excited.txt', 'negative':'/sentimentData/jeremy_2_negative.txt', 'neutral':'/sentimentData/jeremy_2_neutral.txt'}
+testPaths = {'angry':'/sentimentData/hayden_3_angry.txt', 'sad':'/sentimentData/hayden_3_sad.txt',
+ 'calm':'/sentimentData/hayden_3_calm.txt', 'fearful':'/sentimentData/hayden_3_fearful.txt', 'positive':'/sentimentData/hayden_3_positive.txt',
+ 'excited':'/sentimentData/hayden_3_excited.txt', 'negative':'/sentimentData/hayden_3_negative.txt', 'neutral':'/sentimentData/hayden_3_neutral.txt'}
 
 actual = np.array([])
 
@@ -34,7 +34,19 @@ for p in testPaths.keys():
 def testClassifier(clssfr):
   print "Testing " + type(clssfr).__name__ + "..."
   predicted = clssfr.classify(testTweets)
-  print clssfr.getConfusionMatrix(actual, predicted)
+  mat = clssfr.getConfusionMatrix(actual, predicted)
+  num = len(mat)
+  correct = 0
+  total = 0
+  for i in range(0, num):
+    for j in range(0, num):
+      total += mat[i][j]
+      if i == j:
+        correct += mat[i][j]
+  #print correct
+  #print total
+  print "Accuracy: " + str(float(correct)/total) 
+  print mat
   print "...done.\n"
 
 relClssr = tc.TweetClassifier(trainingPaths, cleanNothing)

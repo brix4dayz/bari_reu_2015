@@ -1,118 +1,82 @@
 import tweetclassifier as tc
-import twittercriteria as twc
+import os
 import numpy as np
-import matplotlib.pyplot as plt
 
-testRelevant = None
-testIrrelevant = None
+currentDir = os.getcwd()
 
-trainingPaths = {'relevant':'/relevantTraining.txt', 'irrelevant':'/irrelevantTraining.txt'}
+def cleanNothing(tweet):
+  return tweet
 
-def initTests():
-    global testRelevant, testIrrelevant
-    testRelevant = ["being 10 miles away from this explosion scares the shit out of me #prayersforboston",
-        "ahhh! \"@bostonglobe: breaking news: neighbors say police officers have told them the suspect in the watertown backyard is covered in blood.\"",
-        "got him #dontfuckwithboston #bostonpride",
-        "@bravoandy was at the marathon monday and on lockdown today. won't stop us from #bostonspiritday #bostonstrong",
-        "about #bostonmarathonexplosion: \"@savannahguthrie: fmr atf agent calls these devices \"hellish and diabolical\" in design - on @todayshow\"",
-        "thoughts and prayers go out to all those in the explosion #prayforboston",
-        "#prayingforboston as i try to sleep tonight, goodnight world. #findpeace",
-        "boston bombers are brothers. #watertown #boston",
-        "wait it says hes cornered. it says he his cornered #watertown",
-        "bomb at the finish line??",
-        "boston, what is going on? #prayforbostom #mitshooting",
-        "#watertown stay vigilant, there is no where for this asshole to go. each minute that goes by they are closer to finding him.",
-        "boston is all fucked up and shut down to lockdown died not a soul in sight they need to catch the 2nd suspect #watertown",
-        "video of the explosion taken from the finish line. just horrible.",
-        "@dailystarnews: boston marathon bombings kill 3, hurt over 100 "]
+trainingPaths = {'relevent':'/relevanceData/relevantTraining2.txt', 'irrelevent':'/relevanceData/irrelevantTraining2.txt'}
 
-    testIrrelevant = ["it\'s not a #bostonmarathon until @theeisnotsilent has stolen cheese off a stranger\'s duck plate on their front lawn.",
-        "sir, the cowbell around your neck is unnecessary. #bostonmarathon",
-        "matches the hair @theeisnotsilent #bostonmarathon",
-        "@kyle_kysmitty @teamhendrick @jeffgordonweb @kansasspeedway. thats the distance of the marathon, 26.2 miles.  thank you hms.",
-        "sitting on the #mbta watching marathon runners go by, i can't believe rosie ruiz got ahead of the pack on this slow-ass train.",
-        "happy hump day! time to #getnaked drinking a naked hopularity by @slumbrew at @hopsexplosion",
-        "good luck to all of those at the boston marathon finish line today. sending love and good thoughts!",
-        "praying for good health!!!",
-        "love seeing all those marathon runners rocking their jackets",
-        ".2 to go #youcandoit @ almost the finish line ",
-        "#marathonmonday #gocrazy #cheerloud @go4th_",
-        "i'm at not your average joe's - @nyajoes (watertown, ma)",
-        "midnight marathon bike ride ",
-        "it's good to be home. #bostonstrong @ fenway park ",
-        "happy birthdayyy @jordancollier23"]
-    return
+categories = trainingPaths.keys()
 
-# def scoreMND(chiK):
-#     initTests()
-#     clssr = rc.RelevanceMNB(chiK)
-#     clssr.test(testRelevant, testIrrelevant)
-#     return clssr.balancedF()
+testPaths = {'relevent':'/relevanceData/relevantTest2.txt', 'irrelevent':'/relevanceData/irrelevantTest2.txt'}
 
-def testRelevantClassifier(clssr):
-    initTests()
-    print "Testing " + type(clssr).__name__ + "..."
-    rel = clssr.classify(testRelevant)
-    irr = clssr.classify(testIrrelevant)
-    trueRel = np.empty(len(rel))
-    trueRel.fill(0)
-    trueIrr = np.empty(len(irr))
-    trueIrr.fill(1)
-    print clssr.getConfusionMatrix(np.append(trueRel, trueIrr), np.append(rel, irr))
-    print "...done.\n"      
+actual = np.array([])
 
-if __name__ == "__main__":
-    relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
+testTweets = []
 
-    testRelevantClassifier(relClssr)
+for p in testPaths.keys():
+  temp = []
+  with open(currentDir + testPaths[p], 'r') as f:
+    for line in f:
+      temp.append(line.rstrip('\n'))
+  testTweets.extend(temp)
+  temp = np.empty(len(temp))
+  temp.fill(categories.index(p))
+  actual = np.append(actual, temp)
 
-    relClssr = tc.TweetClassifierMNB(trainingPaths, twc.cleanUpTweet)
+def testClassifier(clssfr):
+  print "Testing " + type(clssfr).__name__ + "..."
+  predicted = clssfr.classify(testTweets)
+  mat = clssfr.getConfusionMatrix(actual, predicted)
+  num = len(mat)
+  correct = 0
+  total = 0
+  for i in range(0, num):
+    for j in range(0, num):
+      total += mat[i][j]
+      if i == j:
+        correct += mat[i][j]
+  #print correct
+  #print total
+  print "Accuracy: " + str(float(correct)/total) 
+  print mat
+  print "...done.\n"
 
-    testRelevantClassifier(relClssr)
+relClssr = tc.TweetClassifier(trainingPaths, cleanNothing)
 
-    relClssr = tc.TweetClassifierLinearSVM(trainingPaths, twc.cleanUpTweet)
+testClassifier(relClssr)
 
-    testRelevantClassifier(relClssr)
+relClssr = tc.TweetClassifierLinearSVM(trainingPaths, cleanNothing)
 
-    #relClssr.getGridSearch()
+testClassifier(relClssr)
 
-    relClssr = tc.TweetClassifierModifiedSVM(trainingPaths, twc.cleanUpTweet)
+relClssr = tc.TweetClassifierModifiedSVM(trainingPaths, cleanNothing)
 
-    testRelevantClassifier(relClssr)
+testClassifier(relClssr)
 
-    #relClssr.getGridSearch()
+relClssr = tc.TweetClassifierQuadraticSVM(trainingPaths, cleanNothing)
 
-    relClssr = tc.TweetClassifierQuadraticSVM(trainingPaths, twc.cleanUpTweet)
+testClassifier(relClssr)
 
-    testRelevantClassifier(relClssr)
+relClssr = tc.TweetClassifierLogSVM(trainingPaths, cleanNothing)
 
-    #relClssr.getGridSearch()
+testClassifier(relClssr)
 
-    # relClssr = tc.TweetClassifier(trainingPaths, twc.cleanUpTweet)
+relClssr = tc.TweetClassifierPerceptronSVM(trainingPaths, cleanNothing)
 
-    # testRelevantClassifier(relClssr)
+testClassifier(relClssr)
 
-    # print len(clsrNB.wordFeatures)
+relClssr = tc.TweetClassifierLossSquared(trainingPaths, cleanNothing)
 
-    # chis = range(1000, len(clsrNB.wordFeatures)+1, 2)
+testClassifier(relClssr)
 
-    # fs = []
+relClssr = tc.TweetClassifierMaxEnt(trainingPaths, cleanNothing)
 
-    # for c in chis:
-    #     fs.append(scoreMND(c))
+testClassifier(relClssr)
 
-    # chis = np.array(chis)
-    # fs = np.array(fs)
+relClssr = tc.TweetClassifierBNB(trainingPaths, cleanNothing)
 
-    # bestF = np.amax(fs)
-    # bestChi = chis[np.argmax(fs)]
-
-    # print bestF
-    # print bestChi
-
-    # plt.plot(chis, fs, 'b')
-    # plt.plot(bestChi, bestF, '^g')
-
-    # plt.show()
-
-    #clsrSVM = rc.RelevanceSVM()
+testClassifier(relClssr)

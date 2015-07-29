@@ -30,7 +30,19 @@ for p in testPaths.keys():
 def testClassifier(clssfr):
   print "Testing " + type(clssfr).__name__ + "..."
   predicted = clssfr.classify(testTweets)
-  print clssfr.getConfusionMatrix(actual, predicted)
+  mat = clssfr.getConfusionMatrix(actual, predicted)
+  num = len(mat)
+  correct = 0
+  total = 0
+  for i in range(0, num):
+    for j in range(0, num):
+      total += mat[i][j]
+      if i == j:
+        correct += mat[i][j]
+  #print correct
+  #print total
+  print "Accuracy: " + str(float(correct)/total) 
+  print mat
   print "...done.\n"
 
 relClssr = tc.TweetClassifier(trainingPaths, cleanNothing)
