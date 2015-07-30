@@ -80,3 +80,7 @@ testClassifier(relClssr)
 relClssr = tc.TweetClassifierBNB(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
+
+relClssr = tc.TweetClassifierRegression(trainingPaths, cleanNothing)
+
+testClassifier(relClssr)

@@ -7,11 +7,11 @@ currentDir = os.getcwd()
 def cleanNothing(tweet):
   return tweet
 
-trainingPaths = {'relevent':'/relevanceData/relevantTraining2.txt', 'irrelevent':'/relevanceData/irrelevantTraining2.txt'}
+trainingPaths = {'relevent':'/relevanceData/relevantTraining.txt', 'irrelevent':'/relevanceData/irrelevantTraining.txt'}
 
 categories = trainingPaths.keys()
 
-testPaths = {'relevent':'/relevanceData/relevantTest2.txt', 'irrelevent':'/relevanceData/irrelevantTest2.txt'}
+testPaths = {'relevent':'/relevanceData/relevantTest.txt', 'irrelevent':'/relevanceData/irrelevantTest.txt'}
 
 actual = np.array([])
 
@@ -78,5 +78,9 @@ relClssr = tc.TweetClassifierMaxEnt(trainingPaths, cleanNothing)
 testClassifier(relClssr)
 
 relClssr = tc.TweetClassifierBNB(trainingPaths, cleanNothing)
+
+testClassifier(relClssr)
+
+relClssr = tc.TweetClassifierRegression(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)

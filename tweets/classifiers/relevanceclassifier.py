@@ -76,8 +76,8 @@ class TweetClassifier(object):
     ## Default multinomial NB using chi squared statistics
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                      ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iFD weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                      #('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
                       #('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the k best features
                       ('clf', MultinomialNB())]) # Use the multinomial NB classifier
 
@@ -119,8 +119,8 @@ class TweetClassifier(object):
     #   except that the parameters of the classifier used to predict is optimized by cross-validation.
     def getGridSearch(self):
         # Set the search parameters
-        parameters = {'vect__ngram_range': [(1,1),(1,2)], # Try either words or bi grams
-                    'vect__max_df': (0.5, 0.75, 1.0),
+        parameters = {'vect__ngram_range': [(1,1),(1,3),(1,2)], # Try either words or bi grams
+                    'vect__max_df': (0.5, 1.0),
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
                     'tfidf__norm': ('l1', 'l2'),
@@ -162,8 +162,8 @@ class TweetClassifierLinearSVM(TweetClassifier):
     # Overriding function to build the linear SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42))]) # Use the SVM classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
         ## By default, SGD supports a linear support vector machine (SVM) using the default args below
@@ -195,8 +195,8 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
     # Overriding function to build the quadratic SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42, loss='squared_hinge'))]) # Use the quadratic SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
@@ -226,8 +226,8 @@ class TweetClassifierModifiedSVM(TweetClassifier):
     # Overriding function to build the smoothed SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42, loss='modified_huber'))]) # Use the smoothed SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
@@ -256,8 +256,8 @@ class TweetClassifierLogSVM(TweetClassifier):
     # Overriding function to build the logistic regression classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42, loss='log'))]) # Use the logistic regression classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
@@ -287,8 +287,8 @@ class TweetClassifierPerceptronSVM(TweetClassifier):
     # Overriding function to build the perceptron algorithm using classifier via a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42, loss='perceptron'))]) # Use the perceptron algorithm for classification
 		## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
@@ -318,8 +318,8 @@ class TweetClassifierRegression(TweetClassifier):
     # Overriding function to build the linear regression classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42, loss='huber', epsilon=0.1))]) # Use the linear regression classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 		## The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
@@ -348,8 +348,8 @@ class TweetClassifierLossSquared(TweetClassifier):
     # Overriding function to build the linear loss classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDClassifier(random_state=42, loss='squared_loss'))]) # Use the classifier for linear loss
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 		
@@ -379,8 +379,8 @@ class TweetRegressor(TweetClassifier):
     # Overriding function to build the regressor using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', SGDRegressor())]) # Use the SGDRegressor classifier
         ## The SGDRegressor estimator works with data represented as dense numpy arrays of floating point values for the features
 		## SGDRegressor default mimics linear regression classification
@@ -413,8 +413,8 @@ class TweetClassifierMaxEnt(TweetClassifier):
 	# Overriding function to build LogisticRegression classifier using a pipeline
     def initPipeline(self):
 	    # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', LogisticRegression())]) # Use LogisticRegression as the estimator
 							
         # Fit the created LogisticRegression classifier
@@ -440,8 +440,8 @@ class TweetClassifierBNB(TweetClassifier):
 	# Overriding function to build BernoulliNB classifier using a pipeline
     def initPipeline(self):
 		# Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
                             ('clf', BernoulliNB())]) # Use the BernoulliNB classifier
 							
         # Fit the created BernoulliNB classifier

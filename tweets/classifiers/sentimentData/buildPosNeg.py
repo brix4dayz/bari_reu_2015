@@ -5,6 +5,8 @@ import numpy as np
 
 sentiments = ['positive', 'negative', 'neutral']
 
+devSize = 100
+
 for s in sentiments:
 
   test = []
@@ -15,7 +17,7 @@ for s in sentiments:
     for line in f:
       tweets.append(line.rstrip('\n'))
 
-  for i in range(0,100):
+  for i in range(0,int(devSize/3.0)):
     j = np.random.randint(len(tweets))
     test.append(tweets.pop(j))
 

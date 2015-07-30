@@ -2,9 +2,11 @@
 
 import numpy as np
 
-sentiments = ['angry', 'calm', 'fearful', 'sad', 'excited', 'positive', 'negative', 'neutral']
+sentiments = {'angry':0.098, 'calm':0.0768, 'fearful':0.037, 'sad':0.081, 'excited':0.147, 'positive':0.095, 'negative':0.123, 'neutral':0.342}
 
-for s in sentiments:
+devSize = 100
+
+for s in sentiments.keys():
 
   test = []
 
@@ -14,7 +16,7 @@ for s in sentiments:
     for line in f:
       tweets.append(line.rstrip('\n'))
 
-  for i in range(0,30):
+  for i in range(0,int(sentiments[s]*devSize)):
     j = np.random.randint(len(tweets))
     test.append(tweets.pop(j))
 
