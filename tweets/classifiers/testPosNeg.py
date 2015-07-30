@@ -1,4 +1,4 @@
-import tweetclassifier as tc
+import tweetclassifier2 as tc
 import os
 import numpy as np
 

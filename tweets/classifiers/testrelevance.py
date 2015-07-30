@@ -1,4 +1,4 @@
-import tweetclassifier as tc
+import relevanceclassifier as tc
 import os
 import numpy as np
 

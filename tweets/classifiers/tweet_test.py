@@ -7,15 +7,15 @@ currentDir = os.getcwd()
 def cleanNothing(tweet):
   return tweet
 
-trainingPaths = {'angry':'/sentimentData/angryTraining.txt', 'sad':'/sentimentData/sadTraining.txt',
- 'calm':'/sentimentData/calmTraining.txt', 'fearful':'/sentimentData/fearfulTraining.txt', 'positive':'/sentimentData/positiveTraining.txt',
- 'excited':'/sentimentData/excitedTraining.txt', 'negative':'/sentimentData/negativeTraining.txt', 'neutral':'/sentimentData/neutralTraining.txt'}
+trainingPaths = {'angry':'/sentimentData/angryTraining_3.txt', 'sad':'/sentimentData/sadTraining_3.txt',
+ 'calm':'/sentimentData/calmTraining_3.txt', 'fearful':'/sentimentData/fearfulTraining_3.txt', 'positive':'/sentimentData/positiveTraining_3.txt',
+ 'excited':'/sentimentData/excitedTraining_3.txt', 'negative':'/sentimentData/negativeTraining_3.txt', 'neutral':'/sentimentData/neutralTraining_3.txt'}
 
 categories = trainingPaths.keys()
 
-testPaths = {'angry':'/sentimentData/hayden_3_angry.txt', 'sad':'/sentimentData/hayden_3_sad.txt',
- 'calm':'/sentimentData/hayden_3_calm.txt', 'fearful':'/sentimentData/hayden_3_fearful.txt', 'positive':'/sentimentData/hayden_3_positive.txt',
- 'excited':'/sentimentData/hayden_3_excited.txt', 'negative':'/sentimentData/hayden_3_negative.txt', 'neutral':'/sentimentData/hayden_3_neutral.txt'}
+testPaths = {'angry':'/sentimentData/hayden_2_angry.txt', 'sad':'/sentimentData/hayden_2_sad.txt',
+ 'calm':'/sentimentData/hayden_2_calm.txt', 'fearful':'/sentimentData/hayden_2_fearful.txt', 'positive':'/sentimentData/hayden_2_positive.txt',
+ 'excited':'/sentimentData/hayden_2_excited.txt', 'negative':'/sentimentData/hayden_2_negative.txt', 'neutral':'/sentimentData/hayden_2_neutral.txt'}
 
 actual = np.array([])
 
