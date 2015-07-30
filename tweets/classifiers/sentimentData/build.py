@@ -14,7 +14,7 @@ for s in sentiments:
     for line in f:
       tweets.append(line.rstrip('\n'))
 
-  for i in range(0,20):
+  for i in range(0,30):
     j = np.random.randint(len(tweets))
     test.append(tweets.pop(j))
 

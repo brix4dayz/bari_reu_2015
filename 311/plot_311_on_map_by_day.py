@@ -18,7 +18,7 @@ import poisson311 as pts
 
 probTol = 0.05
 
-latents = ['pubd', 'public', 'private', 'other']
+latents = ['pubd']
 
 # time_fmt declares the format for the time data
 # year_data declares an empty hash, and the for loop creates further hashes (think: vectors) assigned to the keys of '2012' and '2013'
@@ -51,7 +51,7 @@ for l in latents:
     # boston.plotMap(outname=l + '_bombday_scatter_311_' + str(currentDay),
     #     title='Locations of 311 Reports on 4-' + str(currentDay) + '-13')
     for d in sorted(reports):
-        if l != 'pubd' and d != '22':
+        #if l != 'pubd' and d != '22':
             boston = bm.BostonDensity(reports[d])
             boston.plotMap(outname=l + '_bombday_density_311_' + str(d),
                 title='Locations of ' + l.title() + '311 Reports in 4-' + str(d) + '-13')
