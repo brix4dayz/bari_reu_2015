@@ -150,7 +150,7 @@ class RelevanceClassifier(object):
 ## SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
 ## Note: SGDClassifier supports multi class classification by combining multiple 
 #	binary classifiers in a "one versus all" (OVA) scheme
-class RelevanceClassifierLinearSVM(TweetClassifier):
+class RelevanceClassifierLinearSVM(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -183,7 +183,7 @@ class RelevanceClassifierLinearSVM(TweetClassifier):
 ## Sub class to perform quadratic support vector machine (SVM) tweet classification
 ## SGDClassifier arg loss='squared_hinge' is like hinge, 
 #	which is used for linear SVM, but is quadratically penalized.
-class RelevanceClassifierQuadraticSVM(TweetClassifier):
+class RelevanceClassifierQuadraticSVM(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -214,7 +214,7 @@ class RelevanceClassifierQuadraticSVM(TweetClassifier):
 #	outliers as well as probability estimates.
 ## Note: since they allow to create a probability model, loss="log" 
 #	and loss="modified_huber" are more suitable for OVA classification.
-class RelevanceClassifierModifiedSVM(TweetClassifier):
+class RelevanceClassifierModifiedSVM(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -244,7 +244,7 @@ class RelevanceClassifierModifiedSVM(TweetClassifier):
 ## SGDClassifier arg loss='log' performs logistic regression
 ## Note: since they allow to create a probability model, loss="log" 
 #	and loss="modified_huber" are more suitable for OVA classification.
-class RelevanceClassifierLogSVM(TweetClassifier):
+class RelevanceClassifierLogSVM(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -275,7 +275,7 @@ class RelevanceClassifierLogSVM(TweetClassifier):
 ## Sub class to perform linear regression tweet classification
 ## SGDClassifier arg loss='perceptron' is the linear loss used by the perceptron algorithm
 ## Note: The perceptron algorithm is used for learning weights for features/terms
-class RelevanceClassifierPerceptronSVM(TweetClassifier):
+class RelevanceClassifierPerceptronSVM(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -306,7 +306,7 @@ class RelevanceClassifierPerceptronSVM(TweetClassifier):
 # 	over a certain distance, see epsilon arg description in initPipeline func below
 ## SGDRegressor can also act as a linear SVM using the epsilon_insensitive loss 
 # 	function or the slightly different squared_epsilon_insensitive (which penalizes outliers more)
-class RelevanceClassifierRegression(TweetClassifier):
+class RelevanceClassifierRegression(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -336,7 +336,7 @@ class RelevanceClassifierRegression(TweetClassifier):
 
 ## Sub class to perform tweet classification with linear loss
 ## SGDClassifier arg loss='squred_loss' allows for linear modelling similar to the default SGDRegressor
-class RelevanceClassifierLossSquared(TweetClassifier):
+class RelevanceClassifierLossSquared(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -367,7 +367,7 @@ class RelevanceClassifierLossSquared(TweetClassifier):
 ## SGDRegressor mimics a linear regression using the squared_loss loss parameter and it can also act as
 # 	a linear SVM using the epsilon_insensitive loss function or the slightly different squared_epsilon_insensitive 
 # 	(which penalizes outliers more)
-class RelevanceRegressor(TweetClassifier):
+class RelevanceRegressor(RelevanceClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
@@ -400,7 +400,7 @@ class RelevanceRegressor(TweetClassifier):
 ##########################################################################################################################
 
 # Sub class for creating a classifier for maximum entropy tweet analysis
-class RelevanceClassifierMaxEnt(TweetClassifier):
+class RelevanceClassifierMaxEnt(RelevanceClassifier):
 
 	# Sub class constructor
     def __init__(self, paths, cleaner):
@@ -427,7 +427,7 @@ class RelevanceClassifierMaxEnt(TweetClassifier):
 ##########################################################################################################################
 
 # Sub class for creating a Bernoulli NB classifier for tweet analysis
-class RelevanceClassifierBNB(TweetClassifier):
+class RelevanceClassifierBNB(RelevanceClassifier):
 
 	# Sub class constructor
     def __init__(self, paths, cleaner):
