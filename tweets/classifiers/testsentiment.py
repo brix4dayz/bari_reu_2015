@@ -55,41 +55,41 @@ def testClassifier(clssfr):
   print "...done.\n"
 
 relClssr = tc.TweetClassifier(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierLinearSVM(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierModifiedSVM(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierQuadraticSVM(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierLogSVM(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierPerceptronSVM(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierLossSquared(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierMaxEnt(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierBNB(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
 
 relClssr = tc.TweetClassifierRegression(trainingPaths, cleanNothing)
-
 testClassifier(relClssr)
+relClssr.getGridSearch()
