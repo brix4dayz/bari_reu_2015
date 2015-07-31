@@ -1,3 +1,8 @@
+# Author: Hayden Fuss
+# File: testrelevance.py
+# Date Modified: 07/31/2015
+# Edited: Elizabeth Brooks
+
 import relevanceclassifier as tc
 import os
 import numpy as np
@@ -45,42 +50,42 @@ def testClassifier(clssfr):
   print mat
   print "...done.\n"
 
-relClssr = tc.TweetClassifier(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifier(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierLinearSVM(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierLinearSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierModifiedSVM(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierModifiedSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierQuadraticSVM(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierQuadraticSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierLogSVM(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierLogSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierPerceptronSVM(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierPerceptronSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierLossSquared(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierLossSquared(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierMaxEnt(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierMaxEnt(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierBNB(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierBNB(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierRegression(trainingPaths, cleanNothing)
+relClssr = tc.RelevanceClassifierRegression(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)

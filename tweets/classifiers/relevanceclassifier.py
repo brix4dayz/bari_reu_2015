@@ -1,6 +1,6 @@
 # Author: Elizabeth Brooks
-# File: tweetclassifier.py
-# Date Modified: 07/27/2015
+# File: relevanceclassifier.py
+# Date Modified: 07/31/2015
 # Edited: Hayden Fuss
 
 # Begin script
@@ -35,7 +35,7 @@ current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfra
 ##########################################################################################################################
 
 # Define class to classify tweet relevance
-class TweetClassifier(object):
+class RelevanceClassifier(object):
     # Class constructor to initialize classifier
     def __init__(self, paths, cleaner):
         self.cleaner = cleaner
@@ -142,7 +142,7 @@ class TweetClassifier(object):
         # End of func return statement
         return
     # End getGridSearch 
-# End class TweetClassifier super class
+# End class RelevanceClassifier super class
 
 ##########################################################################################################################
 
@@ -150,11 +150,11 @@ class TweetClassifier(object):
 ## SGDClassifier arg loss='hinge': (soft-margin) linear Support Vector Machine
 ## Note: SGDClassifier supports multi class classification by combining multiple 
 #	binary classifiers in a "one versus all" (OVA) scheme
-class TweetClassifierLinearSVM(TweetClassifier):
+class RelevanceClassifierLinearSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierLinearSVM, self).__init__(paths, cleaner)
+        super(RelevanceClassifierLinearSVM, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -176,18 +176,18 @@ class TweetClassifierLinearSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierLinearSVM sub class
+# End RelevanceClassifierLinearSVM sub class
 
 ##########################################################################################################################
 
 ## Sub class to perform quadratic support vector machine (SVM) tweet classification
 ## SGDClassifier arg loss='squared_hinge' is like hinge, 
 #	which is used for linear SVM, but is quadratically penalized.
-class TweetClassifierQuadraticSVM(TweetClassifier):
+class RelevanceClassifierQuadraticSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierQuadraticSVM, self).__init__(paths, cleaner)
+        super(RelevanceClassifierQuadraticSVM, self).__init__(paths, cleaner)
 		# End of func return statement
         return
     # End sub class constructor
@@ -205,7 +205,7 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierQuadraticSVM sub class
+# End RelevanceClassifierQuadraticSVM sub class
 
 ##########################################################################################################################
 
@@ -214,11 +214,11 @@ class TweetClassifierQuadraticSVM(TweetClassifier):
 #	outliers as well as probability estimates.
 ## Note: since they allow to create a probability model, loss="log" 
 #	and loss="modified_huber" are more suitable for OVA classification.
-class TweetClassifierModifiedSVM(TweetClassifier):
+class RelevanceClassifierModifiedSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierModifiedSVM, self).__init__(paths, cleaner)
+        super(RelevanceClassifierModifiedSVM, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -236,7 +236,7 @@ class TweetClassifierModifiedSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierModifiedSVM sub class
+# End RelevanceClassifierModifiedSVM sub class
 
 ##########################################################################################################################
 
@@ -244,11 +244,11 @@ class TweetClassifierModifiedSVM(TweetClassifier):
 ## SGDClassifier arg loss='log' performs logistic regression
 ## Note: since they allow to create a probability model, loss="log" 
 #	and loss="modified_huber" are more suitable for OVA classification.
-class TweetClassifierLogSVM(TweetClassifier):
+class RelevanceClassifierLogSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierLogSVM, self).__init__(paths, cleaner)
+        super(RelevanceClassifierLogSVM, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -266,7 +266,7 @@ class TweetClassifierLogSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierLogSVM sub class
+# End RelevanceClassifierLogSVM sub class
 # Note: Using loss="log" or loss="modified_huber" enables the predict_proba method, 
 #	which gives a vector of probability estimates per sample.
 
@@ -275,11 +275,11 @@ class TweetClassifierLogSVM(TweetClassifier):
 ## Sub class to perform linear regression tweet classification
 ## SGDClassifier arg loss='perceptron' is the linear loss used by the perceptron algorithm
 ## Note: The perceptron algorithm is used for learning weights for features/terms
-class TweetClassifierPerceptronSVM(TweetClassifier):
+class RelevanceClassifierPerceptronSVM(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierPerceptronSVM, self).__init__(paths, cleaner)
+        super(RelevanceClassifierPerceptronSVM, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -297,7 +297,7 @@ class TweetClassifierPerceptronSVM(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierPerceptronSVM sub class
+# End RelevanceClassifierPerceptronSVM sub class
 
 ##########################################################################################################################
 
@@ -306,11 +306,11 @@ class TweetClassifierPerceptronSVM(TweetClassifier):
 # 	over a certain distance, see epsilon arg description in initPipeline func below
 ## SGDRegressor can also act as a linear SVM using the epsilon_insensitive loss 
 # 	function or the slightly different squared_epsilon_insensitive (which penalizes outliers more)
-class TweetClassifierRegression(TweetClassifier):
+class RelevanceClassifierRegression(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierRegression, self).__init__(paths, cleaner)
+        super(RelevanceClassifierRegression, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -330,17 +330,17 @@ class TweetClassifierRegression(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierRegression sub class
+# End RelevanceClassifierRegression sub class
 
 ##########################################################################################################################
 
 ## Sub class to perform tweet classification with linear loss
 ## SGDClassifier arg loss='squred_loss' allows for linear modelling similar to the default SGDRegressor
-class TweetClassifierLossSquared(TweetClassifier):
+class RelevanceClassifierLossSquared(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetClassifierLossSquared, self).__init__(paths, cleaner)
+        super(RelevanceClassifierLossSquared, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -358,7 +358,7 @@ class TweetClassifierLossSquared(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetClassifierLossSquared sub class
+# End RelevanceClassifierLossSquared sub class
 
 ##########################################################################################################################
 
@@ -367,11 +367,11 @@ class TweetClassifierLossSquared(TweetClassifier):
 ## SGDRegressor mimics a linear regression using the squared_loss loss parameter and it can also act as
 # 	a linear SVM using the epsilon_insensitive loss function or the slightly different squared_epsilon_insensitive 
 # 	(which penalizes outliers more)
-class TweetRegressor(TweetClassifier):
+class RelevanceRegressor(TweetClassifier):
     # Class constructor
     def __init__(self, paths, cleaner):
         # Call the super class constructor which initializes the classifier
-        super(TweetRegressor, self).__init__(paths, cleaner)
+        super(RelevanceRegressor, self).__init__(paths, cleaner)
         # End of func return statement
         return
     # End sub class constructor
@@ -393,19 +393,19 @@ class TweetRegressor(TweetClassifier):
         # End of func return statement
         return
     # End initPipeline override
-# End TweetRegressor sub class
+# End RelevanceRegressor sub class
 ## Note: SGD stands for Stochastic Gradient Descent, where the gradient of the loss is estimated each sample at a time 
 # 	and the model is updated along the way with a decreasing strength schedule (aka learning rate)
 
 ##########################################################################################################################
 
 # Sub class for creating a classifier for maximum entropy tweet analysis
-class TweetClassifierMaxEnt(TweetClassifier):
+class RelevanceClassifierMaxEnt(TweetClassifier):
 
 	# Sub class constructor
     def __init__(self, paths, cleaner):
 		# Call the super class constructor
-        super(TweetClassifierMaxEnt, self).__init__(paths, cleaner)
+        super(RelevanceClassifierMaxEnt, self).__init__(paths, cleaner)
 		# End of func return statement
         return
 	# End sub class constructor
@@ -422,17 +422,17 @@ class TweetClassifierMaxEnt(TweetClassifier):
 		# End of func return statement
         return
 	# End initPipeline override
-# End TweetClassifierMaxEnt sub class
+# End RelevanceClassifierMaxEnt sub class
 
 ##########################################################################################################################
 
 # Sub class for creating a Bernoulli NB classifier for tweet analysis
-class TweetClassifierBNB(TweetClassifier):
+class RelevanceClassifierBNB(TweetClassifier):
 
 	# Sub class constructor
     def __init__(self, paths, cleaner):
 		# Call the super class constructor
-        super(TweetClassifierBNB, self).__init__(paths, cleaner)
+        super(RelevanceClassifierBNB, self).__init__(paths, cleaner)
 		# End of func return statement
         return
 	# End sub class constructor
@@ -449,6 +449,6 @@ class TweetClassifierBNB(TweetClassifier):
 		# End of func return statement
         return
 	# End initPipeline override
-# End TweetClassifierBNB sub class
+# End RelevanceClassifierBNB sub class
 
 # End script

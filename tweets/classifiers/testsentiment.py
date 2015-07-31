@@ -1,3 +1,8 @@
+# Author: Hayden Fuss
+# File: testsentiment.py
+# Date Modified: 07/31/2015
+# Edited: Elizabeth Brooks
+
 import tweetclassifier as tc
 import os
 import numpy as np

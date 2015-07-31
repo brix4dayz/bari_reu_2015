@@ -1,4 +1,9 @@
-import tweetclassifier2 as tc
+# Author: Hayden Fuss
+# File: testposneg.py
+# Date Modified: 07/31/2015
+# Edited: Elizabeth Brooks
+
+import posnegclassifier as tc
 import os
 import numpy as np
 
@@ -45,42 +50,42 @@ def testClassifier(clssfr):
   print mat
   print "...done.\n"
 
-relClssr = tc.TweetClassifier(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifier(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierLinearSVM(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierLinearSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierModifiedSVM(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierModifiedSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierQuadraticSVM(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierQuadraticSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierLogSVM(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierLogSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierPerceptronSVM(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierPerceptronSVM(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierLossSquared(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierLossSquared(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierMaxEnt(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierMaxEnt(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierBNB(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierBNB(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
 
-relClssr = tc.TweetClassifierRegression(trainingPaths, cleanNothing)
+relClssr = tc.PosNegClassifierRegression(trainingPaths, cleanNothing)
 
 testClassifier(relClssr)
