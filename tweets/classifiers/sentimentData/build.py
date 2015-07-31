@@ -12,7 +12,7 @@ for s in sentiments.keys():
 
   tweets = []
 
-  with open(s + 'Training_Uncleaned.txt', 'r') as f:
+  with open('liz_' + s + '.txt', 'r') as f:
     for line in f:
       tweets.append(line.rstrip('\n'))
 

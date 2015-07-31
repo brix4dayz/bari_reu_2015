@@ -5,7 +5,7 @@ import numpy as np
 
 sentiments = ['positive', 'negative', 'neutral']
 
-devSize = 100
+devSize = 300
 
 for s in sentiments:
 

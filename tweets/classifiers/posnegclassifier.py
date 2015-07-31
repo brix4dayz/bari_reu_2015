@@ -120,14 +120,15 @@ class PosNegClassifier(object):
     def getGridSearch(self):
         # Set the search parameters
         parameters = {'vect__ngram_range': [(1,1),(1,2)], # Try either words or bi grams
-                    'vect__max_df': (0.5, 0.75, 1.0),
+                    'vect__max_df': (0.5, 1.0),
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
                     'tfidf__norm': ('l1', 'l2'),
                     'clf__alpha': (0.00001, 0.000001),
                     'clf__penalty': ('l2', 'elasticnet', 'l1'),
-                    'clf__n_iter': (10, 50, 80),
-                    'clf__random_state':(0, 42)}
+                    'clf__n_iter': (50, 80),
+                    'clf__random_state':(0, 42),
+                    'clf__epsilon':(0.1, 0.01)}
         # Use all cores to create a grid search
         classifierGS = GridSearchCV(self.pipeline, parameters, n_jobs=-1)
         # Fit the CS estimator for use as a classifier
@@ -226,9 +227,9 @@ class PosNegClassifierModifiedSVM(PosNegClassifier):
     # Overriding function to build the smoothed SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='modified_huber'))]) # Use the smoothed SVM classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=True, norm='l1')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='modified_huber', penalty='elasticnet', n_iter=50, alpha=1e-05))]) # Use the smoothed SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created smoothed SVM classifier
@@ -318,9 +319,9 @@ class PosNegClassifierRegression(PosNegClassifier):
     # Overriding function to build the linear regression classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='huber', epsilon=0.1))]) # Use the linear regression classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=True, norm='l2') ), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='huber', epsilon=0.01, n_iter=50, alpha=1e-05, penalty='l2'))]) # Use the linear regression classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 		## The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
 		#	For 'huber' it determines the threshold at which it becomes less important to get the prediction exactly right.
