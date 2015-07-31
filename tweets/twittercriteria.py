@@ -53,12 +53,14 @@ def tweetContainsKeyword(tweet):
 # Function to clean up tweet strings 
 # by manually removing irrelevant data (not words)
 def cleanUpTweet(tweet_text):
-  global markup_regex
-  # Irrelevant characters
-  temp = tweet_text.lower()
-  # Use regex to create a regular expression 
-  # for removing undesired characters
-  temp = markup_regex.sub(r"", temp)
+  global markup_regex, handle_regex
+  temp = markup_regex.sub(r"", tweet_text)             # removes markup like pictures and &amp;
+  temp = re.sub(r"\r|\r\n|\n", r" ", temp)             # replaces newlines with spaces
+  temp = unicode(temp, 'utf-8')                        # converts string to utf-8
+  temp = temp.encode('unicode_escape')                 # encodes with escape sequences, putting emojis in raw form
+  temp = re.sub(r"\\U", r" \\U", temp)                 # puts a space in front of every emoji
+  temp = re.sub(r"\\u", r" \\u", temp)                 # puts a space in front of every emoji
+  temp = re.sub(r"0fc|\\u201c|\\u201d|\"", r"", temp)  # remove unicode quotes and other markup
   return temp
 
 def has_punc(s):

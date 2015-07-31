@@ -162,9 +162,9 @@ class RelevanceClassifierLinearSVM(RelevanceClassifier):
     # Overriding function to build the linear SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42))]) # Use the SVM classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=False, norm='l2')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=0, penalty='l2', n_iter=10, alpha=1e-05))]) # Use the SVM classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
         ## By default, SGD supports a linear support vector machine (SVM) using the default args below
         ## SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
@@ -287,9 +287,9 @@ class RelevanceClassifierPerceptronSVM(RelevanceClassifier):
     # Overriding function to build the perceptron algorithm using classifier via a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='perceptron'))]) # Use the perceptron algorithm for classification
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3), max_df=0.5)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True, )), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='perceptron', alpha=1e-05, n_iter=50, penalty='l2'))]) # Use the perceptron algorithm for classification
 		## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created perceptron algorithm using classifier

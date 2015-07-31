@@ -52,40 +52,40 @@ def testClassifier(clssfr):
 
 relClssr = tc.RelevanceClassifier(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierLinearSVM(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierModifiedSVM(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierQuadraticSVM(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierLogSVM(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierPerceptronSVM(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierLossSquared(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierMaxEnt(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierBNB(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
 
 relClssr = tc.RelevanceClassifierRegression(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-relClssr.getGridSearch()
+#relClssr.getGridSearch()
