@@ -1,6 +1,6 @@
 # Author: Hayden Fuss
 # File: testposneg.py
-# Date Modified: 07/31/2015
+# Date Modified: 08/02/2015
 # Edited: Elizabeth Brooks
 
 import posnegclassifier as tc
@@ -72,7 +72,7 @@ testClassifier(relClssr)
 
 relClssr = tc.PosNegClassifierPerceptronSVM(trainingPaths, cleanNothing)
 testClassifier(relClssr)
-#relClssr.getGridSearch()
+relClssr.getGridSearch()
 
 relClssr = tc.PosNegClassifierLossSquared(trainingPaths, cleanNothing)
 testClassifier(relClssr)

@@ -1,6 +1,6 @@
 # Author: Elizabeth Brooks
 # File: posnegclassifier.py
-# Date Modified: 07/31/2015
+# Date Modified: 08/02/2015
 # Edited: Hayden Fuss
 
 # Begin script
@@ -124,11 +124,11 @@ class PosNegClassifier(object):
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
                     'tfidf__norm': ('l1', 'l2'),
-                    'clf__alpha': (0.00001, 0.000001),
+                    #'clf__alpha': (0.00001, 0.000001),
                     'clf__penalty': ('l2', 'elasticnet', 'l1'),
                     'clf__n_iter': (50, 80),
                     'clf__random_state':(0, 42),
-                    'clf__epsilon':(0.1, 0.01)}
+                    'clf__epsilon':(0.01, 0.05, 0.001)}
         # Use all cores to create a grid search
         classifierGS = GridSearchCV(self.pipeline, parameters, n_jobs=-1)
         # Fit the CS estimator for use as a classifier
@@ -321,7 +321,7 @@ class PosNegClassifierRegression(PosNegClassifier):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
         self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer(use_idf=True, norm='l2') ), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='huber', epsilon=0.01, n_iter=50, alpha=1e-05, penalty='l2'))]) # Use the linear regression classifier
+                            ('clf', SGDClassifier(random_state=42, loss='huber', epsilon=0.001, n_iter=50, alpha=1e-05, penalty='l2'))]) # Use the linear regression classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 		## The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
 		#	For 'huber' it determines the threshold at which it becomes less important to get the prediction exactly right.
