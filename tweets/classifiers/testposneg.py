@@ -50,42 +50,48 @@ def testClassifier(clssfr):
   print mat
   print "...done.\n"
 
-#relClssr = tc.PosNegClassifier(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+# The main method used for testing classifiers
+def main():
+	#relClssr = tc.PosNegClassifier(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierLinearSVM(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierLinearSVM(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierModifiedSVM(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierModifiedSVM(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierQuadraticSVM(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierQuadraticSVM(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierLogSVM(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierLogSVM(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-relClssr = tc.PosNegClassifierPerceptronSVM(trainingPaths, cleanNothing)
-testClassifier(relClssr)
-relClssr.getGridSearch()
+	relClssr = tc.PosNegClassifierPerceptronSVM(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
+	relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierLossSquared(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierLossSquared(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierMaxEnt(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierMaxEnt(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierBNB(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierBNB(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
 
-#relClssr = tc.PosNegClassifierRegression(trainingPaths, cleanNothing)
-#testClassifier(relClssr)
-#relClssr.getGridSearch()
+	#relClssr = tc.PosNegClassifierRegression(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
+	#relClssr.getGridSearch()
+
+#Necessary for Windows OS
+if __name__ == '__main__':
+	main()
