@@ -52,44 +52,44 @@ def testClassifier(clssfr):
 
 # The main method used for testing classifiers
 def main():  
-	#relClssr = tc.RelevanceClassifier(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifier(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierLinearSVM(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierLinearSVM(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierModifiedSVM(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierModifiedSVM(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierQuadraticSVM(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierQuadraticSVM(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierLogSVM(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierLogSVM(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
 	relClssr = tc.RelevanceClassifierPerceptronSVM(trainingPaths, cleanNothing)
 	testClassifier(relClssr)
-	relClssr.getGridSearch()
-
-	#relClssr = tc.RelevanceClassifierLossSquared(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierMaxEnt(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierLossSquared(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierBNB(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierMaxEnt(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
-	#relClssr = tc.RelevanceClassifierRegression(trainingPaths, cleanNothing)
-	#testClassifier(relClssr)
+	relClssr = tc.RelevanceClassifierBNB(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
+	#relClssr.getGridSearch()
+
+	relClssr = tc.RelevanceClassifierRegression(trainingPaths, cleanNothing)
+	testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
 #Necessary for Windows OS

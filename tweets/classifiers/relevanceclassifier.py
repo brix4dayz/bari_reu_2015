@@ -76,8 +76,8 @@ class RelevanceClassifier(object):
     ## Default multinomial NB using chi squared statistics
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                      #('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
+        self.pipeline = Pipeline([#('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
+                      ('tfidf', TfidfTransformer()), # Perform TF-iFD weighting on features
                       #('chi2', SelectKBest(chi2, k=2000)), # Use chi squared statistics to select the k best features
                       ('clf', MultinomialNB())]) # Use the multinomial NB classifier
 
@@ -119,15 +119,17 @@ class RelevanceClassifier(object):
     #   except that the parameters of the classifier used to predict is optimized by cross-validation.
     def getGridSearch(self):
         # Set the search parameters
-        parameters = {'vect__ngram_range': [(1,1),(1,3),(1,2)], # Try either words or bi grams
-                    'vect__max_df': (0.5, 1.0),
+        parameters = {'vect__ngram_range': [(1,1),(1,2)], # Try either words or bi grams
+                    'vect__max_df': (0.09, 0.05),
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
                     'tfidf__norm': ('l1', 'l2'),
-                    'clf__alpha': (0.00001, 0.000001),
-                    'clf__penalty': ('l2', 'elasticnet', 'l1'),
-                    'clf__n_iter': (10, 50, 80),
-                    'clf__random_state':(0, 42)}
+                    'clf__penalty': ('l2', 'elasticnet', 'l1'), # Default l2
+					'clf__alpha': (0.0009, 0.0015), # Default 0.0001
+					#'clf_fit_intercept': (True, False), # Default True
+                    'clf__n_iter': (5, 50, 25), # Default 1 or 5 depending, optional
+					#'clf__random_state':(0, 42), # Default None
+                    'clf__epsilon':(0.01, 0.05)} # Default 0.01, depends on classifier (loss)
         # Use all cores to create a grid search
         classifierGS = GridSearchCV(self.pipeline, parameters, n_jobs=-1)
         # Fit the CS estimator for use as a classifier
@@ -162,9 +164,9 @@ class RelevanceClassifierLinearSVM(RelevanceClassifier):
     # Overriding function to build the linear SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.09)), # Create a vector of feature frequencies
                             ('tfidf', TfidfTransformer(use_idf=False, norm='l2')), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=0, penalty='l2', n_iter=10, alpha=1e-05))]) # Use the SVM classifier
+                            ('clf', SGDClassifier(alpha=0.0009, epsilon=0.01, n_iter=25, penalty='l2', random_state=0))]) # Use the SVM classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
         ## By default, SGD supports a linear support vector machine (SVM) using the default args below
         ## SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
@@ -287,9 +289,9 @@ class RelevanceClassifierPerceptronSVM(RelevanceClassifier):
     # Overriding function to build the perceptron algorithm using classifier via a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3), max_df=0.5)), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True, )), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='perceptron', alpha=1e-05, n_iter=50, penalty='l2'))]) # Use the perceptron algorithm for classification
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='perceptron', alpha=0.0001, epsilon=0.01, n_iter=25, penalty='l2', random_state=42))]) # Use the perceptron algorithm for classification
 		## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created perceptron algorithm using classifier
@@ -318,9 +320,9 @@ class RelevanceClassifierRegression(RelevanceClassifier):
     # Overriding function to build the linear regression classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='huber', epsilon=0.1))]) # Use the linear regression classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.09)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=True, norm='l1')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='huber', alpha=0.0009, epsilon=0.01, n_iter=5, penalty='l2', random_state=0))]) # Use the linear regression classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 		## The epsilon arg in the epsilon-insensitive loss functions ('huber', 'epsilon_insensitive', or 'squared_epsilon_insensitive')
 		#	For 'huber' it determines the threshold at which it becomes less important to get the prediction exactly right.
