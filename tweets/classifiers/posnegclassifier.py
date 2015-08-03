@@ -120,16 +120,16 @@ class PosNegClassifier(object):
     def getGridSearch(self):
         # Set the search parameters
         parameters = {'vect__ngram_range': [(1,1),(1,2)], # Try either words or bi grams
-                    'vect__max_df': (0.5, 1.0),
+                    'vect__max_df': (0.5, 0.1, 0.09),
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
                     'tfidf__norm': ('l1', 'l2'),
                     'clf__penalty': ('l2', 'elasticnet', 'l1'), # Default l2
-					'clf__alpha': (0.0005, 0.0009, 0.005), # Default 0.0001
+					'clf__alpha': (0.0001, 0.0009), # Default 0.0001
 					#'clf_fit_intercept': (True, False), # Default True
-                    'clf__n_iter': (50, 25, 10), # Default 1 or 5 depending, optional
-                    'clf__epsilon':(0.01, 0.02), # Default 0.01, depends on classifier (loss)
-					'clf__random_state':(0, 42)} # Default None
+                    'clf__n_iter': (5, 50, 25), # Default 1 or 5 depending, optional
+					#'clf__random_state':(0, 42), # Default None
+                    'clf__epsilon':(0.01, 0.005)} # Default 0.01, depends on classifier (loss)
         # Use all cores to create a grid search
         classifierGS = GridSearchCV(self.pipeline, parameters, n_jobs=-1)
         # Fit the CS estimator for use as a classifier
@@ -164,9 +164,9 @@ class PosNegClassifierLinearSVM(PosNegClassifier):
     # Overriding function to build the linear SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42))]) # Use the SVM classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(max_df=0.1, ngram_range=(1,1))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(alpha=0.0009, epsilon = 0.01, n_iter=50, penalty='elasticnet', random_state=0))]) # Use the SVM classifier
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
         ## By default, SGD supports a linear support vector machine (SVM) using the default args below
         ## SGDClassifier(loss='hinge', penalty='l2', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, n_iter=5, 
