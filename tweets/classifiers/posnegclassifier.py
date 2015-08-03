@@ -1,6 +1,6 @@
 # Author: Elizabeth Brooks
 # File: posnegclassifier.py
-# Date Modified: 08/02/2015
+# Date Modified: 08/03/2015
 # Edited: Hayden Fuss
 
 # Begin script

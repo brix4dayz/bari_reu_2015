@@ -1,6 +1,6 @@
 # Author: Elizabeth Brooks
 # File: relevanceclassifier.py
-# Date Modified: 07/31/2015
+# Date Modified: 08/03/2015
 # Edited: Hayden Fuss
 
 # Begin script

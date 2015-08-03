@@ -1,6 +1,6 @@
 # Author: Hayden Fuss
 # File: testposneg.py
-# Date Modified: 08/02/2015
+# Date Modified: 08/03/2015
 # Edited: Elizabeth Brooks
 
 import posnegclassifier as tc
