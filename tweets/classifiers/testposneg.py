@@ -13,11 +13,9 @@ def cleanNothing(tweet):
   return tweet
 
 trainingPaths = {'positive':'/sentimentData/positive.txt', 'neutral':'/sentimentData/neutral.txt', 'negative':'/sentimentData/negative.txt',}
-
 categories = trainingPaths.keys()
 
 testPaths = {'positive':'/sentimentData/positiveTest.txt', 'neutral':'/sentimentData/neutralTest.txt', 'negative':'/sentimentData/negativeTest.txt',}
-
 actual = np.array([])
 
 testTweets = []

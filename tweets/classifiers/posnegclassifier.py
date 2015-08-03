@@ -124,11 +124,12 @@ class PosNegClassifier(object):
                     #'vect__max_features': (None, 5000, 10000, 50000),
                     'tfidf__use_idf': (True, False),
                     'tfidf__norm': ('l1', 'l2'),
-                    #'clf__alpha': (0.00001, 0.000001),
-                    'clf__penalty': ('l2', 'elasticnet', 'l1'),
-                    'clf__n_iter': (50, 80),
-                    'clf__random_state':(0, 42),
-                    'clf__epsilon':(0.01, 0.05, 0.001)}
+                    'clf__penalty': ('l2', 'elasticnet', 'l1'), # Default l2
+					'clf__alpha': (0.0005, 0.0009, 0.005), # Default 0.0001
+					#'clf_fit_intercept': (True, False), # Default True
+                    'clf__n_iter': (50, 25, 10), # Default 1 or 5 depending, optional
+                    'clf__epsilon':(0.01, 0.02), # Default 0.01, depends on classifier (loss)
+					'clf__random_state':(0, 42)} # Default None
         # Use all cores to create a grid search
         classifierGS = GridSearchCV(self.pipeline, parameters, n_jobs=-1)
         # Fit the CS estimator for use as a classifier
@@ -288,9 +289,9 @@ class PosNegClassifierPerceptronSVM(PosNegClassifier):
     # Overriding function to build the perceptron algorithm using classifier via a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(use_idf=False)), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='perceptron'))]) # Use the perceptron algorithm for classification
+        self.pipeline = Pipeline([('vect', CountVectorizer(max_df=0.5, ngram_range=(1,2))), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='perceptron', alpha=0.0009, epsilon = 0.01, n_iter=25, penalty='l2', random_state=0))]) # Use the perceptron algorithm for classification
 		## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created perceptron algorithm using classifier
