@@ -11,7 +11,7 @@ with open('relevant.txt', 'r') as f:
   for line in f:
     relTweets.append(line.rstrip('\n'))
 
-for i in range(0,10):
+for i in range(0,3):
   j = np.random.randint(len(relTweets))
   relTest.append(relTweets.pop(j))
 
@@ -24,7 +24,7 @@ with open('irrelevant.txt', 'r') as f:
   for line in f:
     irrelTweets.append(line.rstrip('\n'))
 
-for i in range(0,90):
+for i in range(0,27):
   j = np.random.randint(len(irrelTweets))
   irrelTest.append(irrelTweets.pop(j))
 

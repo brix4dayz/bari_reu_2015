@@ -523,13 +523,9 @@ def testMap():
 
 def testScatter():
   out = raw_input("Enter name of output png: ")
-  testData = [
-    {'lon':'-71.0120751', 'lat':'42.27090738'},
-    {'lon':'-71.1864942', 'lat':'42.36610796'},
-    {'lon':'-71.0530936', 'lat':'42.35931187'}
-  ]
+  testData = []
   boston = GreaterBostonScatter(testData)
-  boston.plotMap(outname=out, title='Scatterplot Over Boston')
+  boston.plotMap(outname=out, title='Map of Greater Boston')
   return
 
 #####################################################################################################################

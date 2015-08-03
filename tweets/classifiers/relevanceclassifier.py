@@ -197,9 +197,9 @@ class RelevanceClassifierQuadraticSVM(RelevanceClassifier):
     # Overriding function to build the quadratic SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='squared_hinge'))]) # Use the quadratic SVM classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.05)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=True, norm='l2')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='squared_hinge', penalty='elasticnet', n_iter=5, epsilon=0.01, alpha=.0009))]) # Use the quadratic SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created quadratic SVM classifier
@@ -228,9 +228,9 @@ class RelevanceClassifierModifiedSVM(RelevanceClassifier):
     # Overriding function to build the smoothed SVM classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='modified_huber'))]) # Use the smoothed SVM classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.05)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=True, norm='l2')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='modified_huber', alpha=.0009, epsilon=.01, n_iter=5, penalty='l2'))]) # Use the smoothed SVM classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created smoothed SVM classifier
@@ -258,9 +258,9 @@ class RelevanceClassifierLogSVM(RelevanceClassifier):
     # Overriding function to build the logistic regression classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='log'))]) # Use the logistic regression classifier
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.09)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=False, norm='l2')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='log', penalty='l1', n_iter=50, epsilon=0.01, alpha=0.009))]) # Use the logistic regression classifier
         # The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created logistic regression classifier
@@ -289,9 +289,9 @@ class RelevanceClassifierPerceptronSVM(RelevanceClassifier):
     # Overriding function to build the perceptron algorithm using classifier via a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.5)), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer(norm='l2', use_idf=True)), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(loss='perceptron', alpha=0.0001, epsilon=0.01, n_iter=25, penalty='l2', random_state=42))]) # Use the perceptron algorithm for classification
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,1), max_df=0.05)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(norm='l1', use_idf=False)), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(loss='perceptron', alpha=0.0015, epsilon=0.01, n_iter=50, penalty='elasticnet', random_state=42))]) # Use the perceptron algorithm for classification
 		## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 
         # Fit the created perceptron algorithm using classifier
@@ -350,9 +350,9 @@ class RelevanceClassifierLossSquared(RelevanceClassifier):
     # Overriding function to build the linear loss classifier using a pipeline
     def initPipeline(self):
         # Pipeline of transformers with a final estimator that behaves like a compound classifier
-        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,3))), # Create a vector of feature frequencies
-                            ('tfidf', TfidfTransformer()), # Perform TF-iDF weighting on features
-                            ('clf', SGDClassifier(random_state=42, loss='squared_loss'))]) # Use the classifier for linear loss
+        self.pipeline = Pipeline([('vect', CountVectorizer(ngram_range=(1,2), max_df=0.09)), # Create a vector of feature frequencies
+                            ('tfidf', TfidfTransformer(use_idf=False, norm='l2')), # Perform TF-iDF weighting on features
+                            ('clf', SGDClassifier(random_state=42, loss='squared_loss', penalty='l1', n_iter=50, epsilon=0.01, alpha=0.0015))]) # Use the classifier for linear loss
         ## The SGD estimator implements regularized linear models with stochastic gradient descent learning
 		
         # Fit the created linear loss classifier

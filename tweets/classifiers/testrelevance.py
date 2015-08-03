@@ -52,8 +52,8 @@ def testClassifier(clssfr):
 
 # The main method used for testing classifiers
 def main():  
-	relClssr = tc.RelevanceClassifier(trainingPaths, cleanNothing)
-	testClassifier(relClssr)
+	#relClssr = tc.RelevanceClassifier(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
 	relClssr = tc.RelevanceClassifierLinearSVM(trainingPaths, cleanNothing)

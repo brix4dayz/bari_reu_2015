@@ -18,7 +18,7 @@ import poisson311 as pts
 
 probTol = 0.05
 
-latents = ['pubd']
+latents = ['pubd', 'public', 'private', 'other']
 
 # time_fmt declares the format for the time data
 # year_data declares an empty hash, and the for loop creates further hashes (think: vectors) assigned to the keys of '2012' and '2013'
@@ -54,19 +54,19 @@ for l in latents:
         #if l != 'pubd' and d != '22':
             boston = bm.BostonDensity(reports[d])
             boston.plotMap(outname=l + '_bombday_density_311_' + str(d),
-                title='Locations of ' + l.title() + '311 Reports in 4-' + str(d) + '-13')
-            f = open(l + "_most_dense_311_4-" + str(d) + "-13.csv", "w")
-            f.write(boston.highest)
-            f.close()
+                title='Locations of ' + l.title() + ' 311 Reports in 4-' + str(d) + '-13')
+            # f = open(l + "_most_dense_311_4-" + str(d) + "-13.csv", "w")
+            # f.write(boston.highest)
+            # f.close()
 
-            with open(l + "_response_tracts_311_4-" + str(d) + "-13.csv", "w") as f:
-                ct_counts = []
-                for i, row in boston.df_map.iterrows():
-                    prob = pts.poissonProb(row['count'], row['CT_ID_10'], l)
-                    if (prob <= probTol):
-                        ct_counts.append(str(row['CT_ID_10']) + "," + str(row['count']) + "," + str(prob))
+            # with open(l + "_response_tracts_311_4-" + str(d) + "-13.csv", "w") as f:
+            #     ct_counts = []
+            #     for i, row in boston.df_map.iterrows():
+            #         prob = pts.poissonProb(row['count'], row['CT_ID_10'], l)
+            #         if (prob <= probTol):
+            #             ct_counts.append(str(row['CT_ID_10']) + "," + str(row['count']) + "," + str(prob))
 
-                f.write('ct_id,numReports,probability\n')
-                f.write('\n'.join(ct_counts))
+            #     f.write('ct_id,numReports,probability\n')
+            #     f.write('\n'.join(ct_counts))
 
             plt.close('all')
