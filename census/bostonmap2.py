@@ -45,7 +45,7 @@ stateTracts = '/mass_cb/gz_2010_25_140_00_500k'
 countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7C', 
                 '007':'#7E7125', '009':'#4E65EF', '011':'#BC4638', '013':'#C8C736', 
                 '015':'#F0BF26', '021':'#02896F', '025':'#6E95A3', '023':'#50658C',
-                '027':'#32B126', '019':'#B66497'}
+                '027':'#0000A0', '019':'#B66497'}
 suffolkID = '025'
 
 # change these
@@ -515,6 +515,37 @@ class GreaterBostonDensity(GreaterBostonScatter):
     return
 
 #######################################################################################################################
+
+class ColoredGBScatter(GreaterBostonScatter):
+  def __init__(self, dataPoints):
+    # call parent constructor
+    super(ColoredGBScatter, self).__init__(dataPoints)
+    return
+
+  def dataDF(self):
+    for k in self.dataPoints.keys():
+      output = {'lon':[], 'lat':[]}
+      for d in self.dataPoints[k]['data']:
+        for each in ('lon', 'lat'):
+          output[each].append(d[each])
+      df = pd.DataFrame(output)
+      df[['lon', 'lat']] = df[['lon', 'lat']].astype(float)
+      self.dataPoints[k]['data'] = pd.Series(
+        [Point(self.map(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(df['lon'], df['lat'])])
+    return
+
+  def data(self):
+    for k in self.dataPoints.keys():
+      self.map.scatter(
+        [geom.x for geom in self.dataPoints[k]['data']],
+        [geom.y for geom in self.dataPoints[k]['data']],
+        10, marker='o', lw=.25,
+        facecolor=self.dataPoints[k]['face'], edgecolor=self.dataPoints[k]['edge'],
+        alpha=0.9, antialiased=True, zorder=3)
+    return
+
+#######################################################################################################################
+
 
 def testMap():
   out = raw_input("Enter name of output png: ")

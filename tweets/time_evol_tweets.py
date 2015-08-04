@@ -16,6 +16,7 @@ sys.path.append(os.path.realpath('./classifiers/'))
 import posnegclassifier as pnc
 import relevanceclassifier as rc
 import re
+import copy
 
 spaths = {'positive':'/sentimentData/positive_Uncleaned.txt', 'negative':'/sentimentData/negative_Uncleaned.txt', 
          'neutral':'/sentimentData/neutral_Uncleaned.txt'}
@@ -88,9 +89,11 @@ relInfo = []
 tweetList = []
 textList = []
 
-sentimentTweets = {}
+# negative = blue, positive = orange, neutral = green
+sentimentTweets = {'positive':{'face':'#ffb347', 'edge':'w'}, 'negative':{'edge':'w', 'face':'#33ccff'},
+                  'neutral':{'face':'#77dd77', 'edge':'w'}}
 for c in cats:
-    sentimentTweets[c] = []
+    sentimentTweets[c]['data'] = []
 
 count = 0
 count2 = 0
@@ -127,18 +130,22 @@ with open('cleaned_geo_tweets_4_12_22.csv') as csvfile:
 
                     results = clssfr.classify(textList)
                     for i in range(0, len(results)):
-                        sentimentTweets[cats[results[i]]].append(tweetList[i])
+                        sentimentTweets[cats[results[i]]]['data'].append(tweetList[i])
 
-                    for sentiment in sentimentTweets.keys():
-                        boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
-                        boston.plotMap(outname='bombingDay_' + sentiment + '_' + str(currentHour),
-                            title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
+                    # for sentiment in sentimentTweets.keys():
+                    #     boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
+                    #     boston.plotMap(outname='bombingDay_' + sentiment + '_' + str(currentHour).zfill(3),
+                    #         title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
+                    boston = bm.ColoredGBScatter(copy.deepcopy(sentimentTweets))
+                    boston.plotMap(outname='bombingDay_sentiments_' + str(currentHour).zfill(3),
+                             title='Locations of Sentiment Tweets At ' + timeStr)
+
 
                     boston = bm.GreaterBostonScatter(relTweets)
-                    boston.plotMap(outname='bombingDay_rel_' + str(currentHour),
+                    boston.plotMap(outname='bombingDay_rel_' + str(currentHour).zfill(3),
                         title='Locations of Relevant Tweets At ' + timeStr)
                     boston = bm.GreaterBostonScatter(kwTweets)
-                    boston.plotMap(outname='bombingDay_keyword_'+str(currentHour),
+                    boston.plotMap(outname='bombingDay_keyword_'+str(currentHour).zfill(3),
                         title='Locations of Keyword Tweets At ' + timeStr)
 
                     if twc.tweetContainsKeyword(tweetData['tweet_text']):
@@ -169,19 +176,19 @@ for i in range(0, len(results)):
 
 results = clssfr.classify(textList)
 for i in range(0, len(results)):
-    sentimentTweets[cats[results[i]]].append(tweetList[i])
+    sentimentTweets[cats[results[i]]]['data'].append(tweetList[i])
 
-for sentiment in sentimentTweets.keys():
-    boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
-    boston.plotMap(outname='bombingDay_' + sentiment + '_' + str(currentHour),
-        title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
+# for sentiment in sentimentTweets.keys():
+#     boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
+#     boston.plotMap(outname='bombingDay_' + sentiment + '_' + str(currentHour).zfill(3),
+#         title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
 
 boston = bm.GreaterBostonScatter(relTweets)
-boston.plotMap(outname='bombingDay_rel_' + str(currentHour),
+boston.plotMap(outname='bombingDay_rel_' + str(currentHour).zfill(3),
     title='Locations of Relevant Tweets At ' + timeStr)
 
 boston = bm.GreaterBostonScatter(kwTweets)
-boston.plotMap(outname='bombingDay_keyword_'+str(currentHour),
+boston.plotMap(outname='bombingDay_keyword_'+str(currentHour).zfill(3),
     title='Locations of Keyword Tweets At ' + timeStr)
 
 plt.close('all')
