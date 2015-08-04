@@ -419,6 +419,7 @@ class GreaterBostonScatter(BostonScatter):
     return
 
   def makePlot(self, outname, title):
+    self.cities()
     self.marathon()
     plt.title(title)
     self.fig.set_size_inches((self.w/self.h)*10, 10)
@@ -453,6 +454,10 @@ class GreaterBostonScatter(BostonScatter):
     lat = route[-1][1]
     x,y = self.map(lon, lat)
     self.map.plot(x, y, self.routeColor + 'o', markersize=8)
+
+    return
+
+  def cities(self):
 
     return
 
