@@ -42,10 +42,10 @@ stateTracts = '/mass_cb/gz_2010_25_140_00_500k'
 # stateTracts = '/mass_tiger/tl_2014_25_tract'
 
 # list of counties with INCITS: https://en.wikipedia.org/wiki/List_of_counties_in_Massachusetts
-countyColors = {'017':'#A64345', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7C', 
-                '007':'#7E7125', '009':'#4E65EF', '011':'#BC4638', '013':'#C8C736', 
+countyColors = {'017':'#8B3A3A', '001':'#075B1F', '003':'#FEA39D', '005':'#2AFA7C', 
+                '007':'#7E7125', '009':'#00688B', '011':'#BC4638', '013':'#C8C736', 
                 '015':'#F0BF26', '021':'#02896F', '025':'#6E95A3', '023':'#50658C',
-                '027':'#0000A0', '019':'#B66497'}
+                '027':'#858585', '019':'#B66497'}
 suffolkID = '025'
 
 # change these
@@ -429,7 +429,8 @@ class GreaterBostonScatter(BostonScatter):
   def patchesDF(self):
     self.df_map['patches'] = [PolygonPatch(row['poly'],
       fc=countyColors[row['COUNTY']], ec='k',
-      lw=0.25 if (row['COUNTY'] != suffolkID) else 0.8,
+      #lw=0.25 if (row['COUNTY'] != suffolkID) else 0.8,
+      lw=0.25,
       alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
     return
 
@@ -458,6 +459,23 @@ class GreaterBostonScatter(BostonScatter):
     return
 
   def cities(self):
+
+    labels = ['Watertown', 'Boston', 'Cambridge', 'Brookline', 'Quincy', 'Hopkinton', 'Waltham', 'Arlington', 
+              'Somerville', 'Revere', 'Natick', 'Ashland', 'Wellesley', 'Newton']
+
+    lons = [ -71.1833, -71.0590, -71.1106, -71.1217, -71.0000, -71.5231, -71.2350, 
+            -71.1569, -71.1000, -71.0125, -71.4167, 
+            -71.4639, -71.2931, -71.2097]    
+    lats = [42.3708, 42.3599, 42.3736, 42.3317, 42.2500, 42.2286, 42.3806, 42.4153,
+            42.3875, 42.4083, 42.2833, 42.2611, 
+            42.2964, 42.3369] 
+
+    x,y = self.map(lons, lats)
+    for i in range(0, len(x)):
+      self.map.plot(x[i], y[i], marker='o', color='#33ccff', markersize=5)
+
+    for label, xpt, ypt in zip(labels, x, y):
+      plt.text(xpt-1000, ypt-1300, label)
 
     return
 
@@ -568,4 +586,4 @@ def testScatter():
 
 if __name__ == "__main__":
   testScatter()
-  plt.show()
+  #plt.show()

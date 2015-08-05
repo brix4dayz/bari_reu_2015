@@ -78,7 +78,7 @@ tweet_time_fmt = twc.getTwitterTimeFmt()
 ### get data
 
 kwTweets = []
-currentHour = 14
+currentHour = 0
 
 infoTweets = []
 
@@ -109,7 +109,7 @@ with open('cleaned_geo_tweets_4_12_22.csv') as csvfile:
             # parse date/time into object
             date = time.strptime(tweetData['time'], tweet_time_fmt)
             #if date.tm_mday == 15 and twc.tweetContainsKeyword(tweetData['tweet_text']):
-            if date.tm_mday == 15:
+            if date.tm_mday == 12:
                 count2 += 1
                 if date.tm_hour == currentHour:
                     if twc.tweetContainsKeyword(tweetData['tweet_text'].lower()):
@@ -133,20 +133,20 @@ with open('cleaned_geo_tweets_4_12_22.csv') as csvfile:
                         sentimentTweets[cats[results[i]]]['data'].append(tweetList[i])
 
                     # for sentiment in sentimentTweets.keys():
-                    #     boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
-                    #     boston.plotMap(outname='bombingDay_' + sentiment + '_' + str(currentHour).zfill(3),
+                    #     boston = bm.GreaterBostonScatter(sentimentTweets[sentiment]['data'])
+                    #     boston.plotMap(outname='manhunt_' + sentiment + '_' + str(currentHour).zfill(3),
                     #         title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
                     boston = bm.ColoredGBScatter(copy.deepcopy(sentimentTweets))
-                    boston.plotMap(outname='bombingDay_sentiments_' + str(currentHour).zfill(3),
+                    boston.plotMap(outname='manhunt_sentiments_' + str(currentHour).zfill(3),
                              title='Locations of Sentiment Tweets At ' + timeStr)
 
 
-                    boston = bm.GreaterBostonScatter(relTweets)
-                    boston.plotMap(outname='bombingDay_rel_' + str(currentHour).zfill(3),
-                        title='Locations of Relevant Tweets At ' + timeStr)
-                    boston = bm.GreaterBostonScatter(kwTweets)
-                    boston.plotMap(outname='bombingDay_keyword_'+str(currentHour).zfill(3),
-                        title='Locations of Keyword Tweets At ' + timeStr)
+                    # boston = bm.GreaterBostonScatter(relTweets)
+                    # boston.plotMap(outname='manhunt_rel_' + str(currentHour).zfill(3),
+                    #     title='Locations of Relevant Tweets At ' + timeStr)
+                    # boston = bm.GreaterBostonScatter(kwTweets)
+                    # boston.plotMap(outname='manhunt_keyword_'+str(currentHour).zfill(3),
+                    #     title='Locations of Keyword Tweets At ' + timeStr)
 
                     if twc.tweetContainsKeyword(tweetData['tweet_text']):
                         kwTweets.append(tweetData)
@@ -178,17 +178,17 @@ results = clssfr.classify(textList)
 for i in range(0, len(results)):
     sentimentTweets[cats[results[i]]]['data'].append(tweetList[i])
 
-# for sentiment in sentimentTweets.keys():
-#     boston = bm.GreaterBostonScatter(sentimentTweets[sentiment])
-#     boston.plotMap(outname='bombingDay_' + sentiment + '_' + str(currentHour).zfill(3),
-#         title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
+for sentiment in sentimentTweets.keys():
+    boston = bm.GreaterBostonScatter(sentimentTweets[sentiment]['data'])
+    boston.plotMap(outname='manhunt_' + sentiment + '_' + str(currentHour).zfill(3),
+        title='Locations of ' + sentiment.title() + ' Tweets At ' + timeStr)
 
 boston = bm.GreaterBostonScatter(relTweets)
-boston.plotMap(outname='bombingDay_rel_' + str(currentHour).zfill(3),
+boston.plotMap(outname='manhunt_rel_' + str(currentHour).zfill(3),
     title='Locations of Relevant Tweets At ' + timeStr)
 
 boston = bm.GreaterBostonScatter(kwTweets)
-boston.plotMap(outname='bombingDay_keyword_'+str(currentHour).zfill(3),
+boston.plotMap(outname='manhunt_keyword_'+str(currentHour).zfill(3),
     title='Locations of Keyword Tweets At ' + timeStr)
 
 plt.close('all')
