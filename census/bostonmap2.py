@@ -419,7 +419,7 @@ class GreaterBostonScatter(BostonScatter):
     return
 
   def makePlot(self, outname, title):
-    self.cities()
+    #self.cities()
     self.marathon()
     plt.title(title)
     self.fig.set_size_inches((self.w/self.h)*10, 10)
@@ -429,8 +429,8 @@ class GreaterBostonScatter(BostonScatter):
   def patchesDF(self):
     self.df_map['patches'] = [PolygonPatch(row['poly'],
       fc=countyColors[row['COUNTY']], ec='k',
-      #lw=0.25 if (row['COUNTY'] != suffolkID) else 0.8,
-      lw=0.25,
+      lw=0.25 if (row['COUNTY'] != suffolkID) else 0.8,
+      #lw=0.25,
       alpha=.9, zorder=4) for i,row in self.df_map.iterrows()]
     return
 
@@ -553,15 +553,15 @@ class ColoredGBScatter(GreaterBostonScatter):
           output[each].append(d[each])
       df = pd.DataFrame(output)
       df[['lon', 'lat']] = df[['lon', 'lat']].astype(float)
-      self.dataPoints[k]['data'] = pd.Series(
+      self.dataPoints[k]['series'] = pd.Series(
         [Point(self.map(mapped_x, mapped_y)) for mapped_x, mapped_y in zip(df['lon'], df['lat'])])
     return
 
   def data(self):
     for k in self.dataPoints.keys():
       self.map.scatter(
-        [geom.x for geom in self.dataPoints[k]['data']],
-        [geom.y for geom in self.dataPoints[k]['data']],
+        [geom.x for geom in self.dataPoints[k]['series']],
+        [geom.y for geom in self.dataPoints[k]['series']],
         10, marker='o', lw=.25,
         facecolor=self.dataPoints[k]['face'], edgecolor=self.dataPoints[k]['edge'],
         alpha=0.9, antialiased=True, zorder=3)
