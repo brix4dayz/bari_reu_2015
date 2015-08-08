@@ -50,8 +50,8 @@ def testClassifier(clssfr):
 
 # The main method used for testing classifiers
 def main():
-	relClssr = tc.PosNegClassifier(trainingPaths, cleanNothing)
-	testClassifier(relClssr)
+	#relClssr = tc.PosNegClassifier(trainingPaths, cleanNothing)
+	#testClassifier(relClssr)
 	#relClssr.getGridSearch()
 
 	relClssr = tc.PosNegClassifierLinearSVM(trainingPaths, cleanNothing)
